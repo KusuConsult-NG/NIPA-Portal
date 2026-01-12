@@ -1,62 +1,65 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function NotificationsPage() {
     const [filter, setFilter] = useState('all');
+    const [notifications, setNotifications] = useState<any[]>([]);
 
-    const notifications = [
-        {
-            id: 1,
-            title: 'Payment Confirmation',
-            message: 'Your payment of ₦5,000 for monthly dues has been received.',
-            type: 'payment',
-            read: false,
-            timestamp: new Date(Date.now() - 10 * 60 * 1000), // 10 mins ago
-            icon: 'payments',
-            color: 'green'
-        },
-        {
-            id: 2,
-            title: 'New Event: National Strategy Plenary',
-            message: 'Registration is now open for the National Strategy Plenary 2024.',
-            type: 'event',
-            read: false,
-            timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
-            icon: 'event',
-            color: 'blue'
-        },
-        {
-            id: 3,
-            title: 'Election Nomination Deadline',
-            message: 'Reminder: Nomination forms must be submitted by November 10th.',
-            type: 'election',
-            read: true,
-            timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
-            icon: 'how_to_vote',
-            color: 'purple'
-        },
-        {
-            id: 4,
-            title: 'Birthday Greeting',
-            message: 'Happy Birthday from the NIPA community!',
-            type: 'welfare',
-            read: true,
-            timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
-            icon: 'cake',
-            color: 'pink'
-        },
-        {
-            id: 5,
-            title: 'New Policy Paper Published',
-            message: 'Economic Policy Recommendations 2024 is now available in the resources library.',
-            type: 'resource',
-            read: true,
-            timestamp: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
-            icon: 'description',
-            color: 'orange'
-        }
-    ];
+    useEffect(() => {
+        setNotifications([
+            {
+                id: 1,
+                title: 'Payment Confirmation',
+                message: 'Your payment of ₦5,000 for monthly dues has been received.',
+                type: 'payment',
+                read: false,
+                timestamp: new Date(Date.now() - 10 * 60 * 1000), // 10 mins ago
+                icon: 'payments',
+                color: 'green'
+            },
+            {
+                id: 2,
+                title: 'New Event: National Strategy Plenary',
+                message: 'Registration is now open for the National Strategy Plenary 2024.',
+                type: 'event',
+                read: false,
+                timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
+                icon: 'event',
+                color: 'blue'
+            },
+            {
+                id: 3,
+                title: 'Election Nomination Deadline',
+                message: 'Reminder: Nomination forms must be submitted by November 10th.',
+                type: 'election',
+                read: true,
+                timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
+                icon: 'how_to_vote',
+                color: 'purple'
+            },
+            {
+                id: 4,
+                title: 'Birthday Greeting',
+                message: 'Happy Birthday from the NIPA community!',
+                type: 'welfare',
+                read: true,
+                timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
+                icon: 'cake',
+                color: 'pink'
+            },
+            {
+                id: 5,
+                title: 'New Policy Paper Published',
+                message: 'Economic Policy Recommendations 2024 is now available in the resources library.',
+                type: 'resource',
+                read: true,
+                timestamp: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
+                icon: 'description',
+                color: 'orange'
+            }
+        ]);
+    }, []);
 
     const unreadCount = notifications.filter(n => !n.read).length;
 
@@ -102,8 +105,8 @@ export default function NotificationsPage() {
                             key={f}
                             onClick={() => setFilter(f)}
                             className={`px-6 py-2 rounded-full font-bold text-sm transition-all ${filter === f
-                                    ? 'bg-[--color-primary] text-white shadow-lg'
-                                    : 'bg-white border border-slate-200 text-slate-600 hover:border-[--color-primary]/30'
+                                ? 'bg-[--color-primary] text-white shadow-lg'
+                                : 'bg-white border border-slate-200 text-slate-600 hover:border-[--color-primary]/30'
                                 }`}
                         >
                             {f.charAt(0).toUpperCase() + f.slice(1)}
@@ -117,23 +120,23 @@ export default function NotificationsPage() {
                         <div
                             key={notification.id}
                             className={`bg-white rounded-2xl p-6 border transition-all cursor-pointer ${notification.read
-                                    ? 'border-slate-200 hover:border-slate-300'
-                                    : 'border-[--color-primary]/30 bg-[--color-primary]/5 hover:border-[--color-primary]/50'
+                                ? 'border-slate-200 hover:border-slate-300'
+                                : 'border-[--color-primary]/30 bg-[--color-primary]/5 hover:border-[--color-primary]/50'
                                 }`}
                         >
                             <div className="flex gap-4">
                                 {/* Icon */}
                                 <div className={`shrink-0 size-12 rounded-xl flex items-center justify-center ${notification.color === 'green' ? 'bg-green-100' :
-                                        notification.color === 'blue' ? 'bg-blue-100' :
-                                            notification.color === 'purple' ? 'bg-purple-100' :
-                                                notification.color === 'pink' ? 'bg-pink-100' :
-                                                    'bg-orange-100'
+                                    notification.color === 'blue' ? 'bg-blue-100' :
+                                        notification.color === 'purple' ? 'bg-purple-100' :
+                                            notification.color === 'pink' ? 'bg-pink-100' :
+                                                'bg-orange-100'
                                     }`}>
                                     <span className={`material-symbols-outlined ${notification.color === 'green' ? 'text-green-600' :
-                                            notification.color === 'blue' ? 'text-blue-600' :
-                                                notification.color === 'purple' ? 'text-purple-600' :
-                                                    notification.color === 'pink' ? 'text-pink-600' :
-                                                        'text-orange-600'
+                                        notification.color === 'blue' ? 'text-blue-600' :
+                                            notification.color === 'purple' ? 'text-purple-600' :
+                                                notification.color === 'pink' ? 'text-pink-600' :
+                                                    'text-orange-600'
                                         }`}>
                                         {notification.icon}
                                     </span>

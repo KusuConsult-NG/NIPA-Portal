@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth';
-import { findUserById, updateUser } from '@/lib/database';
+import { findUserById, updateUser } from '@/lib/firebase-admin-db';
 
 export async function GET(
     request: NextRequest,
@@ -20,11 +20,9 @@ export async function GET(
             );
         }
 
-        const { password, ...memberWithoutPassword } = member;
-
         return NextResponse.json({
             success: true,
-            member: memberWithoutPassword
+            member
         });
 
     } catch (error) {
@@ -72,12 +70,10 @@ export async function PATCH(
             );
         }
 
-        const { password, ...memberWithoutPassword } = updatedMember;
-
         return NextResponse.json({
             success: true,
             message: 'Profile updated successfully',
-            member: memberWithoutPassword
+            member: updatedMember
         });
 
     } catch (error) {

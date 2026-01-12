@@ -27,6 +27,9 @@ export interface User {
     role: 'member' | 'admin' | 'welfare';
     status: 'active' | 'inactive';
     membershipType: 'regular' | 'premium' | 'life';
+    dob?: string;
+    birthMonth?: number; // 0-11
+    birthDay?: number;   // 1-31
     joinDate: Date;
     createdAt: Date;
     updatedAt: Date;
@@ -59,20 +62,25 @@ export async function createUser(userId: string, userData: Omit<User, 'id' | 'cr
  * Find user by ID
  */
 export async function findUserById(id: string): Promise<User | null> {
-    const userDoc = await getDoc(doc(db, 'users', id));
+    try {
+        const userDoc = await getDoc(doc(db, 'users', id));
 
-    if (!userDoc.exists()) {
+        if (!userDoc.exists()) {
+            return null;
+        }
+
+        const data = userDoc.data();
+        return {
+            id: userDoc.id,
+            ...data,
+            joinDate: data.joinDate ? new Date(data.joinDate) : new Date(),
+            createdAt: data.createdAt ? new Date(data.createdAt) : new Date(),
+            updatedAt: data.updatedAt ? new Date(data.updatedAt) : new Date()
+        } as User;
+    } catch (error) {
+        console.error('Error fetching user by ID:', error);
         return null;
     }
-
-    const data = userDoc.data();
-    return {
-        id: userDoc.id,
-        ...data,
-        joinDate: new Date(data.joinDate),
-        createdAt: new Date(data.createdAt),
-        updatedAt: new Date(data.updatedAt)
-    } as User;
 }
 
 /**
@@ -216,19 +224,380 @@ export async function createPayment(paymentData: any) {
 }
 
 /**
- * Get payments for a user
+ * Election Interfaces
  */
-export async function getPayments(memberId?: string) {
-    let q = query(collection(db, 'payments'), orderBy('transactionDate', 'desc'));
+export interface ElectionPosition {
+    id: string;
+    title: string;
+    price: string;
+    description: string;
+    icon?: string;
+}
 
-    if (memberId) {
-        q = query(q, where('memberId', '==', memberId));
+export interface Election {
+    id: string;
+    title: string;
+    description: string;
+    startDate: string;
+    endDate: string;
+    status: 'upcoming' | 'active' | 'completed';
+    positions: ElectionPosition[];
+    createdAt: string;
+}
+
+export interface Candidate {
+    id: string;
+    electionId: string;
+    userId: string;
+    name: string;
+    positionId: string;
+    positionName: string;
+    cohort: string;
+    manifesto: string;
+    status: 'pending' | 'approved' | 'rejected';
+    paymentStatus: 'paid' | 'unpaid';
+    createdAt: string;
+}
+
+export interface Vote {
+    id: string; // userId
+    votes: { [positionId: string]: string }; // Map positionId -> candidateId
+    timestamp: string;
+}
+
+/**
+ * Get active election
+ */
+export async function getActiveElection(): Promise<Election | null> {
+    const q = query(
+        collection(db, 'elections'),
+        where('status', '==', 'active'),
+        limit(1)
+    );
+
+    const snapshot = await getDocs(q);
+
+    if (snapshot.empty) {
+        return null;
+    }
+
+    const doc = snapshot.docs[0];
+    return {
+        id: doc.id,
+        ...doc.data()
+    } as Election;
+}
+
+/**
+ * Get candidates for an election
+ */
+export async function getCandidates(electionId: string): Promise<Candidate[]> {
+    const q = query(
+        collection(db, 'elections', electionId, 'candidates'),
+        where('status', '==', 'approved')
+    );
+
+    const snapshot = await getDocs(q);
+
+    return snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+    } as Candidate));
+}
+
+/**
+ * Register as a candidate
+ */
+export async function registerCandidate(
+    electionId: string,
+    userId: string,
+    candidateData: Omit<Candidate, 'id' | 'electionId' | 'userId' | 'createdAt' | 'status'>
+): Promise<Candidate> {
+    const candidateRef = doc(collection(db, 'elections', electionId, 'candidates')); // Auto-ID
+    // Typically use userId as document ID or a composite key to enforce one candidacy per election if strict
+    // For now auto-id
+
+    const newCandidate: Candidate = {
+        id: candidateRef.id,
+        electionId,
+        userId,
+        ...candidateData,
+        status: 'pending',
+        createdAt: new Date().toISOString()
+    };
+
+    await setDoc(candidateRef, newCandidate as any);
+    return newCandidate;
+}
+
+/**
+ * Cast a vote
+ */
+export async function castVote(electionId: string, userId: string, votes: { [positionId: string]: string }): Promise<void> {
+    const voteRef = doc(db, 'elections', electionId, 'votes', userId); // UserId as doc ID to enforce uniqueness
+
+    await setDoc(voteRef, {
+        id: userId,
+        votes,
+        timestamp: new Date().toISOString()
+    });
+}
+
+/**
+ * Welfare / Greetings Interfaces
+ */
+export interface Greeting {
+    id: string;
+    senderId: string;
+    recipientId: string;
+    type: 'birthday' | 'generic';
+    year: number; // For birthday tracking
+    timestamp: string;
+}
+
+/**
+ * Get celebrants for a specific month
+ * @param month - Month number (0-11, where 0 = January)
+ */
+export async function getCelebrants(month: number): Promise<User[]> {
+    const q = query(
+        collection(db, 'users'),
+        where('birthMonth', '==', month),
+        orderBy('birthDay', 'asc')
+    );
+
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+            id: doc.id,
+            ...data,
+            joinDate: new Date(data.joinDate),
+            createdAt: new Date(data.createdAt),
+            updatedAt: new Date(data.updatedAt)
+        } as User;
+    });
+}
+
+/**
+ * Send a greeting (e.g. Birthday wish)
+ */
+export async function sendGreeting(senderId: string, recipientId: string, type: 'birthday' | 'generic' = 'birthday'): Promise<void> {
+    const year = new Date().getFullYear();
+    const greetingRef = doc(collection(db, 'greetings')); // Auto-ID
+
+    await setDoc(greetingRef, {
+        senderId,
+        recipientId,
+        type,
+        year,
+        timestamp: new Date().toISOString()
+    });
+}
+
+/**
+ * Get all birthday greetings sent in a specific year
+ * Used to check "Sent" status
+ */
+export async function getGreetingsForYear(year: number): Promise<Greeting[]> {
+    const q = query(
+        collection(db, 'greetings'),
+        where('type', '==', 'birthday'),
+        where('year', '==', year)
+    );
+
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+    } as Greeting));
+}
+
+/**
+ * Messaging Interfaces
+ */
+export interface Conversation {
+    id: string;
+    participants: string[]; // Array of 2 userIds for 1-on-1
+    lastMessage?: {
+        text: string;
+        senderId: string;
+        timestamp: string;
+    };
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface ConversationMessage {
+    id: string;
+    senderId: string;
+    text: string;
+    timestamp: string;
+    read: boolean;
+}
+
+/**
+ * Get all conversations for a user
+ */
+export async function getConversations(userId: string): Promise<Conversation[]> {
+    const q = query(
+        collection(db, 'conversations'),
+        where('participants', 'array-contains', userId),
+        orderBy('updatedAt', 'desc')
+    );
+
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+    } as Conversation));
+}
+
+/**
+ * Get messages in a conversation
+ */
+export async function getMessages(conversationId: string): Promise<ConversationMessage[]> {
+    const q = query(
+        collection(db, 'conversations', conversationId, 'messages'),
+        orderBy('timestamp', 'asc')
+    );
+
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+    } as ConversationMessage));
+}
+
+/**
+ * Send a message in a conversation
+ */
+export async function sendMessage(conversationId: string, senderId: string, text: string): Promise<void> {
+    const timestamp = new Date().toISOString();
+    const messageRef = doc(collection(db, 'conversations', conversationId, 'messages'));
+
+    // Add message to subcollection
+    await setDoc(messageRef, {
+        senderId,
+        text,
+        timestamp,
+        read: false
+    });
+
+    // Update conversation's lastMessage
+    const conversationRef = doc(db, 'conversations', conversationId);
+    await updateDoc(conversationRef, {
+        lastMessage: {
+            text,
+            senderId,
+            timestamp
+        },
+        updatedAt: timestamp
+    });
+}
+
+/**
+ * Create or get existing conversation between two users
+ */
+export async function createOrGetConversation(userId1: string, userId2: string): Promise<string> {
+    // Check if conversation already exists
+    const q = query(
+        collection(db, 'conversations'),
+        where('participants', 'array-contains', userId1)
+    );
+
+    const snapshot = await getDocs(q);
+    const existingConv = snapshot.docs.find(doc => {
+        const participants = doc.data().participants as string[];
+        return participants.includes(userId2);
+    });
+
+    if (existingConv) {
+        return existingConv.id;
+    }
+
+    // Create new conversation
+    const newConvRef = doc(collection(db, 'conversations'));
+    const now = new Date().toISOString();
+
+    await setDoc(newConvRef, {
+        participants: [userId1, userId2],
+        createdAt: now,
+        updatedAt: now
+    });
+
+    return newConvRef.id;
+}
+
+/**
+ * Resources Interfaces
+ */
+export interface Resource {
+    id: string;
+    title: string;
+    category: 'Policy Papers' | 'Governance' | 'Training Materials' | 'Reports';
+    fileName: string;
+    storagePath: string;
+    fileType: string;
+    fileSize: number;
+    uploadedBy: string;
+    author: string;
+    downloads: number;
+    createdAt: string;
+}
+
+/**
+ * Get all resources or filtered by category
+ */
+export async function getResources(category?: string): Promise<Resource[]> {
+    let q = query(collection(db, 'resources'), orderBy('createdAt', 'desc'));
+
+    if (category && category !== 'all') {
+        q = query(collection(db, 'resources'), where('category', '==', category), orderBy('createdAt', 'desc'));
     }
 
     const snapshot = await getDocs(q);
     return snapshot.docs.map(doc => ({
         id: doc.id,
-        ...doc.data(),
-        transactionDate: new Date(doc.data().transactionDate)
-    }));
+        ...doc.data()
+    } as Resource));
+}
+
+/**
+ * Upload resource to Firebase Storage and create Firestore doc
+ * Note: File upload to Storage happens in the client component
+ * This function creates the metadata record
+ */
+export async function createResourceMetadata(resourceData: Omit<Resource, 'id' | 'downloads' | 'createdAt'>): Promise<string> {
+    const resourceRef = doc(collection(db, 'resources'));
+
+    await setDoc(resourceRef, {
+        ...resourceData,
+        downloads: 0,
+        createdAt: new Date().toISOString()
+    });
+
+    return resourceRef.id;
+}
+
+/**
+ * Increment download count for a resource
+ */
+export async function incrementResourceDownloads(resourceId: string): Promise<void> {
+    const resourceRef = doc(db, 'resources', resourceId);
+    const resourceDoc = await getDoc(resourceRef);
+
+    if (!resourceDoc.exists()) return;
+
+    const currentDownloads = resourceDoc.data().downloads || 0;
+    await updateDoc(resourceRef, {
+        downloads: currentDownloads + 1
+    });
+}
+
+/**
+ * Delete resource (metadata only - Storage deletion should be handled separately)
+ */
+export async function deleteResource(resourceId: string): Promise<void> {
+    await deleteDoc(doc(db, 'resources', resourceId));
 }

@@ -1,8 +1,66 @@
 'use client';
 
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
+import { db } from '@/lib/firebase';
+import { collection, getDocs } from 'firebase/firestore';
 
 export default function AdminPage() {
+    const [loading, setLoading] = useState(true);
+    const [stats, setStats] = useState({
+        totalMembers: 0,
+        activeMembers: 0,
+        inactiveMembers: 0,
+        totalRevenue: 0,
+        pendingVerifications: 0
+    });
+    const [recentUsers, setRecentUsers] = useState<any[]>([]);
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                // 1. Fetch Users
+                const usersRef = collection(db, 'users');
+                const usersSnapshot = await getDocs(usersRef);
+                const totalMembers = usersSnapshot.size;
+                const activeMembers = usersSnapshot.docs.filter(doc => doc.data().status === 'active').length;
+                const inactiveMembers = totalMembers - activeMembers;
+                const pendingVerifications = usersSnapshot.docs.filter(doc => doc.data().status === 'pending').length;
+
+                // Get some recent users for the "Recent Tasks" / "Queue" list
+                // (Using any users for now, ideally filter by pending or recent join date)
+                const recent = usersSnapshot.docs
+                    .map(doc => ({ id: doc.id, ...doc.data() }))
+                    .slice(0, 3);
+
+                // 2. Fetch Revenue
+                const paymentsRef = collection(db, 'payments');
+                const paymentsSnapshot = await getDocs(paymentsRef);
+                const totalRevenue = paymentsSnapshot.docs.reduce((sum, doc) => sum + (doc.data().amount || 0), 0);
+
+                setStats({
+                    totalMembers,
+                    activeMembers,
+                    inactiveMembers,
+                    totalRevenue,
+                    pendingVerifications
+                });
+                setRecentUsers(recent);
+
+            } catch (error) {
+                console.error("Error fetching admin stats:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchStats();
+    }, []);
+
+    const formatCurrency = (amount: number) => {
+        return new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(amount);
+    };
+
     return (
         <div className="flex min-h-screen bg-background-light text-slate-900 font-sans">
             {/* Sidebar */}
@@ -28,7 +86,7 @@ export default function AdminPage() {
                             <span className="material-symbols-outlined text-[22px]">group</span>
                             <p className="text-sm font-medium">Member Directory</p>
                         </Link>
-                        <Link href="/payments" className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 cursor-pointer transition-colors">
+                        <Link href="/analytics" className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 cursor-pointer transition-colors">
                             <span className="material-symbols-outlined text-[22px]">account_balance</span>
                             <p className="text-sm font-medium">Financial Reports</p>
                         </Link>
@@ -104,8 +162,8 @@ export default function AdminPage() {
                             <p className="text-slate-500 font-medium">Comprehensive performance metrics for the fiscal year.</p>
                         </div>
                         <div className="flex items-center gap-3">
-                            <span className="text-xs font-bold text-slate-400">Refreshed: 2 mins ago</span>
-                            <button className="p-2 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200">
+                            <span className="text-xs font-bold text-slate-400">Live Data</span>
+                            <button onClick={() => window.location.reload()} className="p-2 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200">
                                 <span className="material-symbols-outlined text-sm">refresh</span>
                             </button>
                         </div>
@@ -119,19 +177,21 @@ export default function AdminPage() {
                                     <span className="material-symbols-outlined text-secondary-blue font-bold">group</span>
                                 </div>
                                 <span className="text-primary text-[11px] font-black px-2.5 py-1 bg-primary/10 rounded-lg flex items-center gap-1">
-                                    <span className="material-symbols-outlined text-xs">trending_up</span> 2.5%
+                                    <span className="material-symbols-outlined text-xs">trending_up</span> Live
                                 </span>
                             </div>
                             <p className="text-slate-500 text-xs font-bold uppercase tracking-wider">Total Members</p>
-                            <h3 className="text-3xl font-black text-slate-900 mt-2">1,240</h3>
+                            <h3 className="text-3xl font-black text-slate-900 mt-2">
+                                {loading ? '...' : stats.totalMembers}
+                            </h3>
                             <div className="mt-5 flex items-center gap-4 text-xs font-bold">
                                 <div className="flex items-center gap-1.5">
                                     <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
-                                    <span className="text-slate-600">Active: 1,120</span>
+                                    <span className="text-slate-600">Active: {loading ? '...' : stats.activeMembers}</span>
                                 </div>
                                 <div className="flex items-center gap-1.5">
                                     <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
-                                    <span className="text-slate-400">Inactive: 120</span>
+                                    <span className="text-slate-400">Inactive: {loading ? '...' : stats.inactiveMembers}</span>
                                 </div>
                             </div>
                         </div>
@@ -141,16 +201,18 @@ export default function AdminPage() {
                                 <div className="p-3 bg-accent-purple/10 rounded-xl">
                                     <span className="material-symbols-outlined text-accent-purple font-bold">payments</span>
                                 </div>
-                                <span className="text-red-500 text-[11px] font-black px-2.5 py-1 bg-red-50 rounded-lg flex items-center gap-1">
-                                    <span className="material-symbols-outlined text-xs">trending_down</span> 1.2%
+                                <span className="text-green-600 text-[11px] font-black px-2.5 py-1 bg-green-50 rounded-lg flex items-center gap-1">
+                                    <span className="material-symbols-outlined text-xs">check_circle</span> Verified
                                 </span>
                             </div>
-                            <p className="text-slate-500 text-xs font-bold uppercase tracking-wider">MTD Revenue</p>
-                            <h3 className="text-3xl font-black text-slate-900 mt-2">₦450k</h3>
+                            <p className="text-slate-500 text-xs font-bold uppercase tracking-wider">Total Revenue</p>
+                            <h3 className="text-3xl font-black text-slate-900 mt-2">
+                                {loading ? '...' : formatCurrency(stats.totalRevenue)}
+                            </h3>
                             <div className="mt-5 w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
-                                <div className="bg-accent-purple h-full w-[90%]"></div>
+                                <div className="bg-accent-purple h-full w-full"></div>
                             </div>
-                            <p className="text-[10px] text-slate-400 mt-2 font-bold uppercase">Target: ₦500k (90%)</p>
+                            <p className="text-[10px] text-slate-400 mt-2 font-bold uppercase">All Time Collections</p>
                         </div>
 
                         <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
@@ -159,12 +221,14 @@ export default function AdminPage() {
                                     <span className="material-symbols-outlined text-primary font-bold">account_balance_wallet</span>
                                 </div>
                                 <span className="text-primary text-[11px] font-black px-2.5 py-1 bg-primary/10 rounded-lg flex items-center gap-1">
-                                    <span className="material-symbols-outlined text-xs">trending_up</span> 12.4%
+                                    <span className="material-symbols-outlined text-xs">trending_up</span> 100%
                                 </span>
                             </div>
-                            <p className="text-slate-500 text-xs font-bold uppercase tracking-wider">YTD Revenue</p>
-                            <h3 className="text-3xl font-black text-slate-900 mt-2">₦3.2M</h3>
-                            <p className="text-[10px] text-slate-400 mt-5 font-bold uppercase">Fiscal Cycle 2024</p>
+                            <p className="text-slate-500 text-xs font-bold uppercase tracking-wider">Pending Tasks</p>
+                            <h3 className="text-3xl font-black text-slate-900 mt-2">
+                                {loading ? '...' : stats.pendingVerifications}
+                            </h3>
+                            <p className="text-[10px] text-slate-400 mt-5 font-bold uppercase">Awaiting Approval</p>
                         </div>
 
                         <div className="bg-nipa-navy p-6 rounded-2xl border-2 border-primary shadow-xl ring-4 ring-primary/5">
@@ -172,12 +236,14 @@ export default function AdminPage() {
                                 <div className="p-3 bg-primary/20 rounded-xl">
                                     <span className="material-symbols-outlined text-primary font-bold">priority_high</span>
                                 </div>
-                                <span className="text-nipa-navy text-[10px] font-black px-2 py-1 bg-primary rounded-lg uppercase animate-pulse">Pending</span>
+                                <span className="text-nipa-navy text-[10px] font-black px-2 py-1 bg-primary rounded-lg uppercase animate-pulse">Action</span>
                             </div>
                             <p className="text-white/60 text-xs font-bold uppercase tracking-wider">Verifications</p>
-                            <h3 className="text-4xl font-black text-white mt-1">14</h3>
+                            <h3 className="text-4xl font-black text-white mt-1">
+                                {loading ? '...' : stats.pendingVerifications}
+                            </h3>
                             <button className="mt-5 w-full py-2 bg-primary text-nipa-navy font-black text-[10px] uppercase rounded-lg hover:bg-primary/90 transition-all flex items-center justify-center gap-2">
-                                View All Tasks <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                                View Queue <span className="material-symbols-outlined text-sm">arrow_forward</span>
                             </button>
                         </div>
                     </div>
@@ -196,28 +262,32 @@ export default function AdminPage() {
                                 </div>
                             </div>
                             <div className="h-64 flex items-center justify-center bg-slate-50 rounded-xl">
-                                <p className="text-slate-400 font-medium">Chart Visualization Area</p>
+                                <p className="text-slate-400 font-medium">Chart Visualization Coming Soon</p>
                             </div>
                         </div>
 
                         <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm flex flex-col">
                             <div className="flex justify-between items-center mb-8">
-                                <h3 className="text-xl font-black text-slate-900">Recent Tasks</h3>
-                                <Link className="text-xs font-black text-primary hover:text-primary/80 transition-colors uppercase tracking-tight" href="#">View Queue</Link>
+                                <h3 className="text-xl font-black text-slate-900">Recent Members</h3>
+                                <Link className="text-xs font-black text-primary hover:text-primary/80 transition-colors uppercase tracking-tight" href="/directory">View All</Link>
                             </div>
                             <div className="flex flex-col gap-4 flex-1">
-                                {['John Oluyemi', 'Chidi Azikiwe', 'Fatima Abubakar'].map((name, idx) => (
-                                    <div key={idx} className="flex items-center gap-4 p-4 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-100 transition-all cursor-default group">
-                                        <div className={`size-11 rounded-full ${idx === 0 ? 'bg-secondary-blue/10 text-secondary-blue' : idx === 1 ? 'bg-accent-purple/10 text-accent-purple' : 'bg-primary/10 text-primary'} flex items-center justify-center font-black text-sm`}>
-                                            {name.split(' ').map(n => n[0]).join('')}
+                                {loading ? (
+                                    <p className="text-slate-500">Loading...</p>
+                                ) : (
+                                    recentUsers.map((user, idx) => (
+                                        <div key={user.id} className="flex items-center gap-4 p-4 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-100 transition-all cursor-default group">
+                                            <div className={`size-11 rounded-full ${idx === 0 ? 'bg-secondary-blue/10 text-secondary-blue' : idx === 1 ? 'bg-accent-purple/10 text-accent-purple' : 'bg-primary/10 text-primary'} flex items-center justify-center font-black text-sm`}>
+                                                {user.name ? user.name.charAt(0) : 'U'}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-black text-slate-900 truncate">{user.name || 'Unknown User'}</p>
+                                                <p className="text-[10px] text-slate-500 font-bold uppercase mt-0.5">{user.profession || 'Member'} • {user.status || 'inactive'}</p>
+                                            </div>
+                                            <button className="opacity-0 group-hover:opacity-100 text-[10px] font-black bg-nipa-navy text-white px-3 py-1.5 rounded-lg transition-all">VIEW</button>
                                         </div>
-                                        <div className="flex-1 min-w-0">
-                                            <p className="text-sm font-black text-slate-900 truncate">{name}</p>
-                                            <p className="text-[10px] text-slate-500 font-bold uppercase mt-0.5">{idx === 0 ? 'Annual Dues' : idx === 1 ? 'Election Fee' : 'Annual Dues'} • ₦{idx === 1 ? '5,000' : '25,000'}</p>
-                                        </div>
-                                        <button className="opacity-0 group-hover:opacity-100 text-[10px] font-black bg-nipa-navy text-white px-3 py-1.5 rounded-lg transition-all">VERIFY</button>
-                                    </div>
-                                ))}
+                                    ))
+                                )}
                             </div>
                         </div>
                     </div>

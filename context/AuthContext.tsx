@@ -14,6 +14,7 @@ interface UserProfile {
     cohort?: string;
     profession?: string;
     photoURL?: string | null;
+    status?: 'active' | 'inactive';
 }
 
 interface AuthContextType {

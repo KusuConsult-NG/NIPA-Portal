@@ -36,6 +36,27 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // Elections Collection
+    match /elections/{electionId} {
+      allow read: if true;
+      allow write: if isAdmin();
+
+      // Candidates Subcollection
+      match /candidates/{candidateId} {
+        allow read: if true;
+        // Allow authenticated users to register as candidates (create)
+        // Additional validation can be done in cloud functions or strict rule logic
+        allow create: if isAuthenticated(); 
+        allow update: if isAdmin() || (isAuthenticated() && isOwner(request.resource.data.userId));
+      }
+
+      // Votes Subcollection
+      match /votes/{userId} {
+        allow read: if isAuthenticated() && isOwner(userId);
+        allow create: if isAuthenticated() && isOwner(userId);
+      }
+    }
+
     // Payments Collection
     match /payments/{paymentId} {
       allow read: if isAuthenticated() && (resource.data.memberId == request.auth.uid || isAdmin());

@@ -1,4 +1,5 @@
 /**
+ * DEPRECATED: Use lib/firebase-admin-db.ts for server-side or lib/firestore.ts for client-side
  * Simple file-based database for development
  * In production, replace with PostgreSQL, MongoDB, etc.
  */

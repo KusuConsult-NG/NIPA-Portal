@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest } from '@/lib/auth';
-import { findUserById } from '@/lib/database';
+import { findUserById } from '@/lib/firebase-admin-db';
 
 export async function GET(request: NextRequest) {
     try {
@@ -23,12 +23,9 @@ export async function GET(request: NextRequest) {
             );
         }
 
-        // Remove password
-        const { password: _, ...userWithoutPassword } = fullUser;
-
         return NextResponse.json({
             success: true,
-            user: userWithoutPassword
+            user: fullUser
         });
 
     } catch (error) {

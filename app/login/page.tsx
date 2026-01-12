@@ -11,20 +11,17 @@ export default function LoginPage() {
         password: ''
     });
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
 
         try {
-            const { signInWithEmailAndPassword, setPersistence, browserLocalPersistence } = await import('firebase/auth');
-            const { auth } = await import('@/lib/firebase');
-
-            // Set persistence to LOCAL (so user stays logged in)
-            await setPersistence(auth, browserLocalPersistence);
+            const { signInWithEmail } = await import('@/lib/firebaseAuth');
 
             // Sign In
-            const userCredential = await signInWithEmailAndPassword(auth, formData.email, formData.password);
+            const { firebaseUser } = await signInWithEmail(formData.email, formData.password);
 
             // Set cookie immediately to prevent middleware redirect loop
             const { default: Cookies } = await import('js-cookie');
@@ -32,7 +29,7 @@ export default function LoginPage() {
 
             // Get token for API access
             try {
-                const token = await userCredential.user.getIdToken();
+                const token = await firebaseUser.getIdToken();
                 Cookies.set('auth_token', token, { expires: 7 });
             } catch (e) {
                 console.error("Token error", e);
@@ -95,13 +92,22 @@ export default function LoginPage() {
                             <div className="relative">
                                 <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">lock</span>
                                 <input
-                                    type="password"
+                                    type={showPassword ? "text" : "password"}
                                     required
                                     value={formData.password}
                                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                                    className="w-full pl-12 pr-4 py-4 bg-navy-deep border border-white/10 rounded-xl text-white placeholder:text-slate-500 focus:ring-2 focus:ring-[--color-primary] focus:border-transparent transition-all"
+                                    className="w-full pl-12 pr-12 py-4 bg-navy-deep border border-white/10 rounded-xl text-white placeholder:text-slate-500 focus:ring-2 focus:ring-[--color-primary] focus:border-transparent transition-all"
                                     placeholder="Enter your password"
                                 />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors"
+                                >
+                                    <span className="material-symbols-outlined text-xl">
+                                        {showPassword ? 'visibility_off' : 'visibility'}
+                                    </span>
+                                </button>
                             </div>
                         </div>
 

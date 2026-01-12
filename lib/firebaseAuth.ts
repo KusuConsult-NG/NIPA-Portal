@@ -3,6 +3,7 @@ import {
     signInWithEmailAndPassword,
     signOut,
     onAuthStateChanged,
+    updateProfile,
     User as FirebaseUser
 } from 'firebase/auth';
 import { auth } from './firebase';
@@ -24,6 +25,11 @@ export async function signUpWithEmail(
     // Create Firebase Auth user
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const firebaseUser = userCredential.user;
+
+    // Update profile display name
+    await updateProfile(firebaseUser, {
+        displayName: userData.name
+    });
 
     // Create user document in Firestore
     const user = await createUser(firebaseUser.uid, {

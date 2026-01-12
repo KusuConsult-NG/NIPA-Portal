@@ -1,8 +1,34 @@
 'use client';
 
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
+import { listUsers, User } from '@/lib/firestore';
 
 export default function DirectoryPage() {
+    const [users, setUsers] = useState<User[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState('');
+
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const { users } = await listUsers({ limit: 100 }); // Increased limit for client-side filtering
+                setUsers(users);
+            } catch (error) {
+                console.error("Failed to fetch users", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchUsers();
+    }, []);
+
+    const filteredUsers = users.filter(user =>
+        user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.profession.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.cohort.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     return (
         <div className="bg-background-light text-slate-900 min-h-screen font-display">
             <header className="sticky top-0 z-50 bg-navy-deep text-white shadow-lg">
@@ -61,7 +87,13 @@ export default function DirectoryPage() {
                                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
                                     <span className="material-symbols-outlined">search</span>
                                 </div>
-                                <input className="block w-full pl-12 pr-4 py-3.5 border-slate-200 bg-slate-50 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm placeholder-slate-400" placeholder="Search by name, organization or profession..." type="text" />
+                                <input
+                                    className="block w-full pl-12 pr-4 py-3.5 border-slate-200 bg-slate-50 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm placeholder-slate-400"
+                                    placeholder="Search by name, organization or profession..."
+                                    type="text"
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                />
                             </div>
                         </div>
                         <div className="flex flex-wrap items-center gap-3">
@@ -78,218 +110,73 @@ export default function DirectoryPage() {
                                 <span className="material-symbols-outlined text-sm">keyboard_arrow_down</span>
                             </button>
                             <div className="h-8 w-px bg-slate-200 mx-2 hidden sm:block"></div>
-                            <button className="flex items-center gap-1.5 px-3 py-3 text-slate-400 hover:text-red-500 text-sm font-bold transition-colors">
+                            <button
+                                className="flex items-center gap-1.5 px-3 py-3 text-slate-400 hover:text-red-500 text-sm font-bold transition-colors"
+                                onClick={() => setSearchTerm('')}
+                            >
                                 <span className="material-symbols-outlined text-lg">filter_alt_off</span>
                                 Clear
                             </button>
                         </div>
                     </div>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                    <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-xl hover:border-primary/20 transition-all group relative">
-                        <div className="p-8 flex flex-col items-center text-center">
-                            <div className="relative mb-6">
-                                <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-slate-50 shadow-inner group-hover:scale-105 transition-transform duration-300">
-                                    <img className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuALtz3_n979tg3Wa8qkZlYloqX5uzGNKR90zsiVENBlHt8GBuHIf2BmiNtN48LXgtqx6sXLzjjkHh3RqLs_iBDV1W6BxhMMm5zzTcyRZ3H3Om_lLOT8kIE2d2E1uYzQSkF2uGW4YJohsgKJe-09RyfEGurXazVSexKY7rn66fHkjeuKmtQNBBcNuFdQC1DS8HKMwUqxag4mSAJ3V3ihqZvN46zolu34f_RBnbJNFWqeB4HzbwVs1DNAIPGcza3U0cR0VJdKJyV459g" />
-                                </div>
-                                <div className="absolute bottom-1 right-1 w-6 h-6 bg-primary border-4 border-white rounded-full shadow-sm" title="Active"></div>
-                            </div>
-                            <h3 className="text-xl font-extrabold text-slate-900 mb-1 group-hover:text-primary transition-colors">Dr. Jane Doe</h3>
-                            <div className="mb-4">
-                                <span className="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary text-[11px] font-black tracking-widest uppercase mb-2">SEC 45</span>
-                                <p className="text-sm font-medium text-slate-500">Strategic Consultant</p>
-                            </div>
-                            <p className="text-sm text-slate-400 mb-8 flex items-center gap-1.5">
-                                <span className="material-symbols-outlined text-base">location_on</span>
-                                Lagos, Nigeria
-                            </p>
-                            <div className="grid grid-cols-2 gap-3 w-full mt-auto">
-                                <Link href="/messages" className="py-3 px-4 text-xs font-black uppercase tracking-wider rounded-xl border-2 border-slate-100 text-slate-600 hover:bg-slate-50 transition-colors flex items-center justify-center">Message</Link>
-                                <Link href="/directory/1" className="py-3 px-4 text-xs font-black uppercase tracking-wider rounded-xl bg-primary text-white shadow-lg shadow-primary/20 hover:bg-primary-dark transition-all flex items-center justify-center">View Profile</Link>
-                            </div>
-                        </div>
+
+                {loading ? (
+                    <div className="flex justify-center py-20">
+                        <span className="material-symbols-outlined animate-spin text-4xl text-primary">progress_activity</span>
                     </div>
-                    <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-xl hover:border-primary/20 transition-all group relative">
-                        <div className="p-8 flex flex-col items-center text-center">
-                            <div className="relative mb-6">
-                                <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-slate-50 shadow-inner group-hover:scale-105 transition-transform duration-300">
-                                    <img className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCcWgZZotnJnMeGTESPAEv-SAvnLIrpj-WVjvW-BLrx0_guCS0eE2pwr8kxtN1XULzSEiRAU1-aMQhR4lXvEjBogartUFctEE1y5RNcZbAfmGIG6YfPx87m2BTKJcgAHCiRyDBPwR6DUZa01dkTqiXZCKV6B0q0G_cUx0C-GneWnPdl_WsdAXtR9M4lhmT_uFMQDOi8NksCTQYl_rBzQz4wWP-e8XBLYFwc6s8hDAIcCctPDop3v3ZcDcxp1GeZskvIxnFTSuHsuhQ" />
+                ) : filteredUsers.length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                        {filteredUsers.map((user) => (
+                            <div key={user.id} className="bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-xl hover:border-primary/20 transition-all group relative">
+                                <div className="p-8 flex flex-col items-center text-center">
+                                    <div className="relative mb-6">
+                                        <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-slate-50 shadow-inner group-hover:scale-105 transition-transform duration-300">
+                                            {/* Use a placeholder if no photoURL is available (mock logic for now as photoURL isn't in User interface explicitly but commonly added) */}
+                                            <img className="w-full h-full object-cover" src={'https://api.dicebear.com/7.x/avataaars/svg?seed=' + user.name} alt={user.name} />
+                                        </div>
+                                        <div className={`absolute bottom-1 right-1 w-6 h-6 border-4 border-white rounded-full shadow-sm ${user.status === 'active' ? 'bg-primary' : 'bg-slate-300'}`} title={user.status}></div>
+                                    </div>
+                                    <h3 className="text-xl font-extrabold text-slate-900 mb-1 group-hover:text-primary transition-colors">{user.name}</h3>
+                                    <div className="mb-4">
+                                        <span className="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary text-[11px] font-black tracking-widest uppercase mb-2">{user.cohort || 'N/A'}</span>
+                                        <p className="text-sm font-medium text-slate-500">{user.profession || 'Member'}</p>
+                                    </div>
+                                    <p className="text-sm text-slate-400 mb-8 flex items-center gap-1.5">
+                                        <span className="material-symbols-outlined text-base">location_on</span>
+                                        {user.location || 'Nigeria'}
+                                    </p>
+                                    <div className="grid grid-cols-2 gap-3 w-full mt-auto">
+                                        <Link href="/messages" className="py-3 px-4 text-xs font-black uppercase tracking-wider rounded-xl border-2 border-slate-100 text-slate-600 hover:bg-slate-50 transition-colors flex items-center justify-center">Message</Link>
+                                        <Link href={`/directory/${user.id}`} className="py-3 px-4 text-xs font-black uppercase tracking-wider rounded-xl bg-primary text-white shadow-lg shadow-primary/20 hover:bg-primary-dark transition-all flex items-center justify-center">View Profile</Link>
+                                    </div>
                                 </div>
-                                <div className="absolute bottom-1 right-1 w-6 h-6 bg-primary border-4 border-white rounded-full shadow-sm" title="Active"></div>
                             </div>
-                            <h3 className="text-xl font-extrabold text-slate-900 mb-1 group-hover:text-primary transition-colors">Col. Musa Ibrahim</h3>
-                            <div className="mb-4">
-                                <span className="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary text-[11px] font-black tracking-widest uppercase mb-2">SEC 42</span>
-                                <p className="text-sm font-medium text-slate-500">Military Officer</p>
-                            </div>
-                            <p className="text-sm text-slate-400 mb-8 flex items-center gap-1.5">
-                                <span className="material-symbols-outlined text-base">location_on</span>
-                                Abuja, FCT
-                            </p>
-                            <div className="grid grid-cols-2 gap-3 w-full mt-auto">
-                                <Link href="/messages" className="py-3 px-4 text-xs font-black uppercase tracking-wider rounded-xl border-2 border-slate-100 text-slate-600 hover:bg-slate-50 transition-colors flex items-center justify-center">Message</Link>
-                                <Link href="/directory/1" className="py-3 px-4 text-xs font-black uppercase tracking-wider rounded-xl bg-primary text-white shadow-lg shadow-primary/20 hover:bg-primary-dark transition-all flex items-center justify-center">View Profile</Link>
-                            </div>
-                        </div>
+                        ))}
                     </div>
-                    <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-xl hover:border-primary/20 transition-all group relative">
-                        <div className="p-8 flex flex-col items-center text-center">
-                            <div className="relative mb-6">
-                                <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-slate-50 shadow-inner group-hover:scale-105 transition-transform duration-300">
-                                    <img className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBL2oEtWe2ui9ZJbJPsMlQxzIJIgAUU_ooeSJLzWpVhrSpcztgaSS1PYcYaWRQeg5FMyQU_gemf_BkP0zsOia0JfPGOM6dR9lm9A0twekBs-R1uUcGilSWGAKIe6FIYVZRUV9HSxlCzZ1WeHJ80SU_UngvTFxTUyLAeJNJZ7PHK5_MTA3qzAt43vJ3p_aWUH5qLHDBpQNKI52FpV3GXs8GYY4If3rrYQeK3eEE3pSwQ8GZXymETdmNQpf9XJXhcuZgYTSM6ctkpXzw" />
-                                </div>
-                                <div className="absolute bottom-1 right-1 w-6 h-6 bg-primary border-4 border-white rounded-full shadow-sm" title="Active"></div>
-                            </div>
-                            <h3 className="text-xl font-extrabold text-slate-900 mb-1 group-hover:text-primary transition-colors">Engr. Sarah Aliyu</h3>
-                            <div className="mb-4">
-                                <span className="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary text-[11px] font-black tracking-widest uppercase mb-2">SEC 44</span>
-                                <p className="text-sm font-medium text-slate-500">Civil Engineer</p>
-                            </div>
-                            <p className="text-sm text-slate-400 mb-8 flex items-center gap-1.5">
-                                <span className="material-symbols-outlined text-base">location_on</span>
-                                Kano, Nigeria
-                            </p>
-                            <div className="grid grid-cols-2 gap-3 w-full mt-auto">
-                                <Link href="/messages" className="py-3 px-4 text-xs font-black uppercase tracking-wider rounded-xl border-2 border-slate-100 text-slate-600 hover:bg-slate-50 transition-colors flex items-center justify-center">Message</Link>
-                                <Link href="/directory/1" className="py-3 px-4 text-xs font-black uppercase tracking-wider rounded-xl bg-primary text-white shadow-lg shadow-primary/20 hover:bg-primary-dark transition-all flex items-center justify-center">View Profile</Link>
-                            </div>
-                        </div>
+                ) : (
+                    <div className="text-center py-20">
+                        <p className="text-xl text-slate-500 font-bold">No members found.</p>
+                        <p className="text-slate-400">Try adjusting your filters.</p>
                     </div>
-                    <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-xl hover:border-primary/20 transition-all group relative">
-                        <div className="p-8 flex flex-col items-center text-center">
-                            <div className="relative mb-6">
-                                <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-slate-50 shadow-inner group-hover:scale-105 transition-transform duration-300">
-                                    <img className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTSnBDJGo8fQIzfLJ5SmFYzV0TjLXHSO1M2vQsBZaemtc4skVYNYm2xgPHp5K_Md15QTp0mRfXdtSu9Z8KNa7GoXRulqzhhmjqU68qsYMfmMHihC4UC6L4GS4H87Wt-XskvUxTQUhRWaIhykdW8IirhG0wATnf6wMq3RrEXqC6Mp9xRBWEfI_OsDgwaCel4DsiasdEICWNDakSrPg3ihuDp-W_Y2Z79u7fct0N2AmFWOf2vETcjW_ymn3sCV7Zbsz8SG4yNqfIw8M" />
-                                </div>
-                                <div className="absolute bottom-1 right-1 w-6 h-6 bg-primary border-4 border-white rounded-full shadow-sm" title="Active"></div>
-                            </div>
-                            <h3 className="text-xl font-extrabold text-slate-900 mb-1 group-hover:text-primary transition-colors">Prof. David Okon</h3>
-                            <div className="mb-4">
-                                <span className="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary text-[11px] font-black tracking-widest uppercase mb-2">SEC 40</span>
-                                <p className="text-sm font-medium text-slate-500">Academic Researcher</p>
-                            </div>
-                            <p className="text-sm text-slate-400 mb-8 flex items-center gap-1.5">
-                                <span className="material-symbols-outlined text-base">location_on</span>
-                                Enugu, Nigeria
-                            </p>
-                            <div className="grid grid-cols-2 gap-3 w-full mt-auto">
-                                <Link href="/messages" className="py-3 px-4 text-xs font-black uppercase tracking-wider rounded-xl border-2 border-slate-100 text-slate-600 hover:bg-slate-50 transition-colors flex items-center justify-center">Message</Link>
-                                <Link href="/directory/1" className="py-3 px-4 text-xs font-black uppercase tracking-wider rounded-xl bg-primary text-white shadow-lg shadow-primary/20 hover:bg-primary-dark transition-all flex items-center justify-center">View Profile</Link>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-xl hover:border-primary/20 transition-all group relative">
-                        <div className="p-8 flex flex-col items-center text-center">
-                            <div className="relative mb-6">
-                                <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-slate-50 shadow-inner group-hover:scale-105 transition-transform duration-300">
-                                    <img className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJ5GkmkLLsmFLmmPm2lVe1YYe5z5Extl1zHbprOx_-TIOjbc4Jb2Xk6qG_nnsmDkhQQrZp84dDKn5Y4sRvOq3oQ6tmLzATGrik4dOeq9nWGVqF4AzL-EXTSRMNztFPgwkuu1AHCVL-JmuYdNR76Mm7jmKFNMivQu2av9hyu7hj_oWrFof_2MZlYrrF7AKvgjvt5LaT6pQ1EhSMVorCPq0vfeGMTX2ok8g8RrZ0Gi658HDxbtL060OBoCA6vugCmhPUha-sFkrLkas" />
-                                </div>
-                                <div className="absolute bottom-1 right-1 w-6 h-6 bg-primary border-4 border-white rounded-full shadow-sm" title="Active"></div>
-                            </div>
-                            <h3 className="text-xl font-extrabold text-slate-900 mb-1 group-hover:text-primary transition-colors">Aisha Bello</h3>
-                            <div className="mb-4">
-                                <span className="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary text-[11px] font-black tracking-widest uppercase mb-2">SEC 45</span>
-                                <p className="text-sm font-medium text-slate-500">Policy Analyst</p>
-                            </div>
-                            <p className="text-sm text-slate-400 mb-8 flex items-center gap-1.5">
-                                <span className="material-symbols-outlined text-base">location_on</span>
-                                Kaduna, Nigeria
-                            </p>
-                            <div className="grid grid-cols-2 gap-3 w-full mt-auto">
-                                <Link href="/messages" className="py-3 px-4 text-xs font-black uppercase tracking-wider rounded-xl border-2 border-slate-100 text-slate-600 hover:bg-slate-50 transition-colors flex items-center justify-center">Message</Link>
-                                <Link href="/directory/1" className="py-3 px-4 text-xs font-black uppercase tracking-wider rounded-xl bg-primary text-white shadow-lg shadow-primary/20 hover:bg-primary-dark transition-all flex items-center justify-center">View Profile</Link>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-xl hover:border-primary/20 transition-all group relative">
-                        <div className="p-8 flex flex-col items-center text-center">
-                            <div className="relative mb-6">
-                                <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-slate-50 shadow-inner group-hover:scale-105 transition-transform duration-300">
-                                    <img className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDYvD9B1PJN35dm4M5_CREEuv_c3QezYL8GutXuckjfsxVrD0nyU82ivgFYj0DxQQ2HIPG0Xe81E3SU5Cbaduo46j0FAIc0HKLBmGsPHc0jdC7Dvgov16cFw7dX0Yn6_yK4cYvndJ2RnArHIJLsXIxGnkdY5xdA0vrGFB-dojNouIsd_TbubMJmvSt3kj_F8_-gnsr0Lml5jeadlyie_wv0XrIxjcz4cvXxE9ICm6Qz1ln5CPHgJ7HmQ6lbYHUk2sxTVnM1KdHGFEA" />
-                                </div>
-                                <div className="absolute bottom-1 right-1 w-6 h-6 bg-primary border-4 border-white rounded-full shadow-sm" title="Active"></div>
-                            </div>
-                            <h3 className="text-xl font-extrabold text-slate-900 mb-1 group-hover:text-primary transition-colors">Capt. John Smith</h3>
-                            <div className="mb-4">
-                                <span className="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary text-[11px] font-black tracking-widest uppercase mb-2">SEC 43</span>
-                                <p className="text-sm font-medium text-slate-500">Naval Officer</p>
-                            </div>
-                            <p className="text-sm text-slate-400 mb-8 flex items-center gap-1.5">
-                                <span className="material-symbols-outlined text-base">location_on</span>
-                                Port Harcourt
-                            </p>
-                            <div className="grid grid-cols-2 gap-3 w-full mt-auto">
-                                <Link href="/messages" className="py-3 px-4 text-xs font-black uppercase tracking-wider rounded-xl border-2 border-slate-100 text-slate-600 hover:bg-slate-50 transition-colors flex items-center justify-center">Message</Link>
-                                <Link href="/directory/1" className="py-3 px-4 text-xs font-black uppercase tracking-wider rounded-xl bg-primary text-white shadow-lg shadow-primary/20 hover:bg-primary-dark transition-all flex items-center justify-center">View Profile</Link>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-xl hover:border-primary/20 transition-all group relative">
-                        <div className="p-8 flex flex-col items-center text-center">
-                            <div className="relative mb-6">
-                                <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-slate-50 shadow-inner group-hover:scale-105 transition-transform duration-300">
-                                    <img className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqgE5S-a4TnX_FwSAKpn8G9eaat9qjfm8Dtez1ywVO89F5oskfWY8YSzG7gT4ctM9zDcRuvzNDuFlwlYQglXH5vxtNGquElTN27AmpPxdPnjtFsGpOhjy3z9oyQBAlnFLfbYoL3ldJFQ3z8Yd_kv1lqpmjYrbhwb8k4OW1OfincBDQOQVzYmQwVP2WbOT7BY_mKpjrktxvnuzUjVRMqWSL8Y_7PwF41jpDF6RSqOv9nJoeuW47QXz2dW1TjdpuFeIYzBy42IkRuOs" />
-                                </div>
-                                <div className="absolute bottom-1 right-1 w-6 h-6 bg-primary border-4 border-white rounded-full shadow-sm" title="Active"></div>
-                            </div>
-                            <h3 className="text-xl font-extrabold text-slate-900 mb-1 group-hover:text-primary transition-colors">Barr. Fatima Yusuf</h3>
-                            <div className="mb-4">
-                                <span className="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary text-[11px] font-black tracking-widest uppercase mb-2">SEC 41</span>
-                                <p className="text-sm font-medium text-slate-500">Legal Practitioner</p>
-                            </div>
-                            <p className="text-sm text-slate-400 mb-8 flex items-center gap-1.5">
-                                <span className="material-symbols-outlined text-base">location_on</span>
-                                Ibadan, Oyo
-                            </p>
-                            <div className="grid grid-cols-2 gap-3 w-full mt-auto">
-                                <Link href="/messages" className="py-3 px-4 text-xs font-black uppercase tracking-wider rounded-xl border-2 border-slate-100 text-slate-600 hover:bg-slate-50 transition-colors flex items-center justify-center">Message</Link>
-                                <Link href="/directory/1" className="py-3 px-4 text-xs font-black uppercase tracking-wider rounded-xl bg-primary text-white shadow-lg shadow-primary/20 hover:bg-primary-dark transition-all flex items-center justify-center">View Profile</Link>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-xl hover:border-primary/20 transition-all group relative">
-                        <div className="p-8 flex flex-col items-center text-center">
-                            <div className="relative mb-6">
-                                <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-slate-50 shadow-inner group-hover:scale-105 transition-transform duration-300">
-                                    <img className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5SMwbrI_rF-LxIIjwQEworlwbrca0Q1FBlWpZndW7AK8uuCCOQjcEVDxZDUOLIyjsb5UB8HQxEiNv9iruCFo4DmN6g4XzicLeZSCclT0fnPlCP113ev4gBKUHFtpkAGFxAv1h9urxfkQzHv7TIl9FtWfqLyQTyrs1NjmwuY3fk4yIWzT_bcu376DckXxV5ilV_ev3TVGmxQPz3xZAIWzsUCg9x7vhTpi1CPFKRMhIdthpMh5m5SeeJooor4dNkZJx_8GT1ww_aTs" />
-                                </div>
-                                <div className="absolute bottom-1 right-1 w-6 h-6 bg-primary border-4 border-white rounded-full shadow-sm" title="Active"></div>
-                            </div>
-                            <h3 className="text-xl font-extrabold text-slate-900 mb-1 group-hover:text-primary transition-colors">Dr. Samuel Ade</h3>
-                            <div className="mb-4">
-                                <span className="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary text-[11px] font-black tracking-widest uppercase mb-2">SEC 44</span>
-                                <p className="text-sm font-medium text-slate-500">Medical Director</p>
-                            </div>
-                            <p className="text-sm text-slate-400 mb-8 flex items-center gap-1.5">
-                                <span className="material-symbols-outlined text-base">location_on</span>
-                                Jos, Plateau
-                            </p>
-                            <div className="grid grid-cols-2 gap-3 w-full mt-auto">
-                                <Link href="/messages" className="py-3 px-4 text-xs font-black uppercase tracking-wider rounded-xl border-2 border-slate-100 text-slate-600 hover:bg-slate-50 transition-colors flex items-center justify-center">Message</Link>
-                                <Link href="/directory/1" className="py-3 px-4 text-xs font-black uppercase tracking-wider rounded-xl bg-primary text-white shadow-lg shadow-primary/20 hover:bg-primary-dark transition-all flex items-center justify-center">View Profile</Link>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                )}
+
                 <div className="mt-16 flex items-center justify-between border-t border-slate-200 pt-10">
                     <div className="hidden sm:block">
                         <p className="text-sm text-slate-500">
-                            Showing <span className="font-bold text-slate-900">1</span> to <span className="font-bold text-slate-900">12</span> of <span className="font-bold text-slate-900">1,240</span> members
+                            Showing <span className="font-bold text-slate-900">{filteredUsers.length}</span> members
                         </p>
                     </div>
+                    {/* Pagination Placeholder - To be implemented fully with listUsers pagination support */}
                     <div className="flex-1 flex justify-center sm:justify-end">
                         <nav className="inline-flex rounded-xl shadow-sm border border-slate-200 bg-white overflow-hidden">
-                            <Link className="p-3 text-slate-400 hover:text-primary hover:bg-slate-50 transition-colors" href="#">
+                            <button className="p-3 text-slate-400 hover:text-primary hover:bg-slate-50 transition-colors" disabled>
                                 <span className="material-symbols-outlined">chevron_left</span>
-                            </Link>
-                            <Link className="px-5 py-3 text-sm font-bold bg-primary text-white" href="#">1</Link>
-                            <Link className="px-5 py-3 text-sm font-bold text-slate-600 hover:bg-slate-50 transition-colors" href="#">2</Link>
-                            <Link className="px-5 py-3 text-sm font-bold text-slate-600 hover:bg-slate-50 transition-colors" href="#">3</Link>
-                            <span className="px-5 py-3 text-sm font-bold text-slate-400">...</span>
-                            <Link className="px-5 py-3 text-sm font-bold text-slate-600 hover:bg-slate-50 transition-colors" href="#">104</Link>
-                            <Link className="p-3 text-slate-400 hover:text-primary hover:bg-slate-50 transition-colors" href="#">
+                            </button>
+                            <button className="px-5 py-3 text-sm font-bold bg-primary text-white">1</button>
+                            <button className="p-3 text-slate-400 hover:text-primary hover:bg-slate-50 transition-colors" disabled>
                                 <span className="material-symbols-outlined">chevron_right</span>
-                            </Link>
+                            </button>
                         </nav>
                     </div>
                 </div>

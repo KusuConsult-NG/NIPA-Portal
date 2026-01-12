@@ -16,6 +16,8 @@ export default function SignupPage() {
         confirmPassword: ''
     });
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -28,44 +30,28 @@ export default function SignupPage() {
         setLoading(true);
 
         try {
-            const { createUserWithEmailAndPassword, updateProfile } = await import('firebase/auth');
-            const { doc, setDoc } = await import('firebase/firestore');
-            const { auth, db } = await import('@/lib/firebase');
+            const { signUpWithEmail } = await import('@/lib/firebaseAuth');
 
-            // 1. Create Authentication User
-            const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
-            const user = userCredential.user;
-
-            // 2. Update Profile Display Name
-            await updateProfile(user, {
-                displayName: formData.name
-            });
-
-            // 3. Create User Document in Firestore
-            await setDoc(doc(db, 'users', user.uid), {
-                uid: user.uid,
+            // 1. Create User via centralized helper
+            const { firebaseUser } = await signUpWithEmail(formData.email, formData.password, {
                 name: formData.name,
-                email: formData.email,
                 phone: formData.phone,
                 cohort: formData.cohort,
-                profession: formData.profession,
-                role: 'member',
-                createdAt: new Date().toISOString(),
-                photoURL: user.photoURL || null
+                profession: formData.profession
             });
 
-            // 4. Set Cookies immediately to prevent middleware redirect loop
+            // 2. Set Cookies immediately to prevent middleware redirect loop
             const { default: Cookies } = await import('js-cookie');
             Cookies.set('session', 'true', { expires: 7 });
 
             try {
-                const token = await user.getIdToken();
+                const token = await firebaseUser.getIdToken();
                 Cookies.set('auth_token', token, { expires: 7 });
             } catch (e) {
                 console.error("Token error", e);
             }
 
-            // 5. Redirect
+            // 3. Redirect
             alert('Account created successfully!');
             router.push('/dashboard');
 
@@ -168,27 +154,49 @@ export default function SignupPage() {
                             {/* Password */}
                             <div className="space-y-2">
                                 <label className="text-xs font-bold text-slate-300 uppercase tracking-wider">Password</label>
-                                <input
-                                    type="password"
-                                    required
-                                    value={formData.password}
-                                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                                    className="w-full px-4 py-3 bg-navy-deep border border-white/10 rounded-xl text-white placeholder:text-slate-500 focus:ring-2 focus:ring-[--color-primary] focus:border-transparent transition-all"
-                                    placeholder="Min. 8 characters"
-                                />
+                                <div className="relative">
+                                    <input
+                                        type={showPassword ? "text" : "password"}
+                                        required
+                                        value={formData.password}
+                                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                        className="w-full px-4 pr-12 py-3 bg-navy-deep border border-white/10 rounded-xl text-white placeholder:text-slate-500 focus:ring-2 focus:ring-[--color-primary] focus:border-transparent transition-all"
+                                        placeholder="Min. 8 characters"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors"
+                                    >
+                                        <span className="material-symbols-outlined text-xl">
+                                            {showPassword ? 'visibility_off' : 'visibility'}
+                                        </span>
+                                    </button>
+                                </div>
                             </div>
 
                             {/* Confirm Password */}
                             <div className="space-y-2">
                                 <label className="text-xs font-bold text-slate-300 uppercase tracking-wider">Confirm Password</label>
-                                <input
-                                    type="password"
-                                    required
-                                    value={formData.confirmPassword}
-                                    onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                                    className="w-full px-4 py-3 bg-navy-deep border border-white/10 rounded-xl text-white placeholder:text-slate-500 focus:ring-2 focus:ring-[--color-primary] focus:border-transparent transition-all"
-                                    placeholder="Re-enter password"
-                                />
+                                <div className="relative">
+                                    <input
+                                        type={showConfirmPassword ? "text" : "password"}
+                                        required
+                                        value={formData.confirmPassword}
+                                        onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                                        className="w-full px-4 pr-12 py-3 bg-navy-deep border border-white/10 rounded-xl text-white placeholder:text-slate-500 focus:ring-2 focus:ring-[--color-primary] focus:border-transparent transition-all"
+                                        placeholder="Re-enter password"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors"
+                                    >
+                                        <span className="material-symbols-outlined text-xl">
+                                            {showConfirmPassword ? 'visibility_off' : 'visibility'}
+                                        </span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
 

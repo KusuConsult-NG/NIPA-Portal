@@ -30,7 +30,7 @@ export default function RootLayout({
       <head>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
       </head>
-      <body className={`${plusJakartaSans.variable} ${publicSans.variable} font-sans antialiased min-h-screen leading-relaxed selection:bg-primary selection:text-white`}>
+      <body suppressHydrationWarning className={`${plusJakartaSans.variable} ${publicSans.variable} font-sans antialiased min-h-screen leading-relaxed selection:bg-primary selection:text-white`}>
         <AuthProvider>
           {children}
         </AuthProvider>

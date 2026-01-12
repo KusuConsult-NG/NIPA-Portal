@@ -1,9 +1,76 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { db } from '@/lib/firebase';
+import { collection, getDocs, query, where, orderBy, Timestamp } from 'firebase/firestore';
 
 export default function AnalyticsPage() {
     const [timeRange, setTimeRange] = useState('month');
+    const [loading, setLoading] = useState(true);
+    const [metrics, setMetrics] = useState({
+        totalRevenue: 0,
+        activeMembers: 0,
+        totalMembers: 0,
+        eventAttendance: 0,
+        totalEvents: 0
+    });
+    const [recentActivity, setRecentActivity] = useState<any[]>([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            setLoading(true);
+            try {
+                // 1. Fetch Users (for Active Members count)
+                const usersRef = collection(db, 'users');
+                const usersSnapshot = await getDocs(usersRef);
+                const totalMembers = usersSnapshot.size;
+                const activeMembers = usersSnapshot.docs.filter(doc => doc.data().status === 'active').length;
+
+                // 2. Fetch Payments (for Revenue)
+                const paymentsRef = collection(db, 'payments');
+                const paymentsSnapshot = await getDocs(paymentsRef);
+                const totalRevenue = paymentsSnapshot.docs.reduce((sum, doc) => sum + (doc.data().amount || 0), 0);
+
+                // Get recent payments for activity feed
+                const recentPayments = paymentsSnapshot.docs
+                    .map(doc => ({
+                        id: doc.id,
+                        type: 'payment',
+                        ...doc.data(),
+                        timestamp: doc.data().createdAt?.toDate() || new Date()
+                    }))
+                    .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
+                    .slice(0, 5);
+
+                // 3. Fetch Events (for Attendance)
+                const eventsRef = collection(db, 'events');
+                const eventsSnapshot = await getDocs(eventsRef);
+                const totalEvents = eventsSnapshot.size;
+                const eventAttendance = eventsSnapshot.docs.reduce((sum, doc) => sum + (doc.data().registered || 0), 0);
+
+                setMetrics({
+                    totalRevenue,
+                    activeMembers,
+                    totalMembers,
+                    eventAttendance,
+                    totalEvents
+                });
+
+                setRecentActivity(recentPayments);
+
+            } catch (error) {
+                console.error("Error fetching analytics data:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, [timeRange]);
+
+    const formatCurrency = (amount: number) => {
+        return new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN' }).format(amount);
+    };
 
     return (
         <div className="min-h-screen bg-[--color-background-light]">
@@ -37,10 +104,10 @@ export default function AnalyticsPage() {
                 {/* Key Metrics */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
                     {[
-                        { label: 'Total Revenue', value: '₦3.2M', change: '+12.5%', positive: true, icon: 'account_balance_wallet' },
-                        { label: 'Active Members', value: '1,240', change: '+2.3%', positive: true, icon: 'group' },
-                        { label: 'Event Attendance', value: '85%', change: '-3.2%', positive: false, icon: 'event' },
-                        { label: 'Engagement Rate', value: '68%', change: '+5.7%', positive: true, icon: 'trending_up' }
+                        { label: 'Total Revenue', value: formatCurrency(metrics.totalRevenue), change: 'Live', positive: true, icon: 'account_balance_wallet' },
+                        { label: 'Active Members', value: metrics.activeMembers.toLocaleString(), change: `${metrics.totalMembers} Total`, positive: true, icon: 'group' },
+                        { label: 'Event Attendance', value: metrics.eventAttendance.toLocaleString(), change: `${metrics.totalEvents} Events`, positive: true, icon: 'event' },
+                        { label: 'Avg. Revenue / User', value: metrics.totalMembers ? formatCurrency(metrics.totalRevenue / metrics.totalMembers) : '₦0', change: 'Est.', positive: true, icon: 'trending_up' }
                     ].map((metric, idx) => (
                         <div key={idx} className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
                             <div className="flex items-center justify-between mb-4">
@@ -62,7 +129,9 @@ export default function AnalyticsPage() {
                                 </span>
                             </div>
                             <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">{metric.label}</p>
-                            <p className="text-3xl font-black text-slate-900">{metric.value}</p>
+                            <p className="text-3xl font-black text-slate-900">
+                                {loading ? '...' : metric.value}
+                            </p>
                         </div>
                     ))}
                 </div>
@@ -119,23 +188,26 @@ export default function AnalyticsPage() {
                     <div className="lg:col-span-2 bg-white rounded-2xl p-8 border border-slate-200 shadow-sm">
                         <h3 className="text-xl font-black mb-6">Recent Activity</h3>
                         <div className="space-y-4">
-                            {[
-                                { action: 'Payment received', user: 'Col. Ahmed Bello', amount: '₦5,000', time: '2 mins ago' },
-                                { action: 'New member registered', user: 'Dr. Sarah Okonkwo', amount: null, time: '15 mins ago' },
-                                { action: 'Event registration', user: 'Engr. Musa Ibrahim', amount: 'Strategy Plenary', time: '1 hour ago' },
-                                { action: 'Document downloaded', user: 'Barr. Fatima Yusuf', amount: 'Policy Paper', time: '2 hours ago' }
-                            ].map((activity, idx) => (
-                                <div key={idx} className="flex items-center gap-4 p-4 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors">
-                                    <div className="size-10 rounded-full bg-linear-to-br from-[--color-primary] to-[--color-accent] flex items-center justify-center text-white font-bold text-sm">
-                                        {activity.user.split(' ').map(n => n[0]).join('')}
+                            {loading ? (
+                                <p className="text-slate-500">Loading activities...</p>
+                            ) : recentActivity.length > 0 ? (
+                                recentActivity.map((activity, idx) => (
+                                    <div key={idx} className="flex items-center gap-4 p-4 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors">
+                                        <div className="size-10 rounded-full bg-linear-to-br from-[--color-primary] to-[--color-accent] flex items-center justify-center text-white font-bold text-sm">
+                                            PAY
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-bold text-slate-900">{activity.description || 'Payment'}</p>
+                                            <p className="text-xs text-slate-500">Amount: {formatCurrency(activity.amount)}</p>
+                                        </div>
+                                        <span className="text-xs text-slate-400 font-medium shrink-0">
+                                            {activity.timestamp.toLocaleDateString()}
+                                        </span>
                                     </div>
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-bold text-slate-900">{activity.action}</p>
-                                        <p className="text-xs text-slate-500">{activity.user} {activity.amount && `• ${activity.amount}`}</p>
-                                    </div>
-                                    <span className="text-xs text-slate-400 font-medium shrink-0">{activity.time}</span>
-                                </div>
-                            ))}
+                                ))
+                            ) : (
+                                <p className="text-slate-500 italic">No recent activity found.</p>
+                            )}
                         </div>
                     </div>
 

@@ -4,16 +4,16 @@ declare module 'react-paystack' {
         email: string;
         amount: number;
         reference?: string;
-        metadata?: any;
+        metadata?: Record<string, unknown>;
         currency?: string;
         channels?: string[];
         label?: string;
-        onSuccess?: (reference: any) => void;
+        onSuccess?: (reference: Reference) => void;
         onClose?: () => void;
         subaccount?: string;
         transaction_charge?: number;
         bearer?: string;
-        split?: any;
+        split?: Record<string, unknown>;
         split_code?: string;
         plan?: string;
         quantity?: number;
@@ -23,7 +23,16 @@ declare module 'react-paystack' {
         embed?: boolean;
     }
 
-    export const usePaystackPayment: (config: PaystackProps) => (onSuccess?: (reference: any) => void, onClose?: () => void) => void;
+    interface Reference {
+        message: string;
+        reference: string;
+        status: string;
+        trans: string;
+        transaction: string;
+        trxref: string;
+    }
+
+    export const usePaystackPayment: (config: PaystackProps) => (onSuccess?: (reference: Reference) => void, onClose?: () => void) => void;
     export const PaystackButton: React.FC<PaystackProps & { className?: string; text?: string; children?: React.ReactNode }>;
-    export const PaystackConsumer: React.ComponentType<PaystackProps & { children: (initializePayment: (onSuccess?: (reference: any) => void, onClose?: () => void) => void) => React.ReactNode }>;
+    export const PaystackConsumer: React.ComponentType<PaystackProps & { children: (initializePayment: (onSuccess?: (reference: Reference) => void, onClose?: () => void) => void) => React.ReactNode }>;
 }
