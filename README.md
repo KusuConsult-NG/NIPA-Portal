@@ -1,36 +1,174 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# NIPA Portal
 
-## Getting Started
+A comprehensive Next.js application for the **National Institute for Policy, Strategy and Leadership Course Association (NIPA)** member portal.
 
-First, run the development server:
+## 🚀 Features
+
+### Pages
+- **Landing Page** (`/`) - Public homepage with dark theme
+- **Member Dashboard** (`/dashboard`) - Member overview with sidebar
+- **Member Directory** (`/directory`) - Searchable member database
+- **Payments** (`/payments`) - Dues calculator and transaction history
+- **Elections** (`/elections`) - Voting and candidate management
+- **Admin Dashboard** (`/admin`) - System management interface
+- **Welfare Dashboard** (`/welfare`) - Birthday and member care tracking
+- **Messages** (`/messages`) - Real-time messaging center
+
+### Tech Stack
+- **Framework**: Next.js 14 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS v4
+- **Fonts**: Plus Jakarta Sans, Public Sans
+- **Icons**: Material Symbols Outlined
+
+## 📦 Installation
 
 ```bash
+# Install dependencies
+npm install
+
+# Run development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# Build for production
+npm run build
+
+# Start production server
+npm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## ⚠️ Requirements
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Node.js**: >= 20.9.0
+- **npm**: >= 8.0.0
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🎨 Design System
 
-## Learn More
+### Colors
+- **Primary**: `#22C55E` (Green)
+- **Secondary**: `#6366F1` (Indigo)
+- **Navy**: `#0B1120` (Dark backgrounds)
+- **Accent**: `#10B981` (Emerald)
 
-To learn more about Next.js, take a look at the following resources:
+### Components Library
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Import components from `@/components`:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```typescript
+import { Button, Badge, Card, Avatar, Input } from '@/components';
+```
 
-## Deploy on Vercel
+#### Button
+```tsx
+<Button variant="primary" size="md" icon="add">
+  Add Member
+</Button>
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+#### Badge
+```tsx
+<Badge variant="success" dot>Active</Badge>
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+#### Card
+```tsx
+<Card variant="elevated" padding="lg">
+  <h3>Content</h3>
+</Card>
+```
+
+#### StatCard
+```tsx
+<StatCard
+  title="Total Members"
+  value="1,240"
+  icon="group"
+  trend={{ value: "2.5%", isPositive: true }}
+/>
+```
+
+#### Avatar
+```tsx
+<Avatar name="John Doe" size="lg" status="online" />
+```
+
+#### Input
+```tsx
+<Input
+  label="Email"
+  icon="mail"
+  placeholder="Enter email"
+/>
+```
+
+## 🛠 Utils
+
+```typescript
+import { formatCurrency, formatDate, getRelativeTime } from '@/lib/utils';
+
+formatCurrency(5000);        // "₦5,000"
+formatDate(new Date());       // "Jan 12, 2026"
+getRelativeTime(yesterday);   // "1 day ago"
+```
+
+## 📝 Types
+
+TypeScript interfaces for all data models are available in `lib/types.ts`:
+
+```typescript
+import type { Member, Payment, Event } from '@/lib/types';
+```
+
+## 🏗 Project Structure
+
+```
+/
+├── app/                    # Next.js pages
+│   ├── page.tsx           # Landing
+│   ├── dashboard/         # Member dashboard
+│   ├── directory/         # Members list
+│   ├── payments/          # Payment system
+│   ├── elections/         # Elections center
+│   ├── admin/             # Admin panel
+│   ├── welfare/           # Welfare dashboard
+│   └── messages/          # Messaging
+├── components/            # Reusable components
+│   ├── ui/               # Basic UI components
+│   └── layout/           # Layout components
+├── lib/                  # Utilities & types
+└── public/               # Static assets
+```
+
+## 🎯 Development
+
+### Adding a New Page
+
+1. Create file in `app/[page-name]/page.tsx`
+2. Use existing components from `@/components`
+3. Follow NIPA design system colors and spacing
+
+### Creating Components
+
+1. Add to `components/ui/` or `components/layout/`
+2. Export from `components/index.ts`
+3. Use TypeScript for props typing
+
+## 🌐 Deployment
+
+```bash
+# Build the application
+npm run build
+
+# Test production build locally
+npm start
+```
+
+Deploy to Vercel, Netlify, or any Node.js hosting platform.
+
+## 📄 License
+
+© 2024 National Institute for Policy, Strategy and Leadership Course Association
+
+---
+
+**Built with** ❤️ **for NIPA Members**

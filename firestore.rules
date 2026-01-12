@@ -1,0 +1,59 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+    // Check if user has admin role (requires reading user doc)
+    function isAdmin() {
+      return isAuthenticated() && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // Users Collection
+    match /users/{userId} {
+      // Allow users to read their own profile. Admins can read all.
+      allow read: if isAuthenticated() && (isOwner(userId) || isAdmin());
+      // Allow users to create their profile on signup
+      allow create: if isAuthenticated() && isOwner(userId);
+      // Allow users to update their own profile
+      allow update: if isAuthenticated() && (isOwner(userId) || isAdmin());
+      // Only admins can delete users
+      allow delete: if isAdmin();
+    }
+
+    // Events Collection
+    match /events/{eventId} {
+      // Public read access for events
+      allow read: if true;
+      // Only admins can write events
+      allow write: if isAdmin();
+    }
+
+    // Payments Collection
+    match /payments/{paymentId} {
+      allow read: if isAuthenticated() && (resource.data.memberId == request.auth.uid || isAdmin());
+      allow create: if isAuthenticated() && request.resource.data.memberId == request.auth.uid;
+      allow update: if isAdmin();
+    }
+
+    // Conversations Collection (for Messaging)
+    match /conversations/{conversationId} {
+      allow read: if isAuthenticated() && request.auth.uid in resource.data.participants;
+      allow create: if isAuthenticated() && request.auth.uid in request.resource.data.participants;
+      allow update: if isAuthenticated() && request.auth.uid in resource.data.participants;
+
+      // Messages Subcollection
+      match /messages/{messageId} {
+        allow read: if isAuthenticated() && request.auth.uid in get(/databases/$(database)/documents/conversations/$(conversationId)).data.participants;
+        allow create: if isAuthenticated() && request.auth.uid in get(/databases/$(database)/documents/conversations/$(conversationId)).data.participants;
+      }
+    }
+  }
+}
