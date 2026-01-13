@@ -9,13 +9,13 @@ import { onAuthStateChanged } from 'firebase/auth';
 
 export default function CoursesPage() {
     const [courses, setCourses] = useState<Course[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [activeFilter, setActiveFilter] = useState('All');
     // Derived state for filtering - prevents synchronization issues
     const filteredCourses = activeFilter === 'All'
         ? courses
         : courses.filter(c => c.type === activeFilter);
 
-    const [loading, setLoading] = useState(true);
-    const [activeFilter, setActiveFilter] = useState('All');
     const [userId, setUserId] = useState<string | null>(null);
     const [registering, setRegistering] = useState<string | null>(null); // courseId
 
