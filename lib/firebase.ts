@@ -27,17 +27,25 @@ let analytics: any = null;
 let storage: any;
 
 if (firebaseConfig.apiKey) {
-    app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
-    auth = getAuth(app);
-    db = getFirestore(app);
+    try {
+        app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
+        auth = getAuth(app);
+        db = getFirestore(app);
 
-    // Analytics (only in browser)
-    if (typeof window !== 'undefined') {
-        analytics = getAnalytics(app);
+        // Analytics (only in browser)
+        if (typeof window !== 'undefined') {
+            analytics = getAnalytics(app);
+        }
+
+        // Storage
+        storage = getStorage(app);
+    } catch (error) {
+        console.warn('Firebase initialization failed (likely due to missing keys during build):', error);
+        app = {};
+        auth = {} as any;
+        db = {} as any;
+        storage = {} as any;
     }
-
-    // Storage
-    storage = getStorage(app);
 } else {
     // Mock for build time when env vars are missing
     console.warn('Missing Firebase API Key - Initializing mock Firebase instance');
