@@ -38,6 +38,7 @@ export default function LoginPage() {
             // Redirect
             router.push('/dashboard');
 
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
             console.error('Login error:', error);
             const errorMessage = error.message || 'Failed to sign in. Please check your credentials.';
@@ -151,7 +152,7 @@ export default function LoginPage() {
 
                     {/* Register Link */}
                     <div className="text-center">
-                        <p className="text-slate-400 text-sm mb-4">Don't have an account?</p>
+                        <p className="text-slate-400 text-sm mb-4">Don&apos;t have an account?</p>
                         <Link
                             href="/signup"
                             className="inline-flex items-center gap-2 text-white hover:text-[--color-primary] font-bold transition-colors"

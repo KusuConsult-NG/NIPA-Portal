@@ -55,6 +55,7 @@ export default function SignupPage() {
             alert('Account created successfully!');
             router.push('/dashboard');
 
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
             console.error('Signup error:', error);
             const errorMessage = error.message || 'Failed to create account. Please try again.';

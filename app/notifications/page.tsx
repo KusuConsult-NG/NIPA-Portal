@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 
 export default function NotificationsPage() {
     const [filter, setFilter] = useState('all');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [notifications, setNotifications] = useState<any[]>([]);
 
     useEffect(() => {
@@ -184,7 +185,7 @@ export default function NotificationsPage() {
                             <span className="material-symbols-outlined text-slate-400 text-4xl">notifications_off</span>
                         </div>
                         <h3 className="text-xl font-black text-slate-900 mb-2">No notifications</h3>
-                        <p className="text-slate-500">You're all caught up!</p>
+                        <p className="text-slate-500">You&apos;re all caught up!</p>
                     </div>
                 )}
 

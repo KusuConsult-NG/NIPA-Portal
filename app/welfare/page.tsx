@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+// import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import WelfareHeader from '../../components/welfare/WelfareHeader';
@@ -218,7 +218,7 @@ export default function WelfarePage() {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-50">
-                                    {celebrants.map((celebrant, idx) => {
+                                    {celebrants.map((celebrant) => {
                                         const status = getStatus(celebrant);
                                         const isToday = celebrant.birthDay === today && selectedMonth === currentMonth;
 
@@ -253,8 +253,8 @@ export default function WelfarePage() {
                                                 </td>
                                                 <td className="px-8 py-5">
                                                     <span className={`inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${status === 'Pending' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
-                                                            status === 'Sent' ? 'bg-emerald-600/10 text-emerald-600 border border-emerald-600/20' :
-                                                                'bg-slate-100 text-slate-600 border border-slate-200'
+                                                        status === 'Sent' ? 'bg-emerald-600/10 text-emerald-600 border border-emerald-600/20' :
+                                                            'bg-slate-100 text-slate-600 border border-slate-200'
                                                         }`}>
                                                         {status === 'Sent' && <span className="material-symbols-outlined text-[10px] mr-1">check_circle</span>}
                                                         {status}
@@ -265,8 +265,8 @@ export default function WelfarePage() {
                                                         onClick={() => handleGreet(celebrant.id)}
                                                         disabled={status === 'Sent' || status === 'Upcoming' || sending === celebrant.id}
                                                         className={`inline-flex items-center gap-2 px-4 py-2 ${status === 'Pending' && sending !== celebrant.id ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/10' :
-                                                                status === 'Sent' ? 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200' :
-                                                                    'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200'
+                                                            status === 'Sent' ? 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200' :
+                                                                'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200'
                                                             } text-xs font-bold rounded-xl hover:brightness-110 transition-all ${status === 'Pending' && sending !== celebrant.id ? 'active:scale-95' : ''}`}
                                                     >
                                                         {sending === celebrant.id ? (

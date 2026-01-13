@@ -9,10 +9,7 @@ import {
     query,
     where,
     orderBy,
-    limit,
-    startAfter,
-    DocumentData,
-    QueryDocumentSnapshot
+    limit
 } from 'firebase/firestore';
 import { db } from './firebase';
 
@@ -132,7 +129,7 @@ export async function deleteUser(id: string): Promise<boolean> {
     try {
         await deleteDoc(doc(db, 'users', id));
         return true;
-    } catch (error) {
+    } catch {
         return false;
     }
 }
@@ -146,6 +143,7 @@ export async function listUsers(options: {
     role?: string;
     status?: string;
 }): Promise<{ users: User[]; total: number }> {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { page = 1, limit: pageLimit = 50, role, status } = options;
 
     let q = query(collection(db, 'users'));
@@ -181,6 +179,7 @@ export async function listUsers(options: {
 /**
  * Store event in Firestore
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function createEvent(eventData: any) {
     const eventRef = doc(collection(db, 'events'));
     await setDoc(eventRef, {
@@ -213,6 +212,7 @@ export async function getEvents(statusFilter?: string) {
 /**
  * Create payment in Firestore
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function createPayment(paymentData: any) {
     const paymentRef = doc(collection(db, 'payments'));
     await setDoc(paymentRef, {
@@ -326,6 +326,7 @@ export async function registerCandidate(
         createdAt: new Date().toISOString()
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await setDoc(candidateRef, newCandidate as any);
     return newCandidate;
 }

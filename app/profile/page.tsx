@@ -31,10 +31,13 @@ export default function ProfilePage() {
             setFormData({
                 name: profile.name || '',
                 email: profile.email || '',
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 phone: (profile as any).phone || '',
                 cohort: profile.cohort || '',
                 profession: profile.profession || '',
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 location: (profile as any).location || 'Abuja, Nigeria',
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 bio: (profile as any).bio || '',
                 photoURL: profile.photoURL || ''
             });

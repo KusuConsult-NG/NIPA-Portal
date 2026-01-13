@@ -97,6 +97,7 @@ export default function AlumniPage() {
                     {alumni.map((alum, i) => (
                         <div key={i} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all text-center group">
                             <div className="size-24 rounded-full mx-auto mb-4 bg-slate-100 p-1 border-2 border-slate-100 group-hover:border-primary transition-colors">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img src={alum.img} alt={alum.name} className="w-full h-full rounded-full" />
                             </div>
                             <h3 className="font-bold text-navy-deep text-lg">{alum.name}</h3>

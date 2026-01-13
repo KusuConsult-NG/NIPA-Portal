@@ -31,6 +31,7 @@ export default function CoursesPage() {
                                 <span className="material-symbols-outlined text-2xl">notifications</span>
                             </button>
                             <div className="h-10 w-10 rounded-full border-2 border-primary overflow-hidden ring-2 ring-white/10">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img alt="User Avatar" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmkxQB0Y_lA_cPfKoBD3DMA6oUtg6ytwqqLo-Dlay51IzR6AOLF0pUi41YHpWr2rPiIkJ7D37mu7h6V8Rc1CZJUsCcQ3EHOdwp_DGDJTBf4c-_XDji-yDCMWFYQxGaWnKk0A6K-uGd5dsrDjBzcAGJ1lTwouof6bbqjJomLdX1T5gMhRbPup9uWV9yGY_Fj7BUHQN-LZ3O0T3X7OVBHrrXcaVTvVmoEpzjxo8k_4IdISvrozFjVAah8JjcXjaaPngCKp0bayL4QfA" />
                             </div>
                         </div>
@@ -88,7 +89,8 @@ export default function CoursesPage() {
                     ].map((course, idx) => (
                         <div key={idx} className="bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-xl hover:border-primary/20 transition-all group">
                             <div className="h-48 overflow-hidden relative">
-                                <img src={course.image} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img src={course.image} alt={course.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                 <div className="absolute top-4 left-4">
                                     <span className="px-3 py-1 bg-white/90 backdrop-blur-sm text-navy-deep text-[10px] font-black uppercase tracking-widest rounded-lg">{course.type}</span>
                                 </div>

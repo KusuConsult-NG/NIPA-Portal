@@ -69,7 +69,7 @@ export default function MemberProfilePage({ params }: { params: Promise<{ id: st
             <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-200">
                     {/* Cover Image */}
-                    <div className="h-32 sm:h-48 bg-gradient-to-r from-navy-deep to-primary relative">
+                    <div className="h-32 sm:h-48 bg-linear-to-r from-navy-deep to-primary relative">
                         <div className="absolute inset-0 bg-black/10"></div>
                     </div>
 
@@ -79,7 +79,7 @@ export default function MemberProfilePage({ params }: { params: Promise<{ id: st
                             <div className="flex flex-col sm:flex-row gap-6 items-start">
                                 {/* Avatar */}
                                 <div className="shrink-0 relative">
-                                    <div className="size-24 sm:size-32 rounded-full border-4 border-white shadow-lg bg-gradient-to-br from-primary/20 to-secondary/20 overflow-hidden">
+                                    <div className="size-24 sm:size-32 rounded-full border-4 border-white shadow-lg bg-linear-to-br from-primary/20 to-secondary/20 overflow-hidden">
                                         <div className="w-full h-full flex items-center justify-center text-4xl sm:text-5xl font-black text-primary">
                                             {member.name?.charAt(0).toUpperCase() || 'M'}
                                         </div>
@@ -126,7 +126,7 @@ export default function MemberProfilePage({ params }: { params: Promise<{ id: st
                                                     <span className="material-symbols-outlined text-slate-400 text-xl">email</span>
                                                     <div className="flex-1 min-w-0">
                                                         <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Email</p>
-                                                        <p className="text-sm text-slate-700 font-medium break-words">{member.email}</p>
+                                                        <p className="text-sm text-slate-700 font-medium wrap-break-word">{member.email}</p>
                                                     </div>
                                                 </div>
                                                 {member.phone && (
@@ -151,7 +151,7 @@ export default function MemberProfilePage({ params }: { params: Promise<{ id: st
                                         </section>
 
                                         {/* Professional Info */}
-                                        <section className="bg-gradient-to-br from-primary/5 to-secondary/5 p-6 rounded-2xl border border-primary/10">
+                                        <section className="bg-linear-to-br from-primary/5 to-secondary/5 p-6 rounded-2xl border border-primary/10">
                                             <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-4">Professional Details</h3>
                                             <div className="space-y-4">
                                                 {member.profession && (

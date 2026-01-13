@@ -51,7 +51,7 @@ export default function InviteMemberPage() {
                                 <span className="material-symbols-outlined text-4xl">check_circle</span>
                             </div>
                             <h2 className="text-2xl font-bold text-slate-900 mb-2">Invitation Sent!</h2>
-                            <p className="text-slate-500 mb-8">We've sent an email to the provided address with instructions to join.</p>
+                            <p className="text-slate-500 mb-8">We&apos;ve sent an email to the provided address with instructions to join.</p>
                             <button onClick={() => setStatus('idle')} className="px-8 py-3 bg-slate-100 text-slate-600 font-bold rounded-xl hover:bg-slate-200 transition-all">Send Another</button>
                         </div>
                     ) : (

@@ -1,6 +1,6 @@
 'use client';
 
-import { Sidebar, SidebarHeader, SidebarNav, SidebarFooter } from './Sidebar';
+// import { Sidebar, SidebarHeader, SidebarNav, SidebarFooter } from './Sidebar';
 import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -71,6 +71,7 @@ export default function MemberSidebar() {
                     <Link href="/profile" className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-colors group cursor-pointer">
                         <div className="size-10 rounded-full bg-slate-700 flex items-center justify-center border-2 border-slate-600 group-hover:border-primary transition-colors overflow-hidden">
                             {profile?.photoURL ? (
+                                // eslint-disable-next-line @next/next/no-img-element
                                 <img src={profile.photoURL} alt="Profile" className="w-full h-full object-cover" />
                             ) : (
                                 <span className="font-bold text-xs">{profile?.name?.substring(0, 2).toUpperCase() || 'ME'}</span>

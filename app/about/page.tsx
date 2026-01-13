@@ -1,7 +1,7 @@
 'use client';
 
 import PublicHeader from '@/components/layout/PublicHeader';
-import Link from 'next/link';
+// import Link from 'next/link';
 
 export default function AboutPage() {
     return (

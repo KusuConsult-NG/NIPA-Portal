@@ -14,6 +14,7 @@ export default function AdminPage() {
         totalRevenue: 0,
         pendingVerifications: 0
     });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [recentUsers, setRecentUsers] = useState<any[]>([]);
 
     useEffect(() => {

@@ -11,13 +11,29 @@ export default function EventsPage() {
     const [filter, setFilter] = useState('upcoming');
     const [view, setView] = useState<'grid' | 'calendar'>('grid');
 
+    interface Event {
+        id: string;
+        title: string;
+        date: Date;
+        location: string;
+        type: string;
+        description: string;
+        capacity: number;
+        registered: number;
+        image: string;
+        status: string;
+        createdBy?: string;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        createdAt?: any;
+    }
+
     // Modal States
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
 
     // Data States
-    const [events, setEvents] = useState<any[]>([]);
-    const [selectedEvent, setSelectedEvent] = useState<any>(null);
+    const [events, setEvents] = useState<Event[]>([]);
+    const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
     const [createFormData, setCreateFormData] = useState({ title: '', date: '', location: '', type: 'Summit', description: '' });
     const [loading, setLoading] = useState(false);
 
@@ -34,10 +50,10 @@ export default function EventsPage() {
                     id: doc.id,
                     ...doc.data(),
                     date: doc.data().date?.toDate() || new Date(), // Handle Firestore Timestamp
-                }));
+                })) as unknown as Event[];
                 // If no events, fall back to static for demo
                 if (eventsData.length === 0) {
-                    setEvents(STATIC_EVENTS);
+                    setEvents(STATIC_EVENTS as unknown as Event[]); // Cast fallback too just in case
                 } else {
                     setEvents(eventsData);
                 }
@@ -58,7 +74,7 @@ export default function EventsPage() {
         }
     }, [toast]);
 
-    const handleRegister = (event: any) => {
+    const handleRegister = (event: Event) => {
         if (!user) {
             setToast({ message: "Please login to register", type: 'error' });
             return;
@@ -71,8 +87,8 @@ export default function EventsPage() {
         setLoading(true);
         try {
             await addDoc(collection(db, 'registrations'), {
-                eventId: selectedEvent.id,
-                eventTitle: selectedEvent.title,
+                eventId: selectedEvent?.id,
+                eventTitle: selectedEvent?.title,
                 userId: user?.uid,
                 userEmail: user?.email,
                 registeredAt: Timestamp.now()

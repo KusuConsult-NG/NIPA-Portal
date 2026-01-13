@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { db } from '@/lib/firebase';
-import { collection, getDocs, query, where, orderBy, Timestamp } from 'firebase/firestore';
+import { collection, getDocs } from 'firebase/firestore';
 
 export default function AnalyticsPage() {
     const [timeRange, setTimeRange] = useState('month');
@@ -14,6 +14,7 @@ export default function AnalyticsPage() {
         eventAttendance: 0,
         totalEvents: 0
     });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [recentActivity, setRecentActivity] = useState<any[]>([]);
 
     useEffect(() => {

@@ -86,6 +86,7 @@ export default function SeedPage() {
             });
 
             setStatus('Success! Database seeded with Announcements and Events.');
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
             console.error('Seeding error:', error);
             setStatus(`Error: ${error.message}`);

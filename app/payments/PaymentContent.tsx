@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+// import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { usePaystackPayment } from 'react-paystack';
 import axios from 'axios';
@@ -24,7 +24,7 @@ export default function PaymentContent() {
     const { profile, loading } = useAuth();
     // State
     const [email, setEmail] = useState('');
-    const [amount, setAmount] = useState(15000); // Default 3 months
+    // const [amount, setAmount] = useState(15000); // Default 3 months
     const [months, setMonths] = useState(3);
     const [isCustom, setIsCustom] = useState(true);
     const [category, setCategory] = useState("Membership Dues 2024");
@@ -78,7 +78,7 @@ export default function PaymentContent() {
     const totalAmount = isCustom ? (months * baseRate) : (baseRate * 12 - discount);
 
     useEffect(() => {
-        setAmount(totalAmount);
+        // setAmount(totalAmount);
     }, [months, isCustom, totalAmount]);
 
     const config = {
@@ -105,6 +105,7 @@ export default function PaymentContent() {
     // Paystack Hook
     const initializePayment = usePaystackPayment(config);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSuccess = (reference: any) => {
         setProcessing(true);
         // Serve verification
@@ -115,7 +116,7 @@ export default function PaymentContent() {
                 category: category
             }
         })
-            .then((response) => {
+            .then(() => {
                 alert('Payment successful and verified!');
                 setProcessing(false);
                 window.location.reload(); // Reload to show in history
@@ -352,8 +353,8 @@ export default function PaymentContent() {
                                                 <td className="px-8 py-6 text-sm font-black text-slate-900">₦{transaction.amount.toLocaleString()}.00</td>
                                                 <td className="px-8 py-6">
                                                     <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase ${transaction.status === 'successful'
-                                                            ? 'bg-primary/10 text-primary'
-                                                            : 'bg-red-50 text-red-600'
+                                                        ? 'bg-primary/10 text-primary'
+                                                        : 'bg-red-50 text-red-600'
                                                         }`}>
                                                         <span className={`size-1.5 rounded-full ${transaction.status === 'successful' ? 'bg-primary' : 'bg-red-600'
                                                             }`}></span> {transaction.status}

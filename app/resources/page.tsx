@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import Modal from '@/components/ui/Modal';
 import {
@@ -30,11 +30,7 @@ export default function ResourcesPage() {
 
     const categories: Array<'all' | Resource['category']> = ['all', 'Policy Papers', 'Governance', 'Training Materials', 'Reports'];
 
-    useEffect(() => {
-        fetchResources();
-    }, [category]);
-
-    const fetchResources = async () => {
+    const fetchResources = useCallback(async () => {
         setLoading(true);
         try {
             const data = await getResources(category);
@@ -44,7 +40,11 @@ export default function ResourcesPage() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [category]);
+
+    useEffect(() => {
+        fetchResources();
+    }, [fetchResources]);
 
     const filteredResources = resources.filter(resource => {
         const matchesSearch = resource.title.toLowerCase().includes(searchQuery.toLowerCase()) ||

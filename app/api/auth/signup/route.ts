@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
-export async function POST(request: NextRequest) {
+export async function POST() {
     return NextResponse.json(
         { error: 'Not Implemented', message: 'Please use Firebase Client SDK for registration' },
         { status: 501 }

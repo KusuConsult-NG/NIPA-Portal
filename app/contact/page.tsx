@@ -22,7 +22,7 @@ export default function ContactPage() {
             <header className="bg-linear-to-r from-[--color-nipa-navy] to-[--color-navy-card] text-white px-8 py-20">
                 <div className="max-w-6xl mx-auto text-center">
                     <h1 className="text-5xl font-black mb-4">Get In Touch</h1>
-                    <p className="text-xl text-slate-400 font-medium">We're here to help and answer any questions you might have</p>
+                    <p className="text-xl text-slate-400 font-medium">We&apos;re here to help and answer any questions you might have</p>
                 </div>
             </header>
 
