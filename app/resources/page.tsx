@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import Modal from '@/components/ui/Modal';
 import {
@@ -14,6 +15,7 @@ import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 
 export default function ResourcesPage() {
     const { user } = useAuth();
+    const searchParams = useSearchParams();
     const [category, setCategory] = useState('all');
     const [searchQuery, setSearchQuery] = useState('');
     const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
@@ -29,6 +31,14 @@ export default function ResourcesPage() {
     const [uploadProgress, setUploadProgress] = useState(0);
 
     const categories: Array<'all' | Resource['category']> = ['all', 'Policy Papers', 'Governance', 'Training Materials', 'Reports'];
+
+    // Read category from URL query parameter on mount
+    useEffect(() => {
+        const urlCategory = searchParams.get('category');
+        if (urlCategory && categories.includes(urlCategory as any)) {
+            setCategory(urlCategory);
+        }
+    }, [searchParams]);
 
     const fetchResources = useCallback(async () => {
         setLoading(true);
