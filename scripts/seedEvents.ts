@@ -2,9 +2,6 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, addDoc, Timestamp } from 'firebase/firestore';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
-import * as dotenv from 'dotenv';
-import path from 'path';
-
 // Environment variables are loaded via command line usually, but keeping this for safety if run directly
 // dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
 
