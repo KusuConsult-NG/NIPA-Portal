@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import Modal from '@/components/ui/Modal';
@@ -13,7 +13,7 @@ import {
 import { storage } from '@/lib/firebase';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 
-export default function ResourcesPage() {
+function ResourcesPageContent() {
     const { user } = useAuth();
     const searchParams = useSearchParams();
     const [category, setCategory] = useState('all');
@@ -435,5 +435,18 @@ export default function ResourcesPage() {
                 </div>
             </Modal>
         </div>
+    );
+}
+
+// Wrap in Suspense to fix Next.js build error with useSearchParams
+export default function ResourcesPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-background-light flex items-center justify-center">
+                <span className="material-symbols-outlined animate-spin text-4xl text-primary">progress_activity</span>
+            </div>
+        }>
+            <ResourcesPageContent />
+        </Suspense>
     );
 }
