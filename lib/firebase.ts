@@ -6,6 +6,17 @@ let auth: any;
 let db: any;
 let analytics: any = null;
 let storage: any;
+let firebaseReady = false;
+const readyCallbacks: (() => void)[] = [];
+
+// Helper to wait for Firebase to be ready
+export const onFirebaseReady = (callback: () => void) => {
+    if (firebaseReady) {
+        callback();
+    } else {
+        readyCallbacks.push(callback);
+    }
+};
 
 // Only initialize Firebase on the client side
 if (typeof window !== 'undefined') {
@@ -23,7 +34,14 @@ if (typeof window !== 'undefined') {
             };
 
             if (!firebaseConfig.apiKey || firebaseConfig.apiKey === 'undefined') {
-                console.warn('[Firebase] API key not configured');
+                console.warn('[Firebase] API key not configured - using mocks');
+                // Set mocks
+                app = {};
+                auth = {};
+                db = {};
+                storage = {};
+                firebaseReady = true;
+                readyCallbacks.forEach(cb => cb());
                 return;
             }
 
@@ -46,6 +64,8 @@ if (typeof window !== 'undefined') {
             }
 
             console.log('[Firebase] Initialized successfully');
+            firebaseReady = true;
+            readyCallbacks.forEach(cb => cb());
         } catch (error) {
             console.error('[Firebase] Initialization failed:', error);
             // Set mocks on error
@@ -53,6 +73,8 @@ if (typeof window !== 'undefined') {
             auth = {};
             db = {};
             storage = {};
+            firebaseReady = true;
+            readyCallbacks.forEach(cb => cb());
         }
     };
 
@@ -64,6 +86,7 @@ if (typeof window !== 'undefined') {
     auth = {};
     db = {};
     storage = {};
+    firebaseReady = true;
 }
 
 export { app, auth, db, analytics, storage };

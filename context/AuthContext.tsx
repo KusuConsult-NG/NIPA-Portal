@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
 import { User, onAuthStateChanged, signOut as firebaseSignOut } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { auth, onFirebaseReady } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 
@@ -38,50 +38,68 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const router = useRouter();
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
-            setUser(authUser);
+        let unsubscribe: (() => void) | undefined;
 
-            if (authUser) {
-                // Set cookie for middleware and API routes
-                Cookies.set('session', 'true', { expires: 7 });
-                try {
-                    const token = await authUser.getIdToken();
-                    Cookies.set('auth_token', token, { expires: 7 });
-                } catch (e) {
-                    console.error("Error getting token", e);
-                }
-
-                try {
-                    const { doc, getDoc } = await import('firebase/firestore');
-                    const { db } = await import('@/lib/firebase');
-
-                    const userDoc = await getDoc(doc(db, 'users', authUser.uid));
-                    if (userDoc.exists()) {
-                        setProfile(userDoc.data() as UserProfile);
-                    } else {
-                        // Handle case where auth exists but profile doesn't (legacy or partial signup)
-                        setProfile(null);
-                    }
-                } catch (error) {
-                    console.error("Error fetching user profile:", error);
-                    setProfile(null);
-                }
-            } else {
-                // Remove cookies
-                Cookies.remove('session');
-                Cookies.remove('auth_token');
-                setProfile(null);
+        // Wait for Firebase to be ready before setting up auth listener
+        onFirebaseReady(() => {
+            // Check if auth is available (might be mock if no API key)
+            if (!auth || typeof auth.onAuthStateChanged !== 'function') {
+                console.warn('[AuthContext] Firebase Auth not available');
+                setLoading(false);
+                return;
             }
 
-            setLoading(false);
+            unsubscribe = onAuthStateChanged(auth, async (authUser) => {
+                setUser(authUser);
+
+                if (authUser) {
+                    // Set cookie for middleware and API routes
+                    Cookies.set('session', 'true', { expires: 7 });
+                    try {
+                        const token = await authUser.getIdToken();
+                        Cookies.set('auth_token', token, { expires: 7 });
+                    } catch (e) {
+                        console.error("Error getting token", e);
+                    }
+
+                    try {
+                        const { doc, getDoc } = await import('firebase/firestore');
+                        const { db } = await import('@/lib/firebase');
+
+                        const userDoc = await getDoc(doc(db, 'users', authUser.uid));
+                        if (userDoc.exists()) {
+                            setProfile(userDoc.data() as UserProfile);
+                        } else {
+                            // Handle case where auth exists but profile doesn't (legacy or partial signup)
+                            setProfile(null);
+                        }
+                    } catch (error) {
+                        console.error("Error fetching user profile:", error);
+                        setProfile(null);
+                    }
+                } else {
+                    // Remove cookies
+                    Cookies.remove('session');
+                    Cookies.remove('auth_token');
+                    setProfile(null);
+                }
+
+                setLoading(false);
+            });
         });
 
-        return () => unsubscribe();
+        return () => {
+            if (unsubscribe) {
+                unsubscribe();
+            }
+        };
     }, []);
 
     const logout = async () => {
         try {
-            await firebaseSignOut(auth);
+            if (auth && typeof auth.signOut === 'function') {
+                await firebaseSignOut(auth);
+            }
             Cookies.remove('session'); // Ensure cookie is removed immediately on logout action
             Cookies.remove('auth_token');
             setProfile(null);
