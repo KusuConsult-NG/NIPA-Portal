@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { findUserById, User } from '@/lib/firestore';
 
-export default function MemberProfilePage({ params }: { params: { id: string } }) {
+export default function MemberProfilePage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = use(params);
     const router = useRouter();
     const [member, setMember] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
@@ -14,7 +15,7 @@ export default function MemberProfilePage({ params }: { params: { id: string } }
     useEffect(() => {
         const fetchMember = async () => {
             try {
-                const user = await findUserById(params.id);
+                const user = await findUserById(id);
                 if (!user) {
                     setError('Member not found');
                 } else {
@@ -29,7 +30,7 @@ export default function MemberProfilePage({ params }: { params: { id: string } }
         };
 
         fetchMember();
-    }, [params.id]);
+    }, [id]);
 
     if (loading) {
         return (
