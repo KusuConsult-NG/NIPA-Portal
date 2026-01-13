@@ -15,46 +15,42 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase (client-side)
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let app: any;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let auth: any;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let db: any;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let analytics: any = null;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let storage: any;
 
-if (firebaseConfig.apiKey) {
-    try {
-        app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
-        auth = getAuth(app);
-        db = getFirestore(app);
-
-        // Analytics (only in browser)
-        if (typeof window !== 'undefined') {
+// Only initialize Firebase on the client side to prevent SSR/build errors
+if (typeof window !== 'undefined') {
+    // We're on the client
+    if (firebaseConfig.apiKey) {
+        try {
+            app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
+            auth = getAuth(app);
+            db = getFirestore(app);
             analytics = getAnalytics(app);
+            storage = getStorage(app);
+        } catch (error) {
+            console.warn('Firebase initialization failed:', error);
+            // Provide mocks even on client if init fails
+            app = {} as any;
+            auth = {} as any;
+            db = {} as any;
+            storage = {} as any;
         }
-
-        // Storage
-        storage = getStorage(app);
-    } catch (error) {
-        console.warn('Firebase initialization failed (likely due to missing keys during build):', error);
-        app = {};
+    } else {
+        console.warn('Missing Firebase API Key');
+        app = {} as any;
         auth = {} as any;
         db = {} as any;
         storage = {} as any;
     }
 } else {
-    // Mock for build time when env vars are missing
-    console.warn('Missing Firebase API Key - Initializing mock Firebase instance');
-    app = {};
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // We're on the server - provide mock objects to prevent crashes
+    app = {} as any;
     auth = {} as any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     db = {} as any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     storage = {} as any;
 }
 
