@@ -55,15 +55,16 @@ if (typeof window !== 'undefined') {
 
             // Disable App Check / reCAPTCHA enforcement for development
             // This prevents the "_getRecaptchaConfig is not a function" error
-            if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
-                try {
+            // Applied unconditionally on client to ensure it works
+            try {
+                if (auth) {
                     // @ts-ignore - Using internal API to disable reCAPTCHA for development
                     auth._canInitEmulator = false;
                     // @ts-ignore
                     auth._getRecaptchaConfig = () => ({});
-                } catch (e) {
-                    console.log('[Firebase] Could not disable reCAPTCHA, continuing anyway');
                 }
+            } catch (e) {
+                console.log('[Firebase] Could not disable reCAPTCHA, continuing anyway');
             }
 
             db = getFirestore(app);
