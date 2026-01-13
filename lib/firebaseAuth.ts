@@ -12,6 +12,16 @@ import { createUser, findUserById } from './firestore';
 /**
  * Sign up a new user
  */
+/**
+ * Helper to check if we are in Mock Mode (API keys missing)
+ */
+const isMockMode = () => {
+    return !auth || !auth.app || !auth.config;
+};
+
+/**
+ * Sign up a new user
+ */
 export async function signUpWithEmail(
     email: string,
     password: string,
@@ -22,6 +32,36 @@ export async function signUpWithEmail(
         profession: string;
     }
 ) {
+    // If keys are missing, simulate success (Mock Mode)
+    if (isMockMode()) {
+        console.warn('[Mock Mode] Creating fake user because API keys are missing');
+        const mockUid = 'mock-user-' + Date.now();
+        const firebaseUser = {
+            uid: mockUid,
+            email,
+            displayName: userData.name,
+            emailVerified: true
+        } as FirebaseUser;
+
+        // Still try to save to Firestore (will fail if keys missing too, but handled gracefully maybe?)
+        // Actually if keys are missing, Firestore is also mock {}.
+        // So we return simulated data.
+
+        return {
+            user: {
+                ...userData,
+                id: mockUid,
+                email,
+                role: 'member',
+                status: 'active',
+                membershipType: 'regular',
+                joinDate: new Date(),
+                photoUrl: ''
+            },
+            firebaseUser
+        };
+    }
+
     // Create Firebase Auth user
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const firebaseUser = userCredential.user;
@@ -51,6 +91,24 @@ export async function signUpWithEmail(
  * Sign in with email and password
  */
 export async function signInWithEmail(email: string, password: string) {
+    // Mock Mode Check
+    if (isMockMode()) {
+        console.warn('[Mock Mode] Signing in fake user');
+        const mockUid = 'mock-user-123';
+        return {
+            user: {
+                id: mockUid,
+                name: 'Test Member',
+                email,
+                role: 'member',
+                status: 'active',
+                membershipType: 'regular',
+                joinDate: new Date()
+            } as any,
+            firebaseUser: { uid: mockUid, email } as FirebaseUser
+        };
+    }
+
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const firebaseUser = userCredential.user;
 
