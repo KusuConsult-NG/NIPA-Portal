@@ -66,15 +66,14 @@ export default function SignupPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[#0B1120] via-navy-card to-[#0B1120] flex items-center justify-center p-6 gradient-animate relative overflow-hidden">
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-20 right-20 w-96 h-96 bg-[--color-secondary]/10 rounded-full blur-3xl float-slow"></div>
-                <div className="absolute bottom-20 left-20 w-96 h-96 bg-[--color-primary]/10 rounded-full blur-3xl animate-float"></div>
-            </div>
+        <div className="min-h-screen bg-linear-to-br from-[#0B1120] via-navy-card to-[#0B1120] flex items-center justify-center p-6 gradient-animate relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-full bg-[url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop')] bg-cover bg-center opacity-10 mix-blend-overlay"></div>
+            <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-primary/20 rounded-full blur-[100px] animate-pulse-slow pointer-events-none"></div>
+            <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-secondary/20 rounded-full blur-[100px] animate-pulse-slow pointer-events-none" style={{ animationDelay: '2s' }}></div>
 
             <div className="max-w-2xl w-full relative z-10 animate-scale-in">
                 <div className="text-center mb-10">
-                    <div className="inline-flex items-center justify-center size-20 bg-gradient-to-br from-primary to-accent rounded-3xl mb-6 shadow-2xl shadow-primary/20 ring-4 ring-white/5 animate-bounce-soft">
+                    <div className="inline-flex items-center justify-center size-20 bg-linear-to-br from-primary to-accent rounded-3xl mb-6 shadow-2xl shadow-primary/20 ring-4 ring-white/5 animate-bounce-soft">
                         <span className="material-symbols-outlined text-white text-3xl">person_add</span>
                     </div>
                     <h1 className="text-4xl font-black text-white mb-3 tracking-tight animate-slide-up">Join NIPA</h1>
@@ -213,7 +212,7 @@ export default function SignupPage() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-gradient-to-r from-primary to-accent text-white font-black py-4 rounded-xl hover:brightness-110 transition-all shadow-xl shadow-primary/30 disabled:opacity-50 flex items-center justify-center gap-2 btn-premium ripple hover:scale-105"
+                            className="w-full bg-linear-to-r from-primary to-accent text-white font-black py-4 rounded-xl hover:brightness-110 transition-all shadow-xl shadow-primary/30 disabled:opacity-50 flex items-center justify-center gap-2 btn-premium ripple hover:scale-105"
                         >
                             {loading ? (
                                 <>
