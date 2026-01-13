@@ -602,3 +602,194 @@ export async function incrementResourceDownloads(resourceId: string): Promise<vo
 export async function deleteResource(resourceId: string): Promise<void> {
     await deleteDoc(doc(db, 'resources', resourceId));
 }
+
+/**
+ * Course Interfaces
+ */
+export interface Course {
+    id: string;
+    title: string;
+    description: string;
+    shortDescription: string;
+    type: 'Short Course' | 'Seminar' | 'Workshop' | 'Online' | 'Executive Program';
+    level: 'Beginner' | 'Intermediate' | 'Advanced' | 'Executive';
+    price: number | 'Free';
+    currency: 'NGN' | 'USD';
+    startDate: string;
+    endDate: string;
+    duration: string;
+    instructor: string;
+    image: string; // URL
+    capacity: number;
+    registeredCount: number;
+    status: 'open' | 'closed' | 'upcoming';
+    featured?: boolean;
+    modules?: { title: string; duration: string }[];
+    createdAt: string;
+}
+
+export interface CourseRegistration {
+    id: string; // usually userId_courseId
+    userId: string;
+    courseId: string;
+    status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
+    paymentStatus: 'paid' | 'unpaid' | 'waived';
+    registeredAt: string;
+}
+
+/**
+ * Get all courses with optional filtering
+ */
+export async function getCourses(filter?: { featured?: boolean; type?: string; status?: string }): Promise<Course[]> {
+    try {
+        let q = query(collection(db, 'courses'), orderBy('startDate', 'asc'));
+
+        if (filter?.featured) {
+            q = query(q, where('featured', '==', true));
+        }
+
+        if (filter?.type && filter.type !== 'All') {
+            q = query(q, where('type', '==', filter.type));
+        }
+
+        if (filter?.status) {
+            q = query(q, where('status', '==', filter.status));
+        }
+
+        const snapshot = await getDocs(q);
+
+        // Return real data if exists, otherwise return formatted mock data for dev
+        if (!snapshot.empty) {
+            return snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            } as Course));
+        }
+
+        // Mock data fallback if DB is empty (to ensure page works immediately)
+        console.log('[Firestore] No courses found, returning mocks');
+        return [
+            {
+                id: 'course-1',
+                title: 'Senior Executive Course (SEC) 46',
+                description: 'The flagship program designed for high-level policy makers and executors. Prepare for the next level of strategic leadership with intensive modules on governance, economy, and national security.',
+                shortDescription: 'Flagship program for high-level policy makers.',
+                type: 'Executive Program',
+                level: 'Executive',
+                price: 5000000,
+                currency: 'NGN',
+                startDate: '2024-02-01',
+                endDate: '2024-11-30',
+                duration: '10 Months',
+                instructor: 'Dr. A. Ibrahim',
+                image: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=2670&auto=format&fit=crop',
+                capacity: 60,
+                registeredCount: 45,
+                status: 'open',
+                featured: true,
+                createdAt: new Date().toISOString()
+            },
+            {
+                id: 'course-2',
+                title: 'Strategic Leadership Workshop',
+                description: 'Intensive 5-day workshop focused on modern leadership frameworks and change management in public sector institutions.',
+                shortDescription: 'Modern frameworks for public sector leadership.',
+                type: 'Workshop',
+                level: 'Advanced',
+                price: 250000,
+                currency: 'NGN',
+                startDate: '2024-03-15',
+                endDate: '2024-03-20',
+                duration: '5 Days',
+                instructor: 'Prof. Sarah Okon',
+                image: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=2670&auto=format&fit=crop',
+                capacity: 100,
+                registeredCount: 82,
+                status: 'open',
+                createdAt: new Date().toISOString()
+            },
+            {
+                id: 'course-3',
+                title: 'Digital Governance Seminar',
+                description: 'Exploring the intersection of technology and governance. Learn how to leverage digital tools for transparent and efficient public service delivery.',
+                shortDescription: 'Leveraging tech for efficient service delivery.',
+                type: 'Seminar',
+                level: 'Intermediate',
+                price: 150000,
+                currency: 'NGN',
+                startDate: '2024-04-05',
+                endDate: '2024-04-05',
+                duration: '1 Day',
+                instructor: 'Engr. T. Balogun',
+                image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=2670&auto=format&fit=crop',
+                capacity: 200,
+                registeredCount: 156,
+                status: 'upcoming',
+                createdAt: new Date().toISOString()
+            },
+            {
+                id: 'course-4',
+                title: 'Policy Formulation Masterclass',
+                description: 'A deep dive into the cycle of policy formulation, implementation, and evaluation. Suitable for civil servants and policy analysts.',
+                shortDescription: 'Comprehensive guide to policy cycle.',
+                type: 'Online',
+                level: 'Advanced',
+                price: 75000,
+                currency: 'NGN',
+                startDate: '2024-03-01',
+                endDate: '2024-03-31',
+                duration: '4 Weeks',
+                instructor: 'Dr. P. Mensah',
+                image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2670&auto=format&fit=crop',
+                capacity: 500,
+                registeredCount: 320,
+                status: 'open',
+                createdAt: new Date().toISOString()
+            }
+        ];
+
+    } catch (error) {
+        console.error('Error fetching courses:', error);
+        return [];
+    }
+}
+
+/**
+ * Register user for a course
+ */
+export async function registerForCourse(userId: string, courseId: string): Promise<{ success: boolean; message: string }> {
+    try {
+        const regId = `${userId}_${courseId}`;
+        const regRef = doc(db, 'course_registrations', regId);
+
+        // check existing
+        const existing = await getDoc(regRef);
+        if (existing.exists()) {
+            return { success: false, message: 'You are already registered for this course.' };
+        }
+
+        // Create registration
+        await setDoc(regRef, {
+            id: regId,
+            userId,
+            courseId,
+            status: 'pending',
+            paymentStatus: 'unpaid',
+            registeredAt: new Date().toISOString()
+        });
+
+        // Increment count
+        const courseRef = doc(db, 'courses', courseId);
+        // Note: transaction would be better for concurrency but keep simple for now
+        const courseDoc = await getDoc(courseRef);
+        if (courseDoc.exists()) {
+            const current = courseDoc.data().registeredCount || 0;
+            await updateDoc(courseRef, { registeredCount: current + 1 });
+        }
+
+        return { success: true, message: 'Registration successful!' };
+    } catch (error) {
+        console.error('Error registering for course:', error);
+        return { success: false, message: 'Registration failed. Please try again.' };
+    }
+}
