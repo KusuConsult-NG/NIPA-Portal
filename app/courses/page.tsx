@@ -79,7 +79,8 @@ export default function CoursesPage() {
                 Actually, looking at 'admin/page.tsx' vs 'elections/page.tsx', they handle layout inside. */}
 
             <Sidebar variant="dark">
-                {/* Empty Sidebar children since we use Top Nav */}
+                {/* valid empty children */}
+                <></>
             </Sidebar>
 
             {/* Wait, Sidebar needs to be closed. I commented it out because the previous file used a Header.

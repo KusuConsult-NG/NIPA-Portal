@@ -183,7 +183,7 @@ export default function ElectionsPage() {
                         <button
                             onClick={handleRegister}
                             disabled={isRegistered}
-                            className={`flex items-center justify-center rounded-xl h-14 px-8 text-sm font-black tracking-wide shadow-xl transition-all btn-premium ripple ${isRegistered ? 'bg-green-600 text-white shadow-green-600/20 cursor-default' : 'bg-gradient-to-r from-election-primary to-accent text-white shadow-election-primary/20 hover:brightness-110 hover:scale-105'}`}
+                            className={`flex items-center justify-center rounded-xl h-14 px-8 text-sm font-black tracking-wide shadow-xl transition-all btn-premium ripple ${isRegistered ? 'bg-green-600 text-white shadow-green-600/20 cursor-default' : 'bg-linear-to-r from-election-primary to-accent text-white shadow-election-primary/20 hover:brightness-110 hover:scale-105'}`}
                         >
                             <span className="material-symbols-outlined mr-2">{isRegistered ? 'check_circle' : 'how_to_reg'}</span>
                             {isRegistered ? 'Registered' : 'Register to Vote'}
@@ -244,7 +244,7 @@ export default function ElectionsPage() {
                                 <p className="text-gray-500 mb-8 font-medium leading-relaxed">{position.description}</p>
                                 <button
                                     onClick={() => setPaymentModal(position)}
-                                    className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-election-primary to-accent text-white font-black py-4 rounded-2xl hover:brightness-110 transition-all shadow-lg shadow-election-primary/20 btn-premium ripple hover:scale-105"
+                                    className="w-full flex items-center justify-center gap-2 bg-linear-to-r from-election-primary to-accent text-white font-black py-4 rounded-2xl hover:brightness-110 transition-all shadow-lg shadow-election-primary/20 btn-premium ripple hover:scale-105"
                                 >
                                     <span className="material-symbols-outlined">shopping_cart</span>
                                     Purchase Form
