@@ -9,7 +9,11 @@ import { onAuthStateChanged } from 'firebase/auth';
 
 export default function CoursesPage() {
     const [courses, setCourses] = useState<Course[]>([]);
-    const [filteredCourses, setFilteredCourses] = useState<Course[]>([]);
+    // Derived state for filtering - prevents synchronization issues
+    const filteredCourses = activeFilter === 'All'
+        ? courses
+        : courses.filter(c => c.type === activeFilter);
+
     const [loading, setLoading] = useState(true);
     const [activeFilter, setActiveFilter] = useState('All');
     const [userId, setUserId] = useState<string | null>(null);
@@ -27,22 +31,12 @@ export default function CoursesPage() {
             setLoading(true);
             const data = await getCourses();
             setCourses(data);
-            setFilteredCourses(data);
             setLoading(false);
         }
 
         loadCourses();
         return () => unsubscribe();
     }, []);
-
-    // Filter Logic
-    useEffect(() => {
-        if (activeFilter === 'All') {
-            setFilteredCourses(courses);
-        } else {
-            setFilteredCourses(courses.filter(c => c.type === activeFilter));
-        }
-    }, [activeFilter, courses]);
 
     const handleRegister = async (courseId: string) => {
         if (!userId) {
