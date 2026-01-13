@@ -66,22 +66,22 @@ export default function SignupPage() {
     };
 
     return (
-        <div className="min-h-screen bg-linear-to-br from-[#0B1120] via-navy-card to-[#0B1120] flex items-center justify-center p-6">
+        <div className="min-h-screen bg-gradient-to-br from-[#0B1120] via-navy-card to-[#0B1120] flex items-center justify-center p-6 gradient-animate relative overflow-hidden">
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-20 right-20 w-96 h-96 bg-[--color-secondary]/10 rounded-full blur-3xl"></div>
-                <div className="absolute bottom-20 left-20 w-96 h-96 bg-[--color-primary]/10 rounded-full blur-3xl"></div>
+                <div className="absolute top-20 right-20 w-96 h-96 bg-[--color-secondary]/10 rounded-full blur-3xl float-slow"></div>
+                <div className="absolute bottom-20 left-20 w-96 h-96 bg-[--color-primary]/10 rounded-full blur-3xl animate-float"></div>
             </div>
 
-            <div className="max-w-2xl w-full relative z-10">
+            <div className="max-w-2xl w-full relative z-10 animate-scale-in">
                 <div className="text-center mb-10">
-                    <div className="inline-flex items-center justify-center size-20 bg-linear-to-br from-primary to-accent rounded-3xl mb-6 shadow-2xl shadow-primary/20 ring-4 ring-white/5">
+                    <div className="inline-flex items-center justify-center size-20 bg-gradient-to-br from-primary to-accent rounded-3xl mb-6 shadow-2xl shadow-primary/20 ring-4 ring-white/5 animate-bounce-soft">
                         <span className="material-symbols-outlined text-white text-3xl">person_add</span>
                     </div>
-                    <h1 className="text-4xl font-black text-white mb-3 tracking-tight">Join NIPA</h1>
-                    <p className="text-slate-400 font-medium text-lg">Create your member account</p>
+                    <h1 className="text-4xl font-black text-white mb-3 tracking-tight animate-slide-up">Join NIPA</h1>
+                    <p className="text-slate-400 font-medium text-lg animate-slide-up" style={{ animationDelay: '0.1s' }}>Create your member account</p>
                 </div>
 
-                <div className="bg-navy-card border border-white/10 rounded-4xl p-10 shadow-2xl">
+                <div className="glass-card bg-navy-card/80 backdrop-blur-xl border-white/10 rounded-4xl p-10 shadow-2xl card-hover">
                     <form onSubmit={handleSubmit} className="space-y-8">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {/* Name */}
@@ -92,7 +92,7 @@ export default function SignupPage() {
                                     required
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    className="w-full px-4 py-3 bg-navy-deep border border-white/10 rounded-xl text-white placeholder:text-slate-500 focus:ring-2 focus:ring-[--color-primary] focus:border-transparent transition-all"
+                                    className="w-full px-4 py-3 bg-navy-deep/50 border border-white/10 rounded-xl text-white placeholder:text-slate-500 focus-glow focus:border-transparent transition-all duration-300 hover:border-white/20"
                                     placeholder="Col. Ahmed Bello"
                                 />
                             </div>
@@ -105,7 +105,7 @@ export default function SignupPage() {
                                     required
                                     value={formData.email}
                                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                    className="w-full px-4 py-3 bg-navy-deep border border-white/10 rounded-xl text-white placeholder:text-slate-500 focus:ring-2 focus:ring-[--color-primary] focus:border-transparent transition-all"
+                                    className="w-full px-4 py-3 bg-navy-deep/50 border border-white/10 rounded-xl text-white placeholder:text-slate-500 focus-glow focus:border-transparent transition-all duration-300 hover:border-white/20"
                                     placeholder="your.email@example.com"
                                 />
                             </div>
@@ -118,7 +118,7 @@ export default function SignupPage() {
                                     required
                                     value={formData.phone}
                                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                    className="w-full px-4 py-3 bg-navy-deep border border-white/10 rounded-xl text-white placeholder:text-slate-500 focus:ring-2 focus:ring-[--color-primary] focus:border-transparent transition-all"
+                                    className="w-full px-4 py-3 bg-navy-deep/50 border border-white/10 rounded-xl text-white placeholder:text-slate-500 focus-glow focus:border-transparent transition-all duration-300 hover:border-white/20"
                                     placeholder="+234 XXX XXX XXXX"
                                 />
                             </div>
@@ -130,7 +130,7 @@ export default function SignupPage() {
                                     required
                                     value={formData.cohort}
                                     onChange={(e) => setFormData({ ...formData, cohort: e.target.value })}
-                                    className="w-full px-4 py-3 bg-navy-deep border border-white/10 rounded-xl text-white focus:ring-2 focus:ring-[--color-primary] focus:border-transparent transition-all"
+                                    className="w-full px-4 py-3 bg-navy-deep/50 border border-white/10 rounded-xl text-white focus-glow focus:border-transparent transition-all duration-300 hover:border-white/20"
                                 >
                                     <option value="">Select Cohort</option>
                                     {[...Array(10)].map((_, i) => (
@@ -147,7 +147,7 @@ export default function SignupPage() {
                                     required
                                     value={formData.profession}
                                     onChange={(e) => setFormData({ ...formData, profession: e.target.value })}
-                                    className="w-full px-4 py-3 bg-navy-deep border border-white/10 rounded-xl text-white placeholder:text-slate-500 focus:ring-2 focus:ring-[--color-primary] focus:border-transparent transition-all"
+                                    className="w-full px-4 py-3 bg-navy-deep/50 border border-white/10 rounded-xl text-white placeholder:text-slate-500 focus-glow focus:border-transparent transition-all duration-300 hover:border-white/20"
                                     placeholder="e.g., Military Officer, Strategic Consultant"
                                 />
                             </div>
@@ -161,7 +161,7 @@ export default function SignupPage() {
                                         required
                                         value={formData.password}
                                         onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                                        className="w-full px-4 pr-12 py-3 bg-navy-deep border border-white/10 rounded-xl text-white placeholder:text-slate-500 focus:ring-2 focus:ring-[--color-primary] focus:border-transparent transition-all"
+                                        className="w-full px-4 pr-12 py-3 bg-navy-deep/50 border border-white/10 rounded-xl text-white placeholder:text-slate-500 focus-glow focus:border-transparent transition-all duration-300 hover:border-white/20"
                                         placeholder="Min. 8 characters"
                                     />
                                     <button
@@ -185,7 +185,7 @@ export default function SignupPage() {
                                         required
                                         value={formData.confirmPassword}
                                         onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                                        className="w-full px-4 pr-12 py-3 bg-navy-deep border border-white/10 rounded-xl text-white placeholder:text-slate-500 focus:ring-2 focus:ring-[--color-primary] focus:border-transparent transition-all"
+                                        className="w-full px-4 pr-12 py-3 bg-navy-deep/50 border border-white/10 rounded-xl text-white placeholder:text-slate-500 focus-glow focus:border-transparent transition-all duration-300 hover:border-white/20"
                                         placeholder="Re-enter password"
                                     />
                                     <button
@@ -213,7 +213,7 @@ export default function SignupPage() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-linear-to-r from-primary to-accent text-white font-black py-4 rounded-xl hover:brightness-110 transition-all shadow-xl shadow-primary/30 disabled:opacity-50 flex items-center justify-center gap-2"
+                            className="w-full bg-gradient-to-r from-primary to-accent text-white font-black py-4 rounded-xl hover:brightness-110 transition-all shadow-xl shadow-primary/30 disabled:opacity-50 flex items-center justify-center gap-2 btn-premium ripple hover:scale-105"
                         >
                             {loading ? (
                                 <>

@@ -13,10 +13,10 @@ export default function SettingsPage() {
     ];
 
     return (
-        <div className="min-h-screen bg-[--color-background-light]">
-            <header className="bg-white border-b border-slate-200 px-8 py-4">
+        <div className="min-h-screen bg-[--color-background-light] page-transition">
+            <header className="bg-white/95 backdrop-blur-md border-b border-slate-200 px-8 py-4 shadow-sm sticky top-0 z-10">
                 <div className="max-w-6xl mx-auto">
-                    <h1 className="text-2xl font-black">Settings</h1>
+                    <h1 className="text-2xl font-black animate-slide-up">Settings</h1>
                 </div>
             </header>
 
@@ -24,17 +24,17 @@ export default function SettingsPage() {
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                     {/* Sidebar Tabs */}
                     <div className="lg:col-span-1">
-                        <div className="bg-white rounded-2xl border border-slate-200 p-2">
-                            {tabs.map(tab => (
+                        <div className="glass-card-light bg-white rounded-2xl border border-slate-200 p-2 shadow-sm">
+                            {tabs.map((tab, idx) => (
                                 <button
                                     key={tab.id}
                                     onClick={() => setActiveTab(tab.id)}
-                                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-semibold text-sm ${activeTab === tab.id
-                                            ? 'bg-[--color-primary] text-white shadow-lg'
-                                            : 'text-slate-600 hover:bg-slate-50'
+                                    className={`stagger-item w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 font-semibold text-sm ${activeTab === tab.id
+                                        ? 'bg-[--color-primary] text-white shadow-glow-primary scale-105'
+                                        : 'text-slate-600 hover:bg-slate-50 hover:scale-105'
                                         }`}
                                 >
-                                    <span className="material-symbols-outlined text-xl">{tab.icon}</span>
+                                    <span className="material-symbols-outlined text-xl transition-transform duration-300 group-hover:scale-110">{tab.icon}</span>
                                     {tab.label}
                                 </button>
                             ))}
@@ -44,8 +44,8 @@ export default function SettingsPage() {
                     {/* Content Area */}
                     <div className="lg:col-span-3">
                         {activeTab === 'account' && (
-                            <div className="space-y-6">
-                                <div className="bg-white rounded-2xl p-8 border border-slate-200">
+                            <div className="space-y-6 animate-scale-in">
+                                <div className="glass-card-light bg-white rounded-2xl p-8 border border-slate-200 shadow-sm card-hover">
                                     <h2 className="text-xl font-black mb-6">Account Settings</h2>
 
                                     <div className="space-y-6">
@@ -91,7 +91,7 @@ export default function SettingsPage() {
                         )}
 
                         {activeTab === 'notifications' && (
-                            <div className="bg-white rounded-2xl p-8 border border-slate-200">
+                            <div className="glass-card-light bg-white rounded-2xl p-8 border border-slate-200 shadow-sm card-hover animate-scale-in">
                                 <h2 className="text-xl font-black mb-6">Notification Preferences</h2>
 
                                 <div className="space-y-6">
@@ -119,8 +119,8 @@ export default function SettingsPage() {
                         )}
 
                         {activeTab === 'privacy' && (
-                            <div className="space-y-6">
-                                <div className="bg-white rounded-2xl p-8 border border-slate-200">
+                            <div className="space-y-6 animate-scale-in">
+                                <div className="glass-card-light bg-white rounded-2xl p-8 border border-slate-200 shadow-sm card-hover">
                                     <h2 className="text-xl font-black mb-6">Privacy & Security</h2>
 
                                     <div className="space-y-6">
@@ -173,7 +173,7 @@ export default function SettingsPage() {
                         )}
 
                         {activeTab === 'preferences' && (
-                            <div className="bg-white rounded-2xl p-8 border border-slate-200">
+                            <div className="glass-card-light bg-white rounded-2xl p-8 border border-slate-200 shadow-sm card-hover animate-scale-in">
                                 <h2 className="text-xl font-black mb-6">Display Preferences</h2>
 
                                 <div className="space-y-6">
@@ -206,12 +206,11 @@ export default function SettingsPage() {
                             </div>
                         )}
 
-                        {/* Save Button */}
                         <div className="flex justify-end gap-4 mt-8">
-                            <button className="px-6 py-3 bg-slate-100 text-slate-700 rounded-xl font-bold hover:bg-slate-200 transition-colors">
+                            <button className="px-6 py-3 bg-slate-100 text-slate-700 rounded-xl font-bold hover:bg-slate-200 transition-all hover:scale-105">
                                 Cancel
                             </button>
-                            <button className="px-6 py-3 bg-[--color-primary] text-white rounded-xl font-bold hover:brightness-110 transition-all shadow-lg shadow-[--color-primary]/20 flex items-center gap-2">
+                            <button className="px-6 py-3 bg-[--color-primary] text-white rounded-xl font-bold hover:brightness-110 transition-all shadow-lg shadow-[--color-primary]/20 flex items-center gap-2 btn-premium ripple hover:scale-105">
                                 <span className="material-symbols-outlined">save</span>
                                 Save Changes
                             </button>

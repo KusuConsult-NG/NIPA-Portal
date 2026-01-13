@@ -65,7 +65,7 @@ export default function AdminPage() {
     return (
         <div className="flex min-h-screen bg-background-light text-slate-900 font-sans">
             {/* Sidebar */}
-            <aside className="w-72 flex flex-col bg-nipa-navy text-white sticky top-0 h-screen shadow-2xl">
+            <aside className="w-72 flex flex-col bg-nipa-navy text-white sticky top-0 h-screen shadow-2xl glass-card border-r border-white/5">
                 <div className="flex flex-col h-full p-6">
                     <div className="flex items-center gap-3 mb-10 px-2">
                         <div className="bg-center bg-no-repeat aspect-square bg-cover rounded-xl size-10 border border-white/20" style={{ backgroundImage: 'url("https://api.dicebear.com/7.x/avataaars/svg?seed=Admin")' }} />
@@ -127,7 +127,7 @@ export default function AdminPage() {
             {/* Main Content */}
             <main className="flex-1 flex flex-col min-w-0">
                 {/* Header */}
-                <header className="h-16 flex items-center justify-between px-8 bg-white border-b border-slate-200 sticky top-0 z-10">
+                <header className="h-16 flex items-center justify-between px-8 bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-10 shadow-sm">
                     <div className="flex items-center gap-4">
                         <h2 className="text-slate-900 font-extrabold text-xl tracking-tight uppercase italic">Portal <span className="text-primary">Admin</span></h2>
                     </div>
@@ -172,17 +172,17 @@ export default function AdminPage() {
 
                     {/* KPI Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm card-hover glass-card-light animate-scale-in">
                             <div className="flex justify-between items-start mb-4">
-                                <div className="p-3 bg-secondary-blue/10 rounded-xl">
+                                <div className="p-3 bg-secondary-blue/10 rounded-xl transition-transform duration-300 hover:scale-110">
                                     <span className="material-symbols-outlined text-secondary-blue font-bold">group</span>
                                 </div>
-                                <span className="text-primary text-[11px] font-black px-2.5 py-1 bg-primary/10 rounded-lg flex items-center gap-1">
+                                <span className="text-primary text-[11px] font-black px-2.5 py-1 bg-primary/10 rounded-lg flex items-center gap-1 animate-pulse">
                                     <span className="material-symbols-outlined text-xs">trending_up</span> Live
                                 </span>
                             </div>
                             <p className="text-slate-500 text-xs font-bold uppercase tracking-wider">Total Members</p>
-                            <h3 className="text-3xl font-black text-slate-900 mt-2">
+                            <h3 className="text-3xl font-black text-slate-900 mt-2 transition-all duration-500">
                                 {loading ? '...' : stats.totalMembers}
                             </h3>
                             <div className="mt-5 flex items-center gap-4 text-xs font-bold">
@@ -197,9 +197,9 @@ export default function AdminPage() {
                             </div>
                         </div>
 
-                        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm card-hover glass-card-light animate-scale-in" style={{ animationDelay: '0.1s' }}>
                             <div className="flex justify-between items-start mb-4">
-                                <div className="p-3 bg-accent-purple/10 rounded-xl">
+                                <div className="p-3 bg-accent-purple/10 rounded-xl transition-transform duration-300 hover:scale-110">
                                     <span className="material-symbols-outlined text-accent-purple font-bold">payments</span>
                                 </div>
                                 <span className="text-green-600 text-[11px] font-black px-2.5 py-1 bg-green-50 rounded-lg flex items-center gap-1">
@@ -216,9 +216,9 @@ export default function AdminPage() {
                             <p className="text-[10px] text-slate-400 mt-2 font-bold uppercase">All Time Collections</p>
                         </div>
 
-                        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm card-hover glass-card-light animate-scale-in" style={{ animationDelay: '0.2s' }}>
                             <div className="flex justify-between items-start mb-4">
-                                <div className="p-3 bg-primary/10 rounded-xl">
+                                <div className="p-3 bg-primary/10 rounded-xl transition-transform duration-300 hover:scale-110">
                                     <span className="material-symbols-outlined text-primary font-bold">account_balance_wallet</span>
                                 </div>
                                 <span className="text-primary text-[11px] font-black px-2.5 py-1 bg-primary/10 rounded-lg flex items-center gap-1">
@@ -232,15 +232,15 @@ export default function AdminPage() {
                             <p className="text-[10px] text-slate-400 mt-5 font-bold uppercase">Awaiting Approval</p>
                         </div>
 
-                        <div className="bg-nipa-navy p-6 rounded-2xl border-2 border-primary shadow-xl ring-4 ring-primary/5">
+                        <div className="bg-nipa-navy p-6 rounded-2xl border-2 border-primary shadow-xl ring-4 ring-primary/5 card-hover animate-glow animate-scale-in" style={{ animationDelay: '0.3s' }}>
                             <div className="flex justify-between items-start mb-4">
-                                <div className="p-3 bg-primary/20 rounded-xl">
+                                <div className="p-3 bg-primary/20 rounded-xl transition-transform duration-300 hover:scale-110">
                                     <span className="material-symbols-outlined text-primary font-bold">priority_high</span>
                                 </div>
                                 <span className="text-nipa-navy text-[10px] font-black px-2 py-1 bg-primary rounded-lg uppercase animate-pulse">Action</span>
                             </div>
                             <p className="text-white/60 text-xs font-bold uppercase tracking-wider">Verifications</p>
-                            <h3 className="text-4xl font-black text-white mt-1">
+                            <h3 className="text-4xl font-black text-white mt-1 transition-all duration-500">
                                 {loading ? '...' : stats.pendingVerifications}
                             </h3>
                             <button className="mt-5 w-full py-2 bg-primary text-nipa-navy font-black text-[10px] uppercase rounded-lg hover:bg-primary/90 transition-all flex items-center justify-center gap-2">
@@ -277,7 +277,7 @@ export default function AdminPage() {
                                     <p className="text-slate-500">Loading...</p>
                                 ) : (
                                     recentUsers.map((user, idx) => (
-                                        <div key={user.id} className="flex items-center gap-4 p-4 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-100 transition-all cursor-default group">
+                                        <div key={user.id} className="stagger-item flex items-center gap-4 p-4 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-100 transition-all cursor-default group card-hover">
                                             <div className={`size-11 rounded-full ${idx === 0 ? 'bg-secondary-blue/10 text-secondary-blue' : idx === 1 ? 'bg-accent-purple/10 text-accent-purple' : 'bg-primary/10 text-primary'} flex items-center justify-center font-black text-sm`}>
                                                 {user.name ? user.name.charAt(0) : 'U'}
                                             </div>

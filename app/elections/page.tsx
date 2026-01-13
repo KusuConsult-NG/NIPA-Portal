@@ -126,7 +126,7 @@ export default function ElectionsPage() {
     return (
         <div className="bg-slate-50 text-navy-deep font-body relative">
             {/* Header */}
-            <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-200 px-10 py-3">
+            <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200 px-10 py-3 shadow-sm">
                 <div className="max-w-[1200px] mx-auto flex items-center justify-between">
                     <div className="flex items-center gap-4 text-navy-deep">
                         <div className="size-8 text-election-primary">
@@ -183,7 +183,7 @@ export default function ElectionsPage() {
                         <button
                             onClick={handleRegister}
                             disabled={isRegistered}
-                            className={`flex items-center justify-center rounded-xl h-14 px-8 text-sm font-black tracking-wide shadow-xl transition-all ${isRegistered ? 'bg-green-600 text-white shadow-green-600/20 cursor-default' : 'bg-linear-to-r from-election-primary to-accent text-white shadow-election-primary/20 hover:brightness-110'}`}
+                            className={`flex items-center justify-center rounded-xl h-14 px-8 text-sm font-black tracking-wide shadow-xl transition-all btn-premium ripple ${isRegistered ? 'bg-green-600 text-white shadow-green-600/20 cursor-default' : 'bg-gradient-to-r from-election-primary to-accent text-white shadow-election-primary/20 hover:brightness-110 hover:scale-105'}`}
                         >
                             <span className="material-symbols-outlined mr-2">{isRegistered ? 'check_circle' : 'how_to_reg'}</span>
                             {isRegistered ? 'Registered' : 'Register to Vote'}
@@ -232,10 +232,10 @@ export default function ElectionsPage() {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {election.positions.map((position) => (
-                            <div key={position.id} className="bg-white border-2 border-transparent hover:border-election-primary p-8 rounded-4xl transition-all group shadow-sm hover:shadow-xl">
+                        {election.positions.map((position, idx) => (
+                            <div key={position.id} className="stagger-item bg-white border-2 border-transparent hover:border-election-primary p-8 rounded-4xl transition-all duration-300 group shadow-sm hover:shadow-2xl card-hover">
                                 <div className="flex justify-between items-start mb-8">
-                                    <div className="bg-election-primary/10 p-4 rounded-2xl text-election-primary">
+                                    <div className="bg-election-primary/10 p-4 rounded-2xl text-election-primary transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3">
                                         <span className="material-symbols-outlined text-3xl">{position.icon || 'stars'}</span>
                                     </div>
                                     <span className="text-2xl font-black text-navy-deep">{position.price}</span>
@@ -244,7 +244,7 @@ export default function ElectionsPage() {
                                 <p className="text-gray-500 mb-8 font-medium leading-relaxed">{position.description}</p>
                                 <button
                                     onClick={() => setPaymentModal(position)}
-                                    className="w-full flex items-center justify-center gap-2 bg-linear-to-r from-election-primary to-accent text-white font-black py-4 rounded-2xl hover:brightness-110 transition-all shadow-lg shadow-election-primary/20"
+                                    className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-election-primary to-accent text-white font-black py-4 rounded-2xl hover:brightness-110 transition-all shadow-lg shadow-election-primary/20 btn-premium ripple hover:scale-105"
                                 >
                                     <span className="material-symbols-outlined">shopping_cart</span>
                                     Purchase Form
@@ -269,8 +269,8 @@ export default function ElectionsPage() {
 
                     {candidates.length > 0 ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                            {candidates.map((candidate) => (
-                                <div key={candidate.id} className="flex flex-col bg-white rounded-4xl overflow-hidden shadow-sm border-2 border-election-primary/20 hover:border-election-primary transition-all group">
+                            {candidates.map((candidate, idx) => (
+                                <div key={candidate.id} className="stagger-item flex flex-col bg-white rounded-4xl overflow-hidden shadow-sm border-2 border-election-primary/20 hover:border-election-primary transition-all duration-300 group card-hover">
                                     <div className="relative h-64 bg-gray-100 overflow-hidden">
                                         <img alt="Candidate profile photo" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${candidate.name}`} />
                                         <div className="absolute top-4 left-4 px-4 py-1.5 bg-linear-to-r from-election-primary to-accent text-white text-[9px] font-black uppercase rounded-full shadow-lg tracking-widest">
@@ -342,9 +342,9 @@ export default function ElectionsPage() {
 
             {/* Payment Modal */}
             {paymentModal && (
-                <div className="fixed inset-0 z-60 flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-navy-deep/80 backdrop-blur-sm" onClick={() => setPaymentModal(null)}></div>
-                    <div className="relative bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl animate-in zoom-in-95 duration-200">
+                <div className="fixed inset-0 z-60 flex items-center justify-center p-4 animate-fade-in">
+                    <div className="absolute inset-0 glass-overlay" onClick={() => setPaymentModal(null)}></div>
+                    <div className="relative bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl animate-scale-in duration-300">
                         <button onClick={() => setPaymentModal(null)} className="absolute top-4 right-4 p-2 hover:bg-slate-100 rounded-full transition-colors">
                             <span className="material-symbols-outlined text-slate-400">close</span>
                         </button>
@@ -384,9 +384,9 @@ export default function ElectionsPage() {
 
             {/* Manifesto Modal */}
             {manifestoModal && (
-                <div className="fixed inset-0 z-60 flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-navy-deep/80 backdrop-blur-sm" onClick={() => setManifestoModal(null)}></div>
-                    <div className="relative bg-white rounded-3xl max-w-2xl w-full max-h-[85vh] overflow-y-auto shadow-2xl animate-in zoom-in-95 duration-200 custom-scrollbar">
+                <div className="fixed inset-0 z-60 flex items-center justify-center p-4 animate-fade-in">
+                    <div className="absolute inset-0 glass-overlay" onClick={() => setManifestoModal(null)}></div>
+                    <div className="relative bg-white rounded-3xl max-w-2xl w-full max-h-[85vh] overflow-y-auto shadow-2xl animate-scale-in duration-300 custom-scrollbar">
                         <div className="sticky top-0 bg-white/90 backdrop-blur-md p-4 border-b border-gray-100 flex justify-end z-10">
                             <button onClick={() => setManifestoModal(null)} className="p-2 hover:bg-slate-100 rounded-full transition-colors">
                                 <span className="material-symbols-outlined text-slate-400">close</span>
