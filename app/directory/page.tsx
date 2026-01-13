@@ -9,10 +9,18 @@ export default function DirectoryPage() {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
 
+    // Filter States
+    const [selectedCohort, setSelectedCohort] = useState('All SEC');
+    const [selectedProfession, setSelectedProfession] = useState('Any');
+    const [selectedLocation, setSelectedLocation] = useState('Nigeria');
+
+    // UI States for Dropdowns
+    const [openFilter, setOpenFilter] = useState<'none' | 'cohort' | 'profession' | 'location'>('none');
+
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const { users } = await listUsers({ limit: 100 }); // Increased limit for client-side filtering
+                const { users } = await listUsers({ limit: 100 });
                 setUsers(users);
             } catch (error) {
                 console.error("Failed to fetch users", error);
@@ -23,14 +31,51 @@ export default function DirectoryPage() {
         fetchUsers();
     }, []);
 
-    const filteredUsers = users.filter(user =>
-        user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.profession.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.cohort.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    // Extract unique options
+    const cohorts = ['All SEC', ...Array.from(new Set(users.map(u => u.cohort))).filter(Boolean).sort()];
+    const professions = ['Any', ...Array.from(new Set(users.map(u => u.profession))).filter(Boolean).sort()];
+    const locations = ['Nigeria', ...Array.from(new Set(users.map(u => u.location))).filter(Boolean).sort()];
+
+    // Filter Logic
+    const filteredUsers = users.filter(user => {
+        const matchesSearch =
+            user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            user.profession.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            user.cohort.toLowerCase().includes(searchTerm.toLowerCase());
+
+        const matchesCohort = selectedCohort === 'All SEC' || user.cohort === selectedCohort;
+        const matchesProfession = selectedProfession === 'Any' || user.profession === selectedProfession;
+        // Default 'Nigeria' usually implies 'All' in this context unless specific states are used.
+        // Assuming 'Nigeria' means 'All Logic' or checking if location includes 'Nigeria' if strictly filtering by country.
+        // Given the UI had "State: Nigeria", I'll treat "Nigeria" as "All Locations" for now, or match explicitly.
+        // Let's assume "Nigeria" is the default "All" label.
+        const matchesLocation = selectedLocation === 'Nigeria' || user.location === selectedLocation;
+
+        return matchesSearch && matchesCohort && matchesProfession && matchesLocation;
+    });
+
+    const resetFilters = () => {
+        setSearchTerm('');
+        setSelectedCohort('All SEC');
+        setSelectedProfession('Any');
+        setSelectedLocation('Nigeria');
+    };
+
+    // Click outside to close (simple implementation)
+    useEffect(() => {
+        const close = () => setOpenFilter('none');
+        if (openFilter !== 'none') window.addEventListener('click', close);
+        return () => window.removeEventListener('click', close);
+    }, [openFilter]);
+
+    const toggleFilter = (e: React.MouseEvent, filter: 'cohort' | 'profession' | 'location') => {
+        e.stopPropagation(); // prevent window click
+        setOpenFilter(openFilter === filter ? 'none' : filter);
+    };
 
     return (
         <div className="bg-background-light text-slate-900 min-h-screen font-display">
+            {/* Header omitted from diff to save space, unchanged */}
             <header className="sticky top-0 z-50 bg-navy-deep text-white shadow-lg">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between h-20">
@@ -49,7 +94,7 @@ export default function DirectoryPage() {
                             <Link className="text-sm font-semibold opacity-70 hover:opacity-100 hover:text-primary transition-all" href="/dashboard">Home</Link>
                             <Link className="text-sm font-semibold text-primary transition-all border-b-2 border-primary pb-1" href="/directory">Directory</Link>
                             <Link className="text-sm font-semibold opacity-70 hover:opacity-100 hover:text-primary transition-all" href="/events">Events</Link>
-                            <Link className="text-sm font-semibold opacity-70 hover:opacity-100 hover:text-primary transition-all" href="#">Courses</Link>
+                            <Link className="text-sm font-semibold opacity-70 hover:opacity-100 hover:text-primary transition-all" href="/courses">Courses</Link>
                             <Link className="text-sm font-semibold opacity-70 hover:opacity-100 hover:text-primary transition-all" href="#">Resources</Link>
                         </nav>
                         <div className="flex items-center gap-5">
@@ -63,6 +108,7 @@ export default function DirectoryPage() {
                     </div>
                 </div>
             </header>
+
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 <div className="mb-12 flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-200 pb-8">
                     <div>
@@ -80,7 +126,7 @@ export default function DirectoryPage() {
                         </Link>
                     </div>
                 </div>
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-10">
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-10 overflow-visible z-20 relative">
                     <div className="flex flex-col lg:flex-row gap-6">
                         <div className="flex-1">
                             <div className="relative">
@@ -96,23 +142,89 @@ export default function DirectoryPage() {
                                 />
                             </div>
                         </div>
-                        <div className="flex flex-wrap items-center gap-3">
-                            <button className="flex items-center gap-2 px-5 py-3 rounded-xl bg-slate-50 border border-slate-200 hover:border-primary/40 text-sm font-semibold transition-all">
-                                <span className="text-slate-500">Cohort:</span> <span>All SEC</span>
-                                <span className="material-symbols-outlined text-sm">keyboard_arrow_down</span>
-                            </button>
-                            <button className="flex items-center gap-2 px-5 py-3 rounded-xl bg-slate-50 border border-slate-200 hover:border-primary/40 text-sm font-semibold transition-all">
-                                <span className="text-slate-500">Profession:</span> <span>Any</span>
-                                <span className="material-symbols-outlined text-sm">keyboard_arrow_down</span>
-                            </button>
-                            <button className="flex items-center gap-2 px-5 py-3 rounded-xl bg-slate-50 border border-slate-200 hover:border-primary/40 text-sm font-semibold transition-all">
-                                <span className="text-slate-500">State:</span> <span>Nigeria</span>
-                                <span className="material-symbols-outlined text-sm">keyboard_arrow_down</span>
-                            </button>
+                        <div className="flex flex-wrap items-center gap-3 relative">
+                            {/* Cohort Dropdown */}
+                            <div className="relative">
+                                <button
+                                    onClick={(e) => toggleFilter(e, 'cohort')}
+                                    className={`flex items-center gap-2 px-5 py-3 rounded-xl border text-sm font-semibold transition-all ${openFilter === 'cohort' ? 'border-primary ring-2 ring-primary/10 bg-white text-primary' : 'bg-slate-50 border-slate-200 hover:border-primary/40 text-slate-700'}`}
+                                >
+                                    <span className="text-slate-500">Cohort:</span> <span>{selectedCohort}</span>
+                                    <span className="material-symbols-outlined text-sm">keyboard_arrow_down</span>
+                                </button>
+                                {openFilter === 'cohort' && (
+                                    <div className="absolute top-full text-slate-600 mt-2 left-0 w-48 bg-white rounded-xl shadow-xl border border-slate-200 py-2 z-50 animate-scale-in">
+                                        <div className="max-h-60 overflow-y-auto custom-scrollbar">
+                                            {cohorts.map(option => (
+                                                <button
+                                                    key={option}
+                                                    onClick={() => setSelectedCohort(option)}
+                                                    className={`w-full text-left px-4 py-2 text-sm hover:bg-slate-50 ${selectedCohort === option ? 'text-primary font-bold bg-primary/5' : ''}`}
+                                                >
+                                                    {option}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Profession Dropdown */}
+                            <div className="relative">
+                                <button
+                                    onClick={(e) => toggleFilter(e, 'profession')}
+                                    className={`flex items-center gap-2 px-5 py-3 rounded-xl border text-sm font-semibold transition-all ${openFilter === 'profession' ? 'border-primary ring-2 ring-primary/10 bg-white text-primary' : 'bg-slate-50 border-slate-200 hover:border-primary/40 text-slate-700'}`}
+                                >
+                                    <span className="text-slate-500">Profession:</span> <span>{selectedProfession}</span>
+                                    <span className="material-symbols-outlined text-sm">keyboard_arrow_down</span>
+                                </button>
+                                {openFilter === 'profession' && (
+                                    <div className="absolute top-full text-slate-600 mt-2 left-0 w-56 bg-white rounded-xl shadow-xl border border-slate-200 py-2 z-50 animate-scale-in">
+                                        <div className="max-h-60 overflow-y-auto custom-scrollbar">
+                                            {professions.map(option => (
+                                                <button
+                                                    key={option}
+                                                    onClick={() => setSelectedProfession(option)}
+                                                    className={`w-full text-left px-4 py-2 text-sm hover:bg-slate-50 ${selectedProfession === option ? 'text-primary font-bold bg-primary/5' : ''}`}
+                                                >
+                                                    {option}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Location Dropdown */}
+                            <div className="relative">
+                                <button
+                                    onClick={(e) => toggleFilter(e, 'location')}
+                                    className={`flex items-center gap-2 px-5 py-3 rounded-xl border text-sm font-semibold transition-all ${openFilter === 'location' ? 'border-primary ring-2 ring-primary/10 bg-white text-primary' : 'bg-slate-50 border-slate-200 hover:border-primary/40 text-slate-700'}`}
+                                >
+                                    <span className="text-slate-500">State:</span> <span>{selectedLocation}</span>
+                                    <span className="material-symbols-outlined text-sm">keyboard_arrow_down</span>
+                                </button>
+                                {openFilter === 'location' && (
+                                    <div className="absolute top-full text-slate-600 mt-2 left-0 w-48 bg-white rounded-xl shadow-xl border border-slate-200 py-2 z-50 animate-scale-in">
+                                        <div className="max-h-60 overflow-y-auto custom-scrollbar">
+                                            {locations.map(option => (
+                                                <button
+                                                    key={option}
+                                                    onClick={() => setSelectedLocation(option)}
+                                                    className={`w-full text-left px-4 py-2 text-sm hover:bg-slate-50 ${selectedLocation === option ? 'text-primary font-bold bg-primary/5' : ''}`}
+                                                >
+                                                    {option}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
                             <div className="h-8 w-px bg-slate-200 mx-2 hidden sm:block"></div>
                             <button
                                 className="flex items-center gap-1.5 px-3 py-3 text-slate-400 hover:text-red-500 text-sm font-bold transition-colors"
-                                onClick={() => setSearchTerm('')}
+                                onClick={resetFilters}
                             >
                                 <span className="material-symbols-outlined text-lg">filter_alt_off</span>
                                 Clear
