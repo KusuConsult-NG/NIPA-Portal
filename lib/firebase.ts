@@ -52,6 +52,20 @@ if (typeof window !== 'undefined') {
 
             app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
             auth = getAuth(app);
+
+            // Disable App Check / reCAPTCHA enforcement for development
+            // This prevents the "_getRecaptchaConfig is not a function" error
+            if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+                try {
+                    // @ts-ignore - Using internal API to disable reCAPTCHA for development
+                    auth._canInitEmulator = false;
+                    // @ts-ignore
+                    auth._getRecaptchaConfig = () => ({});
+                } catch (e) {
+                    console.log('[Firebase] Could not disable reCAPTCHA, continuing anyway');
+                }
+            }
+
             db = getFirestore(app);
             storage = getStorage(app);
 
