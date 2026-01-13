@@ -32,9 +32,9 @@ export default function DirectoryPage() {
     }, []);
 
     // Extract unique options
-    const cohorts = ['All SEC', ...Array.from(new Set(users.map(u => u.cohort))).filter(Boolean).sort()];
-    const professions = ['Any', ...Array.from(new Set(users.map(u => u.profession))).filter(Boolean).sort()];
-    const locations = ['Nigeria', ...Array.from(new Set(users.map(u => u.location))).filter(Boolean).sort()];
+    const cohorts = ['All SEC', ...Array.from(new Set(users.map(u => u.cohort))).filter((c): c is string => !!c).sort()];
+    const professions = ['Any', ...Array.from(new Set(users.map(u => u.profession))).filter((p): p is string => !!p).sort()];
+    const locations = ['Nigeria', ...Array.from(new Set(users.map(u => u.location))).filter((l): l is string => !!l).sort()];
 
     // Filter Logic
     const filteredUsers = users.filter(user => {
