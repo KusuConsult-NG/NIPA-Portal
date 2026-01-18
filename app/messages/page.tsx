@@ -161,7 +161,7 @@ export default function MessagesPage() {
                 </div>
 
                 <div className="mb-4">
-                    <BackButton className="!text-slate-400 hover:!text-white flex-col gap-1 !text-[10px]" />
+                    <BackButton className="text-slate-400! hover:text-white! flex-col gap-1 text-[10px]!" />
                 </div>
 
                 <button className="flex flex-col items-center gap-1 text-white relative group">
