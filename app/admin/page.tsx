@@ -30,9 +30,11 @@ export default function AdminPage() {
 
                 // Get some recent users for the "Recent Tasks" / "Queue" list
                 // (Using any users for now, ideally filter by pending or recent join date)
+                // Get recent users, prioritizing pending
                 const recent = usersSnapshot.docs
                     .map(doc => ({ id: doc.id, ...doc.data() }))
-                    .slice(0, 3);
+                    .sort((a, b) => (a.status === 'pending' ? -1 : 1))
+                    .slice(0, 5);
 
                 // 2. Fetch Revenue
                 const paymentsRef = collection(db, 'payments');
@@ -278,14 +280,33 @@ export default function AdminPage() {
                                 ) : (
                                     recentUsers.map((user, idx) => (
                                         <div key={user.id} className="stagger-item flex items-center gap-4 p-4 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-100 transition-all cursor-default group card-hover">
-                                            <div className={`size-11 rounded-full ${idx === 0 ? 'bg-secondary-blue/10 text-secondary-blue' : idx === 1 ? 'bg-accent-purple/10 text-accent-purple' : 'bg-primary/10 text-primary'} flex items-center justify-center font-black text-sm`}>
+                                            <div className={`size-11 rounded-full ${user.status === 'pending' ? 'bg-yellow-100 text-yellow-600' : 'bg-primary/10 text-primary'} flex items-center justify-center font-black text-sm`}>
                                                 {user.name ? user.name.charAt(0) : 'U'}
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <p className="text-sm font-black text-slate-900 truncate">{user.name || 'Unknown User'}</p>
-                                                <p className="text-[10px] text-slate-500 font-bold uppercase mt-0.5">{user.profession || 'Member'} • {user.status || 'inactive'}</p>
+                                                <p className="text-[10px] text-slate-500 font-bold uppercase mt-0.5">{user.profession || 'Member'} • <span className={user.status === 'pending' ? 'text-yellow-600' : 'text-green-600'}>{user.status || 'inactive'}</span></p>
                                             </div>
-                                            <button className="opacity-0 group-hover:opacity-100 text-[10px] font-black bg-nipa-navy text-white px-3 py-1.5 rounded-lg transition-all">VIEW</button>
+                                            {user.status === 'pending' && (
+                                                <button
+                                                    onClick={async () => {
+                                                        if (confirm(`Approve ${user.name}?`)) {
+                                                            try {
+                                                                const { updateUser } = await import('@/lib/firestore');
+                                                                await updateUser(user.id, { status: 'active' });
+                                                                alert('User approved!');
+                                                                window.location.reload();
+                                                            } catch (e) {
+                                                                alert('Error approving user');
+                                                                console.error(e);
+                                                            }
+                                                        }
+                                                    }}
+                                                    className="opacity-100 text-[10px] font-black bg-primary text-nipa-navy px-3 py-1.5 rounded-lg transition-all hover:brightness-110 shadow-sm"
+                                                >
+                                                    APPROVE
+                                                </button>
+                                            )}
                                         </div>
                                     ))
                                 )}

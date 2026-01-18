@@ -118,7 +118,7 @@ function ResourcesPageContent() {
                         fileType: fileExt.toUpperCase(),
                         fileSize: file.size,
                         uploadedBy: user.uid,
-                        author: uploadData.author || 'NIPA Member'
+                        author: uploadData.author || 'PSLC Member'
                     });
 
                     // Reset and refresh

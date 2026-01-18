@@ -124,7 +124,7 @@ export default function SignupPage() {
 
                             {/* Cohort */}
                             <div className="space-y-2">
-                                <label className="text-xs font-bold text-slate-300 uppercase tracking-wider">SEC Cohort</label>
+                                <label className="text-xs font-bold text-slate-300 uppercase tracking-wider">PSLC Cohort</label>
                                 <select
                                     required
                                     value={formData.cohort}
@@ -132,8 +132,8 @@ export default function SignupPage() {
                                     className="w-full px-4 py-3 bg-navy-deep/50 border border-white/10 rounded-xl text-white focus-glow focus:border-transparent transition-all duration-300 hover:border-white/20"
                                 >
                                     <option value="">Select Cohort</option>
-                                    {[...Array(10)].map((_, i) => (
-                                        <option key={i} value={`SEC ${40 + i}`} className="bg-[--color-nipa-navy]">SEC {40 + i}</option>
+                                    {[...Array(70)].map((_, i) => (
+                                        <option key={i} value={`PSLC ${i + 1}`} className="bg-[--color-nipa-navy]">PSLC {i + 1}</option>
                                     ))}
                                 </select>
                             </div>

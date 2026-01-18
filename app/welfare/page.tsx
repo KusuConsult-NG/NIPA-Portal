@@ -302,7 +302,7 @@ export default function WelfarePage() {
                 <footer className="bg-white border-t border-slate-100 py-10 mt-10">
                     <div className="max-w-[1280px] mx-auto px-6 text-center">
                         <p className="text-[11px] text-slate-400 font-bold uppercase tracking-widest">
-                            © 2024 National Institute for Policy, Strategy and Leadership Course Association (NIPA)
+                            © 2024 PSLC Association.
                         </p>
                     </div>
                 </footer>

@@ -17,7 +17,7 @@ export default function WelfareHeader() {
                     <div className="size-10 bg-emerald-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-emerald-600/20">
                         <span className="material-symbols-outlined font-bold">account_balance</span>
                     </div>
-                    <h2 className="text-xl font-extrabold leading-tight tracking-tight">NIPA <span className="text-emerald-600">Welfare</span></h2>
+                    <h2 className="text-xl font-extrabold leading-tight tracking-tight">PSLC <span className="text-emerald-600">Welfare</span></h2>
                 </div>
                 <nav className="hidden md:flex items-center gap-8">
                     <Link className={`text-sm font-bold leading-normal ${isActive('/welfare')}`} href="/welfare">Dashboard</Link>

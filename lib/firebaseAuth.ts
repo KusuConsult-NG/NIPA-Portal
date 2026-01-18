@@ -53,7 +53,7 @@ export async function signUpWithEmail(
                 id: mockUid,
                 email,
                 role: 'member',
-                status: 'active',
+                status: 'pending',
                 membershipType: 'regular',
                 joinDate: new Date(),
                 photoUrl: ''
@@ -79,7 +79,7 @@ export async function signUpWithEmail(
         cohort: userData.cohort,
         profession: userData.profession,
         role: 'member',
-        status: 'active',
+        status: 'pending',
         membershipType: 'regular',
         joinDate: new Date()
     });

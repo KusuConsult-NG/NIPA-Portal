@@ -16,8 +16,8 @@ const publicSans = Public_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "NIPA | National Institute for Policy, Strategy and Leadership",
-  description: "Empowering strategic thinkers to architect the future of national governance and global leadership.",
+  title: "PSLC Association | National Institute's Policy Strategy and Leadership Course Association",
+  description: "Collaboration, Institutional Alignment, and Nation Building. Promoting the ideals of the National Institute in stimulating policy, leadership, and development engagements.",
 };
 
 export default function RootLayout({

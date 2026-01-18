@@ -72,6 +72,43 @@ export default function MemberDashboard() {
 
     const userName = profile?.name || 'Member';
 
+    // If user is pending, show restricted view
+    if (profile?.status === 'pending') {
+        return (
+            <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
+                <div className="max-w-md w-full bg-white rounded-3xl p-10 shadow-xl text-center border border-slate-100">
+                    <div className="size-20 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse">
+                        <span className="material-symbols-outlined text-4xl">hourglass_top</span>
+                    </div>
+                    <h1 className="text-2xl font-black text-slate-900 mb-2">Verification Pending</h1>
+                    <p className="text-slate-500 font-medium mb-8 leading-relaxed">
+                        Your account is currently under review by the PSLC Association administrators. You will receive an email once your membership is approved.
+                    </p>
+                    <div className="bg-slate-50 rounded-xl p-4 mb-8 text-left">
+                        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Your Details</h3>
+                        <div className="space-y-2 text-sm">
+                            <div className="flex justify-between">
+                                <span className="text-slate-500">Name:</span>
+                                <span className="font-bold text-slate-900">{userName}</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-slate-500">Cohort:</span>
+                                <span className="font-bold text-slate-900">{profile?.cohort || 'N/A'}</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-slate-500">Status:</span>
+                                <span className="font-bold text-yellow-600 bg-yellow-50 px-2 py-0.5 rounded-full text-xs uppercase">Pending</span>
+                            </div>
+                        </div>
+                    </div>
+                    <Link href="/" className="block w-full py-3.5 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-colors">
+                        Return to Home
+                    </Link>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="flex min-h-screen bg-background-main font-sans text-slate-900">
             {/* Sidebar */}

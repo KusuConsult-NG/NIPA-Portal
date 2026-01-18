@@ -22,7 +22,7 @@ export interface User {
     profession: string;
     location?: string;
     role: 'member' | 'admin' | 'welfare';
-    status: 'active' | 'inactive';
+    status: 'active' | 'inactive' | 'pending';
     membershipType: 'regular' | 'premium' | 'life';
     dob?: string;
     birthMonth?: number; // 0-11

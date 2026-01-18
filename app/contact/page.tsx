@@ -67,33 +67,33 @@ export default function ContactPage() {
                         {
                             icon: 'location_on',
                             title: 'Visit Us',
-                            line1: 'NIPA Headquarters',
-                            line2: 'Plot 555, Zone A, Abuja, FCT',
+                            line1: 'National Institute, Kuru',
+                            line2: 'Jos, Plateau State',
                             color: 'blue'
                         },
                         {
                             icon: 'mail',
                             title: 'Email Us',
-                            line1: 'info@nipa.org',
-                            line2: 'support@nipa.org',
+                            line1: 'info@pslcassociation.com',
+                            line2: 'support@pslcassociation.com',
                             color: 'green'
                         },
                         {
                             icon: 'phone',
                             title: 'Call Us',
-                            line1: '+234 803 123 4567',
-                            line2: '+234 805 234 5678',
+                            line1: '+234 813 523 5570',
+                            line2: 'Mon-Fri, 9am - 5pm',
                             color: 'purple'
                         }
                     ].map((contact, idx) => (
                         <div key={idx} className="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm text-center hover:shadow-lg transition-shadow">
                             <div className={`inline-flex items-center justify-center size-16 rounded-xl mb-4 ${contact.color === 'blue' ? 'bg-blue-100' :
-                                    contact.color === 'green' ? 'bg-green-100' :
-                                        'bg-purple-100'
+                                contact.color === 'green' ? 'bg-green-100' :
+                                    'bg-purple-100'
                                 }`}>
                                 <span className={`material-symbols-outlined text-3xl ${contact.color === 'blue' ? 'text-blue-600' :
-                                        contact.color === 'green' ? 'text-green-600' :
-                                            'text-purple-600'
+                                    contact.color === 'green' ? 'text-green-600' :
+                                        'text-purple-600'
                                     }`}>
                                     {contact.icon}
                                 </span>
@@ -197,7 +197,7 @@ export default function ContactPage() {
                                 <div className="text-center">
                                     <span className="material-symbols-outlined text-slate-400 text-5xl mb-3">map</span>
                                     <p className="text-slate-500 font-medium">Interactive Map</p>
-                                    <p className="text-xs text-slate-400 mt-2">Plot 555, Zone A, Abuja, FCT</p>
+                                    <p className="text-xs text-slate-400 mt-2">National Institute, Kuru, Jos</p>
                                 </div>
                             </div>
                         </div>
@@ -245,7 +245,7 @@ export default function ContactPage() {
             {/* Footer */}
             <footer className="bg-navy-deep text-slate-400 py-12 border-t border-white/5 mt-16">
                 <div className="max-w-6xl mx-auto px-8 text-center">
-                    <p className="text-sm font-medium">© 2024 NIPA. Architects of the Future.</p>
+                    <p className="text-sm font-medium">© 2024 PSLC Association. All rights reserved.</p>
                 </div>
             </footer>
         </div>
