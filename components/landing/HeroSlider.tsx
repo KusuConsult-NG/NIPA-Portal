@@ -44,14 +44,14 @@ export default function HeroSlider() {
                         }`}
                 >
                     <div
-                        className="absolute inset-0 bg-cover bg-center transform transition-transform duration-[8000ms] ease-linear scale-105"
+                        className="absolute inset-0 bg-cover bg-center transform transition-transform duration-8000 ease-linear scale-105"
                         style={{
                             backgroundImage: `url(${slide.image})`,
                             transform: index === currentSlide ? 'scale(1.1)' : 'scale(1.0)'
                         }}
                     ></div>
                     {/* Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-navy-deep/95 via-navy-deep/70 to-transparent"></div>
+                    <div className="absolute inset-0 bg-linear-to-r from-navy-deep/95 via-navy-deep/70 to-transparent"></div>
                 </div>
             ))}
 

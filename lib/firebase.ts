@@ -58,12 +58,12 @@ if (typeof window !== 'undefined') {
             // Applied unconditionally on client to ensure it works
             try {
                 if (auth) {
-                    // @ts-ignore - Using internal API to disable reCAPTCHA for development
+                    // @ts-expect-error - Using internal API to disable reCAPTCHA for development
                     auth._canInitEmulator = false;
-                    // @ts-ignore
+                    // @ts-expect-error - Using internal API to disable reCAPTCHA for development
                     auth._getRecaptchaConfig = () => ({});
                 }
-            } catch (e) {
+            } catch {
                 console.log('[Firebase] Could not disable reCAPTCHA, continuing anyway');
             }
 
@@ -74,7 +74,7 @@ if (typeof window !== 'undefined') {
             try {
                 const { getAnalytics } = await import('firebase/analytics');
                 analytics = getAnalytics(app);
-            } catch (e) {
+            } catch {
                 console.log('[Firebase] Analytics not available');
             }
 

@@ -232,7 +232,7 @@ export default function ElectionsPage() {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {election.positions.map((position, idx) => (
+                        {election.positions.map((position) => (
                             <div key={position.id} className="stagger-item bg-white border-2 border-transparent hover:border-election-primary p-8 rounded-4xl transition-all duration-300 group shadow-sm hover:shadow-2xl card-hover">
                                 <div className="flex justify-between items-start mb-8">
                                     <div className="bg-election-primary/10 p-4 rounded-2xl text-election-primary transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3">
@@ -269,7 +269,7 @@ export default function ElectionsPage() {
 
                     {candidates.length > 0 ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                            {candidates.map((candidate, idx) => (
+                            {candidates.map((candidate) => (
                                 <div key={candidate.id} className="stagger-item flex flex-col bg-white rounded-4xl overflow-hidden shadow-sm border-2 border-election-primary/20 hover:border-election-primary transition-all duration-300 group card-hover">
                                     <div className="relative h-64 bg-gray-100 overflow-hidden">
                                         <img alt="Candidate profile photo" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${candidate.name}`} />

@@ -34,7 +34,7 @@ export default function AdminPage() {
                 // Get recent users, prioritizing pending
                 const recent = usersSnapshot.docs
                     .map(doc => ({ id: doc.id, ...doc.data() } as User))
-                    .sort((a, b) => (a.status === 'pending' ? -1 : 1))
+                    .sort((a, b) => (a.status === b.status ? 0 : a.status === 'pending' ? -1 : 1))
                     .slice(0, 5);
 
                 // 2. Fetch Revenue
@@ -279,7 +279,7 @@ export default function AdminPage() {
                                 {loading ? (
                                     <p className="text-slate-500">Loading...</p>
                                 ) : (
-                                    recentUsers.map((user, idx) => (
+                                    recentUsers.map((user) => (
                                         <div key={user.id} className="stagger-item flex items-center gap-4 p-4 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-100 transition-all cursor-default group card-hover">
                                             <div className={`size-11 rounded-full ${user.status === 'pending' ? 'bg-yellow-100 text-yellow-600' : 'bg-primary/10 text-primary'} flex items-center justify-center font-black text-sm`}>
                                                 {user.name ? user.name.charAt(0) : 'U'}

@@ -45,7 +45,7 @@ export default function ContactPage() {
             <PublicHeader />
 
             {/* Header */}
-            <header className="bg-gradient-to-r from-navy-deep to-navy-card text-white px-8 py-20">
+            <header className="bg-linear-to-r from-navy-deep to-navy-card text-white px-8 py-20">
                 <div className="max-w-6xl mx-auto text-center">
                     <h1 className="text-5xl font-black mb-4">Get In Touch</h1>
                     <p className="text-xl text-slate-400 font-medium">We&apos;re here to help and answer any questions you might have</p>
@@ -171,7 +171,7 @@ export default function ContactPage() {
                             <button
                                 type="submit"
                                 disabled={submitting}
-                                className="w-full py-4 bg-gradient-to-r from-primary to-accent text-white font-black rounded-xl hover:brightness-110 transition-all shadow-xl shadow-primary/30 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                                className="w-full py-4 bg-linear-to-r from-primary to-accent text-white font-black rounded-xl hover:brightness-110 transition-all shadow-xl shadow-primary/30 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                             >
                                 {submitting ? (
                                     <>
@@ -203,7 +203,7 @@ export default function ContactPage() {
                         </div>
 
                         {/* Office Hours */}
-                        <div className="bg-gradient-to-br from-primary to-accent rounded-2xl p-8 text-white shadow-xl">
+                        <div className="bg-linear-to-br from-primary to-accent rounded-2xl p-8 text-white shadow-xl">
                             <div className="flex items-center gap-3 mb-6">
                                 <span className="material-symbols-outlined text-3xl">schedule</span>
                                 <h3 className="text-2xl font-black">Office Hours</h3>
