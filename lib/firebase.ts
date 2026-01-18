@@ -58,9 +58,9 @@ if (typeof window !== 'undefined') {
             // Applied unconditionally on client to ensure it works
             try {
                 if (auth) {
-                    // @ts-expect-error - Using internal API to disable reCAPTCHA for development
+                    // Using internal API to disable reCAPTCHA for development
                     auth._canInitEmulator = false;
-                    // @ts-expect-error - Using internal API to disable reCAPTCHA for development
+                    // Using internal API to disable reCAPTCHA for development
                     auth._getRecaptchaConfig = () => ({});
                 }
             } catch {
