@@ -9,7 +9,7 @@ export default function PublicHeader() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     return (
-        <header className="sticky top-0 z-50 w-full glass-nav transition-all">
+        <header className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md border-b border-slate-200 transition-all">
             <div className="max-w-[1280px] mx-auto px-6 lg:px-12 py-4 flex items-center justify-between">
                 <div className="flex items-center gap-3 relative z-50">
                     <div className="size-10 text-primary flex items-center justify-center bg-primary/10 rounded-xl">
@@ -17,12 +17,12 @@ export default function PublicHeader() {
                             <path d="M36.7273 44C33.9891 44 31.6043 39.8386 30.3636 33.69C29.123 39.8386 26.7382 44 24 44C21.2618 44 18.877 39.8386 17.6364 33.69C16.3957 39.8386 14.0109 44 11.2727 44C7.25611 44 4 35.0457 4 24C4 12.9543 7.25611 4 11.2727 4C14.0109 4 16.3957 8.16144 17.6364 14.31C18.877 8.16144 21.2618 4 24 4C26.7382 4 29.123 8.16144 30.3636 14.31C31.6043 8.16144 33.9891 4 36.7273 4C40.7439 4 44 12.9543 44 24C44 35.0457 40.7439 44 36.7273 44Z" fill="currentColor"></path>
                         </svg>
                     </div>
-                    <h2 className="text-xl font-extrabold leading-tight tracking-tight text-white">PSLC Association</h2>
+                    <h2 className="text-xl font-extrabold leading-tight tracking-tight text-navy-deep">PSLC Association</h2>
                 </div>
 
                 {/* Mobile Menu Toggle */}
                 <button
-                    className="md:hidden relative z-50 p-2 text-white"
+                    className="md:hidden relative z-50 p-2 text-navy-deep"
                     onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 >
                     <span className="material-symbols-outlined text-3xl">
@@ -33,11 +33,11 @@ export default function PublicHeader() {
                 {/* Desktop Navigation */}
                 <div className="hidden md:flex flex-1 justify-end gap-12 items-center">
                     <nav className="flex items-center gap-8">
-                        <Link className="text-[15px] font-medium text-slate-300 hover:text-primary transition-colors" href="/">Home</Link>
-                        <Link className="text-[15px] font-medium text-slate-300 hover:text-primary transition-colors" href="/about">About</Link>
-                        <Link className="text-[15px] font-medium text-slate-300 hover:text-primary transition-colors" href="/events">Events</Link>
-                        <Link className="text-[15px] font-medium text-slate-300 hover:text-primary transition-colors" href="/gallery">Gallery</Link>
-                        <Link className="text-[15px] font-medium text-slate-300 hover:text-primary transition-colors" href="/resources">Resources</Link>
+                        <Link className="text-[15px] font-medium text-slate-600 hover:text-primary transition-colors" href="/">Home</Link>
+                        <Link className="text-[15px] font-medium text-slate-600 hover:text-primary transition-colors" href="/about">About</Link>
+                        <Link className="text-[15px] font-medium text-slate-600 hover:text-primary transition-colors" href="/events">Events</Link>
+                        <Link className="text-[15px] font-medium text-slate-600 hover:text-primary transition-colors" href="/gallery">Gallery</Link>
+                        <Link className="text-[15px] font-medium text-slate-600 hover:text-primary transition-colors" href="/resources">Resources</Link>
                     </nav>
                     <div className="flex items-center gap-5">
                         {!loading && user ? (
@@ -59,12 +59,12 @@ export default function PublicHeader() {
                 </div>
 
                 {/* Mobile Menu Drawer */}
-                <div className={`fixed inset-0 bg-navy-deep/95 backdrop-blur-xl z-40 flex flex-col items-center justify-center gap-8 transition-transform duration-300 md:hidden ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+                <div className={`fixed inset-0 bg-white/95 backdrop-blur-xl z-40 flex flex-col items-center justify-center gap-8 transition-transform duration-300 md:hidden ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
                     <nav className="flex flex-col items-center gap-8 text-center">
-                        <Link onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-bold text-white hover:text-primary transition-colors" href="/">Home</Link>
-                        <Link onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-bold text-white hover:text-primary transition-colors" href="/about">About</Link>
-                        <Link onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-bold text-white hover:text-primary transition-colors" href="/events">Events</Link>
-                        <Link onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-bold text-white hover:text-primary transition-colors" href="/resources">Resources</Link>
+                        <Link onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-bold text-navy-deep hover:text-primary transition-colors" href="/">Home</Link>
+                        <Link onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-bold text-navy-deep hover:text-primary transition-colors" href="/about">About</Link>
+                        <Link onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-bold text-navy-deep hover:text-primary transition-colors" href="/events">Events</Link>
+                        <Link onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-bold text-navy-deep hover:text-primary transition-colors" href="/resources">Resources</Link>
                     </nav>
                     <div className="flex flex-col items-center gap-6 mt-8">
                         {!loading && user ? (
