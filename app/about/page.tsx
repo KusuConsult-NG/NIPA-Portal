@@ -1,6 +1,7 @@
 'use client';
 
 import PublicHeader from '@/components/layout/PublicHeader';
+import LeadershipSlider from '@/components/about/LeadershipSlider';
 // import Link from 'next/link';
 
 export default function AboutPage() {
@@ -69,24 +70,9 @@ export default function AboutPage() {
                         <p className="text-lg text-slate-600">Guided by distinguished statesmen, scholars, and industry captains with decades of service.</p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 justify-center">
-                        {[
-                            { name: 'Ekpa Stanley Ekpa', role: 'President', img: '/images/leaders/president.jpg' },
-                            { name: 'Eric G. Martyns', role: 'Vice President', img: '/images/leaders/vice-president.jpg' },
-                            { name: 'Nanna Yakubu Dashe', role: 'Treasurer', img: '/images/leaders/treasurer.jpg' },
-                            { name: 'Akut-Kawai Deborah Habiba', role: 'Welfare Secretary', img: '/images/leaders/welfare-secretary.jpg' },
-                        ].map((leader, i) => (
-                            <div key={i} className="group relative overflow-hidden rounded-3xl bg-slate-50">
-                                <div className="aspect-4/5 bg-slate-200">
-                                    <div className="w-full h-full bg-cover bg-center group-hover:scale-110 transition-transform duration-500" style={{ backgroundImage: `url("${leader.img}")` }}></div>
-                                </div>
-                                <div className="absolute bottom-0 left-0 w-full p-8 bg-linear-to-t from-navy-deep to-transparent">
-                                    <h3 className="text-white text-xl font-bold">{leader.name}</h3>
-                                    <p className="text-primary font-medium tracking-wider text-sm uppercase mt-1">{leader.role}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                    <section className="py-20 max-w-[1280px] mx-auto px-6 lg:px-12">
+                        <LeadershipSlider />
+                    </section>
                 </div>
             </section>
 

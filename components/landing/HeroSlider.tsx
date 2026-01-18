@@ -5,21 +5,21 @@ import Link from 'next/link';
 
 const slides = [
     {
-        image: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=2574&auto=format&fit=crop', // Meeting/Conference
-        title: 'Advancing Excellence',
-        subtitle: 'Through Policy',
-        description: 'Empowering strategic thinkers to architect the future of national governance and global leadership.'
+        image: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=2574&auto=format&fit=crop', // Representative "Institute" image
+        title: 'The National Institute',
+        subtitle: 'Shaping Strategy',
+        description: 'Empowering leaders to architect the future of national governance and global policy.'
     },
     {
-        image: 'https://images.unsplash.com/photo-1576267423445-807c69753060?q=80&w=2670&auto=format&fit=crop', // Handshake/Agreement
-        title: 'Building Bridges',
-        subtitle: 'Across Nations',
+        image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=2670&auto=format&fit=crop', // Strategy/Research look
+        title: 'Thought Leadership',
+        subtitle: 'For Development',
         description: 'Fostering deep collaboration and institutional alignment for sustainable nation building.'
     },
     {
-        image: 'https://images.unsplash.com/photo-1541872703-74c5e105696c?q=80&w=2670&auto=format&fit=crop', // Leadership/Speaker
-        title: 'Developing Leaders',
-        subtitle: 'For The Future',
+        image: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=2670&auto=format&fit=crop', // Conference/Meeting look
+        title: 'Network of Excellence',
+        subtitle: 'Uniting Leaders',
         description: 'Promoting the ideals of the National Institute in stimulating policy, leadership, and development.'
     }
 ];
