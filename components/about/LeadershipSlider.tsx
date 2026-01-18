@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 
 interface Leader {
     name: string;
@@ -22,10 +22,6 @@ export default function LeadershipSlider() {
     const scrollToValues = (index: number) => {
         if (!scrollContainerRef.current) return;
         const container = scrollContainerRef.current;
-        const width = container.offsetWidth;
-        // Assuming 1 card visible on mobile, maybe 2 or 3 on larger.
-        // For simplicity, let's scroll based on child width.
-        // Actually, let's just center the target.
         const card = container.children[index] as HTMLElement;
         if (card) {
             container.scrollTo({
@@ -36,24 +32,9 @@ export default function LeadershipSlider() {
         setActiveIndex(index);
     };
 
-    const handleScroll = () => {
-        if (!scrollContainerRef.current) return;
-        const container = scrollContainerRef.current;
-        const scrollLeft = container.scrollLeft;
-        const width = container.offsetWidth;
-        // Simple approximation
-        const index = Math.round(scrollLeft / (width / (window.innerWidth >= 1024 ? 3 : window.innerWidth >= 768 ? 2 : 1)));
-        // This math is tricky with responsive columns.
-        // Let's rely on manual clicks for "active" state or just simple scroll tracking.
-    };
-
     return (
         <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <div className="flex justify-between items-end mb-8">
-                <div>
-                    <h2 className="text-3xl font-bold text-slate-900">Executive Leadership</h2>
-                    <p className="text-slate-500 mt-2">The team driving our vision forward.</p>
-                </div>
+            <div className="flex justify-end items-center mb-8">
                 <div className="flex gap-2">
                     <button
                         onClick={() => scrollToValues(Math.max(0, activeIndex - 1))}
