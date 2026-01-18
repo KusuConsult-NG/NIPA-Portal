@@ -11,6 +11,7 @@ import {
     User,
     findUserById
 } from '@/lib/firestore';
+import BackButton from '@/components/ui/BackButton';
 
 // Extended conversation with user info
 interface ConversationWithUser extends Conversation {
@@ -157,6 +158,10 @@ export default function MessagesPage() {
             <div className="w-20 bg-slate-900 border-r border-white/5 flex flex-col items-center py-6 gap-8 text-slate-400 z-20">
                 <div className="size-10 bg-primary/20 rounded-xl flex items-center justify-center text-primary font-bold mb-4 shadow-lg shadow-primary/10">
                     <span className="material-symbols-outlined">chat_bubble</span>
+                </div>
+
+                <div className="mb-4">
+                    <BackButton className="!text-slate-400 hover:!text-white flex-col gap-1 !text-[10px]" />
                 </div>
 
                 <button className="flex flex-col items-center gap-1 text-white relative group">
