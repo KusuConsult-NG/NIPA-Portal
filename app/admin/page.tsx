@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { db } from '@/lib/firebase';
 import { collection, getDocs } from 'firebase/firestore';
+import { User } from '@/lib/firestore';
 
 export default function AdminPage() {
     const [loading, setLoading] = useState(true);
