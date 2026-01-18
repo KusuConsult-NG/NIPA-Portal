@@ -4,6 +4,7 @@ import Link from 'next/link';
 // import { useState } from 'react';
 import PublicHeader from '@/components/layout/PublicHeader';
 import HeroSlider from '@/components/landing/HeroSlider';
+import LeadershipSlider from '@/components/about/LeadershipSlider';
 
 export default function LandingPage() {
   return (
@@ -111,6 +112,15 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
+
+        <section className="bg-white/5 border-y border-white/10 py-24">
+          <div className="text-center max-w-3xl mx-auto mb-12 px-6">
+            <p className="text-primary font-bold text-xs uppercase tracking-[0.2em] mb-4">Our Leadership</p>
+            <h2 className="text-white text-3xl md:text-4xl font-extrabold">Meet the Executive Team</h2>
+          </div>
+          <LeadershipSlider />
+        </section>
+
         <section className="max-w-[1280px] mx-auto px-6 lg:px-12 py-24 text-center">
           <div className="bg-linear-to-br from-primary/20 via-navy-deep to-secondary/20 rounded-[2.5rem] p-12 md:p-24 border border-white/10 relative overflow-hidden">
             <div className="relative z-10 flex flex-col items-center gap-8">
