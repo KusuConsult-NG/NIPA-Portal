@@ -5,19 +5,19 @@ import Link from 'next/link';
 
 const slides = [
     {
-        image: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=2574&auto=format&fit=crop', // Representative "Institute" image
+        image: 'https://designunion.com.ng/wp-content/uploads/2019/07/nipss-residence-hall-1.jpg', // Specific NIPSS Residence Hall image found
         title: 'The National Institute',
         subtitle: 'Shaping Strategy',
         description: 'Empowering leaders to architect the future of national governance and global policy.'
     },
     {
-        image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=2670&auto=format&fit=crop', // Strategy/Research look
+        image: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=2574&auto=format&fit=crop', // Fallback prestigious building
         title: 'Thought Leadership',
         subtitle: 'For Development',
         description: 'Fostering deep collaboration and institutional alignment for sustainable nation building.'
     },
     {
-        image: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=2670&auto=format&fit=crop', // Conference/Meeting look
+        image: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=2670&auto=format&fit=crop', // Conference/Meeting
         title: 'Network of Excellence',
         subtitle: 'Uniting Leaders',
         description: 'Promoting the ideals of the National Institute in stimulating policy, leadership, and development.'

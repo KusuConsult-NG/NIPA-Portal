@@ -10,7 +10,8 @@ export default function LandingPage() {
     <div className="bg-navy-deep text-slate-100 min-h-screen selection:bg-primary selection:text-navy-deep font-sans">
       <PublicHeader />
       <main className="hero-gradient">
-        <HeroSlider />\n        <div className="w-full bg-white/5 border-y border-white/10 py-10">
+        <HeroSlider />
+        <div className="w-full bg-white/5 border-y border-white/10 py-10">
           <div className="max-w-[1280px] mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8">
             <div className="text-center md:border-r border-white/10 last:border-0">
               <p className="text-primary text-4xl font-extrabold mb-1">2,500+</p>
