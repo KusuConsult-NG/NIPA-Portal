@@ -11,8 +11,8 @@ interface Leader {
 const LEADERS: Leader[] = [
     { name: 'Ekpa Stanley Ekpa', role: 'President', img: '/images/leaders/president.jpg' },
     { name: 'Eric G. Martyns', role: 'Vice President', img: '/images/leaders/vice-president.jpg' },
-    { name: 'Nanna Yakubu Dashe', role: 'Treasurer', img: '/images/leaders/treasurer.jpg' },
     { name: 'Akut-Kawai Deborah Habiba', role: 'Welfare Secretary', img: '/images/leaders/welfare-secretary.jpg' },
+    { name: 'Nanna Yakubu Dashe', role: 'Treasurer', img: '/images/leaders/treasurer.jpg' },
 ];
 
 export default function LeadershipSlider() {
