@@ -75,8 +75,7 @@ export default function DirectoryPage() {
 
     return (
         <div className="bg-background-light text-slate-900 min-h-screen font-display">
-            {/* Header omitted from diff to save space, unchanged */}
-            <header className="sticky top-0 z-50 bg-navy-deep text-white shadow-lg">
+            <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200 shadow-sm">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between h-20">
                         <div className="flex items-center gap-3">
@@ -86,22 +85,22 @@ export default function DirectoryPage() {
                                 </svg>
                             </div>
                             <div className="flex flex-col leading-none">
-                                <span className="text-xl font-black tracking-tight uppercase">NIPA</span>
-                                <span className="text-[8px] opacity-60 tracking-widest uppercase">Member Portal</span>
+                                <span className="text-xl font-black tracking-tight uppercase text-navy-deep">NIPA</span>
+                                <span className="text-[8px] opacity-60 tracking-widest uppercase text-slate-500">Member Portal</span>
                             </div>
                         </div>
                         <nav className="hidden md:flex items-center gap-8">
-                            <Link className="text-sm font-semibold opacity-70 hover:opacity-100 hover:text-primary transition-all" href="/dashboard">Home</Link>
+                            <Link className="text-sm font-semibold text-slate-600 hover:text-primary transition-all" href="/dashboard">Home</Link>
                             <Link className="text-sm font-semibold text-primary transition-all border-b-2 border-primary pb-1" href="/directory">Directory</Link>
-                            <Link className="text-sm font-semibold opacity-70 hover:opacity-100 hover:text-primary transition-all" href="/events">Events</Link>
-                            <Link className="text-sm font-semibold opacity-70 hover:opacity-100 hover:text-primary transition-all" href="/courses">Courses</Link>
-                            <Link className="text-sm font-semibold opacity-70 hover:opacity-100 hover:text-primary transition-all" href="#">Resources</Link>
+                            <Link className="text-sm font-semibold text-slate-600 hover:text-primary transition-all" href="/events">Events</Link>
+                            <Link className="text-sm font-semibold text-slate-600 hover:text-primary transition-all" href="/courses">Courses</Link>
+                            <Link className="text-sm font-semibold text-slate-600 hover:text-primary transition-all" href="#">Resources</Link>
                         </nav>
                         <div className="flex items-center gap-5">
-                            <button className="p-2 rounded-full hover:bg-white/10 transition-colors">
+                            <button className="p-2 rounded-full hover:bg-slate-100 text-slate-600 transition-colors">
                                 <span className="material-symbols-outlined text-2xl">notifications</span>
                             </button>
-                            <div className="h-10 w-10 rounded-full border-2 border-primary overflow-hidden ring-2 ring-white/10">
+                            <div className="h-10 w-10 rounded-full border-2 border-primary overflow-hidden ring-2 ring-primary/10">
                                 <img alt="User Avatar" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmkxQB0Y_lA_cPfKoBD3DMA6oUtg6ytwqqLo-Dlay51IzR6AOLF0pUi41YHpWr2rPiIkJ7D37mu7h6V8Rc1CZJUsCcQ3EHOdwp_DGDJTBf4c-_XDji-yDCMWFYQxGaWnKk0A6K-uGd5dsrDjBzcAGJ1lTwouof6bbqjJomLdX1T5gMhRbPup9uWV9yGY_Fj7BUHQN-LZ3O0T3X7OVBHrrXcaVTvVmoEpzjxo8k_4IdISvrozFjVAah8JjcXjaaPngCKp0bayL4QfA" />
                             </div>
                         </div>
