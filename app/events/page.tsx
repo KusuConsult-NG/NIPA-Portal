@@ -148,6 +148,15 @@ export default function EventsPage() {
         }
     };
 
+    // Filter Logic
+    const filteredEvents = events.filter(event => {
+        const now = new Date();
+        // Reset hours to compare just dates if needed, but for events, time matters.
+        if (filter === 'upcoming') return event.date >= now;
+        if (filter === 'past') return event.date < now;
+        return true; // 'all'
+    });
+
     return (
         <div className="min-h-screen bg-background-light font-display">
             {/* Toast Notification */}
@@ -214,75 +223,117 @@ export default function EventsPage() {
                 {/* Grid View */}
                 {view === 'grid' && (
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        {events.map(event => (
-                            <div key={event.id} className="bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-xl transition-all group">
-                                {/* Image */}
-                                <div className="relative h-64 overflow-hidden">
-                                    <div
-                                        className="w-full h-full bg-cover bg-center group-hover:scale-105 transition-transform duration-500"
-                                        style={{ backgroundImage: `url("${event.image}")` }}
-                                    />
-                                    <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent"></div>
-                                    <div className="absolute top-4 left-4">
-                                        <span className="px-4 py-1.5 bg-primary/90 backdrop-blur-md text-white text-xs font-black uppercase rounded-full shadow-lg">
-                                            {event.type}
-                                        </span>
+                        {filteredEvents.length > 0 ? (
+                            filteredEvents.map(event => (
+                                <div key={event.id} className="bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-xl transition-all group">
+                                    {/* Image */}
+                                    <div className="relative h-64 overflow-hidden">
+                                        <div
+                                            className="w-full h-full bg-cover bg-center group-hover:scale-105 transition-transform duration-500"
+                                            style={{ backgroundImage: `url("${event.image}")` }}
+                                        />
+                                        <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent"></div>
+                                        <div className="absolute top-4 left-4">
+                                            <span className={`px-4 py-1.5 backdrop-blur-md text-white text-xs font-black uppercase rounded-full shadow-lg ${event.date < new Date() ? 'bg-slate-500/90' : 'bg-primary/90'}`}>
+                                                {event.date < new Date() ? 'Completed' : event.type}
+                                            </span>
+                                        </div>
+                                        <div className="absolute bottom-6 left-6 right-6">
+                                            <h3 className="text-white text-2xl font-black mb-2 leading-tight drop-shadow-md">{event.title}</h3>
+                                            <div className="flex items-center gap-4 text-white/90 text-sm font-medium">
+                                                <span className="flex items-center gap-1"><span className="material-symbols-outlined text-lg">calendar_today</span> {event.date.toLocaleDateString()}</span>
+                                                <span className="flex items-center gap-1"><span className="material-symbols-outlined text-lg">location_on</span> {event.location.split(',')[0]}</span>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div className="absolute bottom-6 left-6 right-6">
-                                        <h3 className="text-white text-2xl font-black mb-2 leading-tight drop-shadow-md">{event.title}</h3>
-                                        <div className="flex items-center gap-4 text-white/90 text-sm font-medium">
-                                            <span className="flex items-center gap-1"><span className="material-symbols-outlined text-lg">calendar_today</span> {event.date.toLocaleDateString()}</span>
-                                            <span className="flex items-center gap-1"><span className="material-symbols-outlined text-lg">location_on</span> {event.location.split(',')[0]}</span>
+
+                                    {/* Content */}
+                                    <div className="p-8 space-y-6">
+                                        <div className="flex items-start justify-between">
+                                            <p className="text-slate-600 leading-relaxed font-medium">{event.description}</p>
+                                        </div>
+
+                                        {/* Capacity */}
+                                        <div className="space-y-2">
+                                            <div className="flex justify-between text-xs font-bold uppercase tracking-wider text-slate-500">
+                                                <span>Registration Status</span>
+                                                <span>{Math.round((event.registered / event.capacity) * 100)}% Full</span>
+                                            </div>
+                                            <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
+                                                <div
+                                                    className="bg-primary h-full rounded-full"
+                                                    style={{ width: `${(event.registered / event.capacity) * 100}%` }}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        {/* Actions */}
+                                        <div className="flex gap-4 pt-2">
+                                            <button
+                                                onClick={() => handleRegister(event)}
+                                                disabled={event.date < new Date()}
+                                                className={`flex-1 py-4 text-white rounded-xl font-bold transition-all shadow-xl flex items-center justify-center gap-2 group/btn ${event.date < new Date() ? 'bg-slate-400 cursor-not-allowed shadow-none' : 'bg-primary hover:brightness-110 shadow-primary/20'}`}
+                                            >
+                                                <span className="material-symbols-outlined group-hover/btn:scale-110 transition-transform">{event.date < new Date() ? 'event_busy' : 'confirmation_number'}</span>
+                                                {event.date < new Date() ? 'Registration Closed' : 'Register Now'}
+                                            </button>
+                                            <button
+                                                onClick={() => handleShare(event.title)}
+                                                className="size-14 flex items-center justify-center bg-slate-50 text-slate-600 border border-slate-200 rounded-xl hover:bg-white hover:border-primary hover:text-primary transition-all shadow-sm"
+                                            >
+                                                <span className="material-symbols-outlined">share</span>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
-
-                                {/* Content */}
-                                <div className="p-8 space-y-6">
-                                    <div className="flex items-start justify-between">
-                                        <p className="text-slate-600 leading-relaxed font-medium">{event.description}</p>
-                                    </div>
-
-                                    {/* Capacity */}
-                                    <div className="space-y-2">
-                                        <div className="flex justify-between text-xs font-bold uppercase tracking-wider text-slate-500">
-                                            <span>Registration Status</span>
-                                            <span>{Math.round((event.registered / event.capacity) * 100)}% Full</span>
-                                        </div>
-                                        <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
-                                            <div
-                                                className="bg-primary h-full rounded-full"
-                                                style={{ width: `${(event.registered / event.capacity) * 100}%` }}
-                                            />
-                                        </div>
-                                    </div>
-
-                                    {/* Actions */}
-                                    <div className="flex gap-4 pt-2">
-                                        <button
-                                            onClick={() => handleRegister(event)}
-                                            className="flex-1 py-4 bg-primary text-white rounded-xl font-bold hover:brightness-110 transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-2 group/btn"
-                                        >
-                                            <span className="material-symbols-outlined group-hover/btn:scale-110 transition-transform">confirmation_number</span>
-                                            Register Now
-                                        </button>
-                                        <button
-                                            onClick={() => handleShare(event.title)}
-                                            className="size-14 flex items-center justify-center bg-slate-50 text-slate-600 border border-slate-200 rounded-xl hover:bg-white hover:border-primary hover:text-primary transition-all shadow-sm"
-                                        >
-                                            <span className="material-symbols-outlined">share</span>
-                                        </button>
-                                    </div>
+                            ))
+                        ) : (
+                            <div className="col-span-full py-20 text-center">
+                                <div className="inline-flex bg-slate-100 p-4 rounded-full mb-4">
+                                    <span className="material-symbols-outlined text-4xl text-slate-400">event_busy</span>
                                 </div>
+                                <h3 className="text-xl font-black text-slate-900 mb-2">No Events Found</h3>
+                                <p className="text-slate-500 max-w-md mx-auto">There are no {filter} events scheduled at this time.</p>
+                                {filter !== 'all' && (
+                                    <button onClick={() => setFilter('all')} className="mt-6 text-primary font-bold hover:underline">
+                                        View All Events
+                                    </button>
+                                )}
                             </div>
-                        ))}
+                        )}
                     </div>
                 )}
 
                 {/* Calendar View Placeholder (Simplified for brevity, but functional toggle) */}
                 {view === 'calendar' && (
-                    <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden p-8 flex items-center justify-center h-96">
-                        <p className="text-slate-400 font-bold">Calendar View Mode</p>
+                    <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden p-8 flex flex-col items-center justify-center min-h-[400px]">
+                        <div className="max-w-md text-center">
+                            <span className="material-symbols-outlined text-6xl text-primary/20 mb-4">calendar_month</span>
+                            <h3 className="text-xl font-black text-slate-900 mb-2">Calendar View</h3>
+                            <p className="text-slate-500 mb-8">Switch to Grid view to see event details, or use the list below.</p>
+
+                            {filteredEvents.length > 0 ? (
+                                <div className="space-y-4 w-full">
+                                    {filteredEvents.map(event => (
+                                        <div key={event.id} className="flex items-center gap-4 p-4 bg-slate-50 rounded-xl border border-slate-100 text-left hover:border-primary/30 transition-colors cursor-pointer group">
+                                            <div className="flex flex-col items-center justify-center bg-white border border-slate-200 rounded-lg w-14 h-14 shrink-0 shadow-sm group-hover:border-primary group-hover:text-primary transition-colors">
+                                                <span className="text-[10px] font-bold uppercase text-slate-500">{event.date.toLocaleString('default', { month: 'short' })}</span>
+                                                <span className="text-xl font-black text-slate-900">{event.date.getDate()}</span>
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <h4 className="font-bold text-slate-900 truncate">{event.title}</h4>
+                                                <p className="text-xs text-slate-500 truncate">{event.location}</p>
+                                            </div>
+                                            <span className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase ${event.status === 'upcoming' ? 'bg-primary/10 text-primary' : 'bg-slate-200 text-slate-500'}`}>
+                                                {event.status}
+                                            </span>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p className="text-slate-400 font-medium italic">No events to display in this view.</p>
+                            )}
+                        </div>
                     </div>
                 )}
             </main>
@@ -437,5 +488,18 @@ const STATIC_EVENTS = [
         description: 'Hands-on workshop on implementing national cybersecurity frameworks.',
         image: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800',
         status: 'upcoming'
+    },
+    {
+        id: '4',
+        title: '2023 Executive Retreat',
+        date: new Date('2023-11-15'),
+        time: '09:00 AM',
+        location: 'Transcorp Hilton, Abuja',
+        type: 'Retreat',
+        capacity: 200,
+        registered: 180,
+        description: 'Past executive retreat focusing on leadership development in the digital age.',
+        image: 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=800',
+        status: 'past'
     }
 ];
