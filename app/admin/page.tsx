@@ -32,7 +32,7 @@ export default function AdminPage() {
                 // (Using any users for now, ideally filter by pending or recent join date)
                 // Get recent users, prioritizing pending
                 const recent = usersSnapshot.docs
-                    .map(doc => ({ id: doc.id, ...doc.data() }))
+                    .map(doc => ({ id: doc.id, ...doc.data() } as User))
                     .sort((a, b) => (a.status === 'pending' ? -1 : 1))
                     .slice(0, 5);
 
