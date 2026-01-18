@@ -80,19 +80,19 @@ export default function LeadershipSlider() {
                 {LEADERS.map((leader, i) => (
                     <div
                         key={i}
-                        className="min-w-[85vw] sm:min-w-[45vw] lg:min-w-[30%] snap-center group relative overflow-hidden rounded-3xl bg-slate-50 shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                        className="min-w-[280px] w-[85vw] sm:w-[350px] flex-shrink-0 snap-center group relative overflow-hidden rounded-3xl bg-slate-50 shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-[450px]"
                     >
-                        <div className="aspect-[4/5] bg-slate-200 relative overflow-hidden">
+                        <div className="absolute inset-0 bg-slate-200">
                             <div
                                 className="w-full h-full bg-cover bg-center group-hover:scale-105 transition-transform duration-700"
                                 style={{ backgroundImage: `url("${leader.img}")` }}
                             ></div>
-                            <div className="absolute inset-0 bg-linear-to-t from-navy-deep/90 via-navy-deep/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity"></div>
+                            <div className="absolute inset-0 bg-gradient-to-t from-navy-deep/90 via-navy-deep/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity"></div>
 
                             <div className="absolute bottom-0 left-0 w-full p-6 translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
                                 <h3 className="text-white text-2xl font-bold leading-tight mb-1">{leader.name}</h3>
                                 <div className="h-1 w-12 bg-primary rounded-full mb-3 origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 delay-100"></div>
-                                <p className="text-primary-light font-medium tracking-wide text-sm uppercase">{leader.role}</p>
+                                <p className="text-primary font-medium tracking-wide text-sm uppercase">{leader.role}</p>
                             </div>
                         </div>
                     </div>
