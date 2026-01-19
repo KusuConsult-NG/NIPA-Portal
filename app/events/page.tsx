@@ -182,7 +182,6 @@ export default function EventsPage() {
                         <h1 className="text-2xl font-black text-slate-900">Events</h1>
                         <p className="text-sm text-slate-600 font-medium">Upcoming NIPA events and workshops</p>
                     </div>
-                    {/* Only show Create button if user is authenticated (and ideally admin, but allowing for all for demo) */}
                     {user && (
                         <button
                             onClick={() => setIsCreateModalOpen(true)}
@@ -205,7 +204,7 @@ export default function EventsPage() {
                                 onClick={() => setFilter(f)}
                                 className={`px-6 py-2 rounded-full font-bold text-sm transition-all ${filter === f
                                     ? 'bg-primary text-white shadow-md'
-                                    : 'text-slate-500 hover:text-slate-900'
+                                    : 'text-slate-600 hover:text-slate-900'
                                     }`}
                             >
                                 {f.charAt(0).toUpperCase() + f.slice(1)}
@@ -216,13 +215,13 @@ export default function EventsPage() {
                     <div className="flex bg-white p-1 rounded-xl border border-slate-200">
                         <button
                             onClick={() => setView('grid')}
-                            className={`p-2 rounded-lg transition-all ${view === 'grid' ? 'bg-slate-100 text-primary' : 'text-slate-400 hover:text-slate-600'}`}
+                            className={`p-2 rounded-lg transition-all ${view === 'grid' ? 'bg-slate-100 text-primary' : 'text-slate-500 hover:text-slate-600'}`}
                         >
                             <span className="material-symbols-outlined">grid_view</span>
                         </button>
                         <button
                             onClick={() => setView('calendar')}
-                            className={`p-2 rounded-lg transition-all ${view === 'calendar' ? 'bg-slate-100 text-primary' : 'text-slate-400 hover:text-slate-600'}`}
+                            className={`p-2 rounded-lg transition-all ${view === 'calendar' ? 'bg-slate-100 text-primary' : 'text-slate-500 hover:text-slate-600'}`}
                         >
                             <span className="material-symbols-outlined">calendar_month</span>
                         </button>
@@ -235,7 +234,6 @@ export default function EventsPage() {
                         {filteredEvents.length > 0 ? (
                             filteredEvents.map(event => (
                                 <div key={event.id} onClick={() => handleViewDetails(event)} className="bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-xl transition-all group cursor-pointer">
-                                    {/* Image */}
                                     <div className="relative h-64 overflow-hidden">
                                         <div
                                             className="w-full h-full bg-cover bg-center group-hover:scale-105 transition-transform duration-500"
@@ -255,14 +253,8 @@ export default function EventsPage() {
                                             </div>
                                         </div>
                                     </div>
-
-                                    {/* Content */}
                                     <div className="p-8 space-y-6">
-                                        <div className="flex items-start justify-between">
-                                            <p className="text-slate-600 leading-relaxed font-medium line-clamp-3">{event.description}</p>
-                                        </div>
-
-                                        {/* Capacity */}
+                                        <p className="text-slate-600 leading-relaxed font-medium line-clamp-3">{event.description}</p>
                                         <div className="space-y-2">
                                             <div className="flex justify-between text-xs font-bold uppercase tracking-wider text-slate-500">
                                                 <span>Registration Status</span>
@@ -275,8 +267,6 @@ export default function EventsPage() {
                                                 />
                                             </div>
                                         </div>
-
-                                        {/* Actions */}
                                         <div className="flex gap-4 pt-2">
                                             <button
                                                 onClick={(e) => { e.stopPropagation(); handleRegister(event); }}
@@ -302,7 +292,7 @@ export default function EventsPage() {
                                     <span className="material-symbols-outlined text-4xl text-slate-400">event_busy</span>
                                 </div>
                                 <h3 className="text-xl font-black text-slate-900 mb-2">No Events Found</h3>
-                                <p className="text-slate-500 max-w-md mx-auto">There are no {filter} events scheduled at this time.</p>
+                                <p className="text-slate-600 max-w-md mx-auto">There are no {filter} events scheduled at this time.</p>
                                 {filter !== 'all' && (
                                     <button onClick={() => setFilter('all')} className="mt-6 text-primary font-bold hover:underline">
                                         View All Events
@@ -313,20 +303,20 @@ export default function EventsPage() {
                     </div>
                 )}
 
-                {/* Calendar View Placeholder (Simplified for brevity, but functional toggle) */}
+                {/* Calendar View Placeholder */}
                 {view === 'calendar' && (
                     <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden p-8 flex flex-col items-center justify-center min-h-[400px]">
                         <div className="max-w-md text-center">
                             <span className="material-symbols-outlined text-6xl text-primary/20 mb-4">calendar_month</span>
                             <h3 className="text-xl font-black text-slate-900 mb-2">Calendar View</h3>
-                            <p className="text-slate-500 mb-8">Switch to Grid view to see event details, or use the list below.</p>
+                            <p className="text-slate-600 mb-8">Switch to Grid view to see event details, or use the list below.</p>
 
                             {filteredEvents.length > 0 ? (
                                 <div className="space-y-4 w-full">
                                     {filteredEvents.map(event => (
                                         <div key={event.id} onClick={() => handleViewDetails(event)} className="flex items-center gap-4 p-4 bg-slate-50 rounded-xl border border-slate-100 text-left hover:border-primary/30 transition-colors cursor-pointer group">
                                             <div className="flex flex-col items-center justify-center bg-white border border-slate-200 rounded-lg w-14 h-14 shrink-0 shadow-sm group-hover:border-primary group-hover:text-primary transition-colors">
-                                                <span className="text-[10px] font-bold uppercase text-slate-500">{event.date.toLocaleString('default', { month: 'short' })}</span>
+                                                <span className="text-xs font-bold uppercase text-slate-500">{event.date.toLocaleString('default', { month: 'short' })}</span>
                                                 <span className="text-xl font-black text-slate-900">{event.date.getDate()}</span>
                                             </div>
                                             <div className="flex-1 min-w-0">
@@ -340,7 +330,7 @@ export default function EventsPage() {
                                     ))}
                                 </div>
                             ) : (
-                                <p className="text-slate-400 font-medium italic">No events to display in this view.</p>
+                                <p className="text-slate-500 italic">No events found for this filter.</p>
                             )}
                         </div>
                     </div>
@@ -418,126 +408,132 @@ export default function EventsPage() {
 
             {/* Details Modal */}
             <Modal isOpen={isDetailsModalOpen} onClose={() => setIsDetailsModalOpen(false)} title="">
-                <div className="-mt-6 -mx-6 mb-6 relative h-64 overflow-hidden rounded-t-2xl">
-                    <div
-                        className="w-full h-full bg-cover bg-center"
-                        style={{ backgroundImage: `url("${selectedEvent?.image}")` }}
-                    />
-                    <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent"></div>
-                    <button onClick={() => setIsDetailsModalOpen(false)} className="absolute top-4 right-4 p-2 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors z-10">
-                        <span className="material-symbols-outlined">close</span>
-                    </button>
-                    <div className="absolute bottom-6 left-6 right-6">
-                        <span className="px-3 py-1 bg-primary text-white text-xs font-black uppercase rounded-full shadow-lg mb-2 inline-block">
-                            {selectedEvent?.type}
-                        </span>
-                        <h2 className="text-white text-3xl font-black leading-tight">{selectedEvent?.title}</h2>
-                    </div>
-                </div>
+                {selectedEvent && (
+                    <>
+                        <div className="-mt-6 -mx-6 mb-6 relative h-64 overflow-hidden rounded-t-2xl">
+                            <div
+                                className="w-full h-full bg-cover bg-center"
+                                style={{ backgroundImage: `url("${selectedEvent.image}")` }}
+                            />
+                            <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent"></div>
+                            <button onClick={() => setIsDetailsModalOpen(false)} className="absolute top-4 right-4 p-2 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors z-10">
+                                <span className="material-symbols-outlined">close</span>
+                            </button>
+                            <div className="absolute bottom-6 left-6 right-6">
+                                <span className="px-3 py-1 bg-primary text-white text-xs font-black uppercase rounded-full shadow-lg mb-2 inline-block">
+                                    {selectedEvent.type}
+                                </span>
+                                <h2 className="text-white text-3xl font-black leading-tight">{selectedEvent.title}</h2>
+                            </div>
+                        </div>
 
-                <div className="space-y-6">
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
-                            <div className="size-10 bg-white rounded-full flex items-center justify-center shadow-sm text-primary">
-                                <span className="material-symbols-outlined">calendar_today</span>
+                        <div className="space-y-6">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                                    <div className="size-10 bg-white rounded-full flex items-center justify-center shadow-sm text-primary">
+                                        <span className="material-symbols-outlined">calendar_today</span>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs text-slate-500 font-bold uppercase">Date</p>
+                                        <p className="text-sm font-bold text-slate-900">{selectedEvent.date.toLocaleDateString()}</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                                    <div className="size-10 bg-white rounded-full flex items-center justify-center shadow-sm text-primary">
+                                        <span className="material-symbols-outlined">schedule</span>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs text-slate-500 font-bold uppercase">Time</p>
+                                        <p className="text-sm font-bold text-slate-900">09:00 AM</p>
+                                    </div>
+                                </div>
+                                <div className="col-span-2 flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                                    <div className="size-10 bg-white rounded-full flex items-center justify-center shadow-sm text-primary">
+                                        <span className="material-symbols-outlined">location_on</span>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs text-slate-500 font-bold uppercase">Location</p>
+                                        <p className="text-sm font-bold text-slate-900">{selectedEvent.location}</p>
+                                    </div>
+                                </div>
                             </div>
-                            <div>
-                                <p className="text-xs text-slate-500 font-bold uppercase">Date</p>
-                                <p className="text-sm font-bold text-slate-900">{selectedEvent?.date.toLocaleDateString()}</p>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
-                            <div className="size-10 bg-white rounded-full flex items-center justify-center shadow-sm text-primary">
-                                <span className="material-symbols-outlined">schedule</span>
-                            </div>
-                            <div>
-                                <p className="text-xs text-slate-500 font-bold uppercase">Time</p>
-                                <p className="text-sm font-bold text-slate-900">09:00 AM</p>
-                            </div>
-                        </div>
-                        <div className="col-span-2 flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
-                            <div className="size-10 bg-white rounded-full flex items-center justify-center shadow-sm text-primary">
-                                <span className="material-symbols-outlined">location_on</span>
-                            </div>
-                            <div>
-                                <p className="text-xs text-slate-500 font-bold uppercase">Location</p>
-                                <p className="text-sm font-bold text-slate-900">{selectedEvent?.location}</p>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div className="prose prose-slate max-w-none">
-                        <h4 className="text-lg font-bold text-slate-900 mb-2">About this Event</h4>
-                        <p className="text-slate-600 leading-relaxed">{selectedEvent?.description}</p>
-                        <p className="text-slate-600 leading-relaxed mt-2">
-                            Join us for an immersive experience designed to foster collaboration and strategic thinking among NIPA members. This event will feature keynote speakers, breakout sessions, and networking opportunities.
-                        </p>
-                    </div>
-
-                    <div className="border-t border-slate-200 pt-6">
-                        <div className="mb-4 flex flex-col gap-2">
-                            <div className="flex justify-between text-sm font-bold text-slate-700">
-                                <span>Attendance</span>
-                                <span>{selectedEvent ? Math.round((selectedEvent.registered / selectedEvent.capacity) * 100) : 0}% Filled</span>
+                            <div className="prose prose-slate max-w-none">
+                                <h4 className="text-lg font-bold text-slate-900 mb-2">About this Event</h4>
+                                <p className="text-slate-600 leading-relaxed">{selectedEvent.description}</p>
+                                <p className="text-slate-600 leading-relaxed mt-2">
+                                    Join us for an immersive experience designed to foster collaboration and strategic thinking among NIPA members.
+                                </p>
                             </div>
-                            <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
-                                <div
-                                    className="bg-primary h-full rounded-full"
-                                    style={{ width: `${selectedEvent ? (selectedEvent.registered / selectedEvent.capacity) * 100 : 0}%` }}
-                                />
+
+                            <div className="border-t border-slate-200 pt-6">
+                                <div className="mb-4 flex flex-col gap-2">
+                                    <div className="flex justify-between text-sm font-bold text-slate-700">
+                                        <span>Attendance</span>
+                                        <span>{Math.round((selectedEvent.registered / selectedEvent.capacity) * 100)}% Filled</span>
+                                    </div>
+                                    <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
+                                        <div
+                                            className="bg-primary h-full rounded-full"
+                                            style={{ width: `${(selectedEvent.registered / selectedEvent.capacity) * 100}%` }}
+                                        />
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => {
+                                        setIsDetailsModalOpen(false);
+                                        handleRegister(selectedEvent);
+                                    }}
+                                    disabled={selectedEvent.date < new Date()}
+                                    className={`w-full py-4 text-white font-bold rounded-xl hover:brightness-110 transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-2 ${selectedEvent.date < new Date() ? 'bg-slate-400 cursor-not-allowed shadow-none' : 'bg-primary'}`}
+                                >
+                                    <span className="material-symbols-outlined">confirmation_number</span>
+                                    {selectedEvent.date < new Date() ? 'Event Ended' : 'Register for Event'}
+                                </button>
                             </div>
                         </div>
-                        <button
-                            onClick={() => {
-                                setIsDetailsModalOpen(false);
-                                if (selectedEvent) handleRegister(selectedEvent);
-                            }}
-                            disabled={selectedEvent ? selectedEvent.date < new Date() : false}
-                            className={`w-full py-4 text-white font-bold rounded-xl hover:brightness-110 transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-2 ${selectedEvent && selectedEvent.date < new Date() ? 'bg-slate-400 cursor-not-allowed shadow-none' : 'bg-primary'}`}
-                        >
-                            <span className="material-symbols-outlined">confirmation_number</span>
-                            {selectedEvent && selectedEvent.date < new Date() ? 'Event Ended' : 'Register for Event'}
-                        </button>
-                    </div>
-                </div>
+                    </>
+                )}
             </Modal>
 
             {/* Register Modal */}
             <Modal isOpen={isRegisterModalOpen} onClose={() => setIsRegisterModalOpen(false)} title="Confirm Registration">
-                <div className="space-y-6 text-center">
-                    <div className="size-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
-                        <span className="material-symbols-outlined text-4xl text-primary">confirmation_number</span>
-                    </div>
-                    <div>
-                        <h4 className="text-xl font-bold text-slate-900 mb-2">{selectedEvent?.title}</h4>
-                        <p className="text-slate-500">Are you sure you want to register for this event? A confirmation email will be sent to your registered address.</p>
-                    </div>
-                    <div className="bg-slate-50 p-4 rounded-xl text-left space-y-3">
-                        <div className="flex justify-between text-sm">
-                            <span className="text-slate-500">Date</span>
-                            <span className="font-bold text-slate-900">{selectedEvent?.date.toLocaleDateString()}</span>
+                {selectedEvent && (
+                    <div className="space-y-6 text-center">
+                        <div className="size-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
+                            <span className="material-symbols-outlined text-4xl text-primary">confirmation_number</span>
                         </div>
-                        <div className="flex justify-between text-sm">
-                            <span className="text-slate-500">Location</span>
-                            <span className="font-bold text-slate-900">{selectedEvent?.location}</span>
+                        <div>
+                            <h4 className="text-xl font-bold text-slate-900 mb-2">{selectedEvent.title}</h4>
+                            <p className="text-slate-600">Are you sure you want to register for this event? A confirmation email will be sent to your registered address.</p>
+                        </div>
+                        <div className="bg-slate-50 p-4 rounded-xl text-left space-y-3">
+                            <div className="flex justify-between text-sm">
+                                <span className="text-slate-500 font-bold">Date</span>
+                                <span className="font-bold text-slate-900">{selectedEvent.date.toLocaleDateString()}</span>
+                            </div>
+                            <div className="flex justify-between text-sm">
+                                <span className="text-slate-500 font-bold">Location</span>
+                                <span className="font-bold text-slate-900">{selectedEvent.location}</span>
+                            </div>
+                        </div>
+                        <div className="flex gap-4">
+                            <button
+                                onClick={() => setIsRegisterModalOpen(false)}
+                                className="flex-1 py-3 bg-slate-100 text-slate-700 font-bold rounded-xl hover:bg-slate-200 transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={confirmRegistration}
+                                disabled={loading}
+                                className="flex-1 py-3 bg-primary text-white font-bold rounded-xl hover:brightness-110 transition-all shadow-lg shadow-primary/20 disabled:opacity-50"
+                            >
+                                {loading ? 'Registering...' : 'Confirm Registration'}
+                            </button>
                         </div>
                     </div>
-                    <div className="flex gap-4">
-                        <button
-                            onClick={() => setIsRegisterModalOpen(false)}
-                            className="flex-1 py-3 bg-slate-100 text-slate-700 font-bold rounded-xl hover:bg-slate-200 transition-colors"
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            onClick={confirmRegistration}
-                            disabled={loading}
-                            className="flex-1 py-3 bg-primary text-white font-bold rounded-xl hover:brightness-110 transition-all shadow-lg shadow-primary/20 disabled:opacity-50"
-                        >
-                            {loading ? 'Registering...' : 'Confirm Registration'}
-                        </button>
-                    </div>
-                </div>
+                )}
             </Modal>
         </div>
     );

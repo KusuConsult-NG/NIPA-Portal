@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 const slides = [
     {
-        image: 'https://designunion.com.ng/wp-content/uploads/2019/07/nipss-residence-hall-1.jpg', // Specific NIPSS Residence Hall image found
+        image: '/images/nipss-hero.png',
         title: 'The National Institute',
         subtitle: 'Shaping Strategy',
         description: 'Empowering leaders to architect the future of national governance and global policy.'
@@ -51,7 +51,7 @@ export default function HeroSlider() {
                         }}
                     ></div>
                     {/* Gradient Overlay */}
-                    <div className="absolute inset-0 bg-linear-to-r from-navy-deep/95 via-navy-deep/70 to-transparent"></div>
+                    <div className="absolute inset-0 bg-linear-to-r from-navy-deep via-navy-deep/60 to-transparent"></div>
                 </div>
             ))}
 

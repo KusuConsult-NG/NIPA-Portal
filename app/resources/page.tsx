@@ -231,7 +231,7 @@ function ResourcesPageContent() {
                             <div className="p-2 bg-primary/10 rounded-lg">
                                 <span className="material-symbols-outlined text-primary">description</span>
                             </div>
-                            <span className="text-xs font-bold uppercase text-slate-400 tracking-wider">Total Documents</span>
+                            <span className="text-xs font-bold uppercase text-slate-500 tracking-wider">Total Documents</span>
                         </div>
                         <div className="text-3xl font-black text-slate-900">{resources.length}</div>
                     </div>
@@ -240,7 +240,7 @@ function ResourcesPageContent() {
                             <div className="p-2 bg-primary/10 rounded-lg">
                                 <span className="material-symbols-outlined text-primary">policy</span>
                             </div>
-                            <span className="text-xs font-bold uppercase text-slate-400 tracking-wider">Policy Papers</span>
+                            <span className="text-xs font-bold uppercase text-slate-500 tracking-wider">Policy Papers</span>
                         </div>
                         <div className="text-3xl font-black text-slate-900">
                             {resources.filter(r => r.category === 'Policy Papers').length}
@@ -251,7 +251,7 @@ function ResourcesPageContent() {
                             <div className="p-2 bg-primary/10 rounded-lg">
                                 <span className="material-symbols-outlined text-primary">school</span>
                             </div>
-                            <span className="text-xs font-bold uppercase text-slate-400 tracking-wider">Training Modules</span>
+                            <span className="text-xs font-bold uppercase text-slate-500 tracking-wider">Training Modules</span>
                         </div>
                         <div className="text-3xl font-black text-slate-900">
                             {resources.filter(r => r.category === 'Training Materials').length}
@@ -262,7 +262,7 @@ function ResourcesPageContent() {
                             <div className="p-2 bg-primary/10 rounded-lg">
                                 <span className="material-symbols-outlined text-primary">download</span>
                             </div>
-                            <span className="text-xs font-bold uppercase text-slate-400 tracking-wider">Total Downloads</span>
+                            <span className="text-xs font-bold uppercase text-slate-500 tracking-wider">Total Downloads</span>
                         </div>
                         <div className="text-3xl font-black text-slate-900">
                             {resources.reduce((sum, r) => sum + r.downloads, 0)}
@@ -280,11 +280,11 @@ function ResourcesPageContent() {
                         <table className="w-full">
                             <thead>
                                 <tr className="bg-slate-50 border-b border-slate-100">
-                                    <th className="px-6 py-4 text-left text-xs font-black text-slate-400 uppercase tracking-wider">Document</th>
-                                    <th className="px-6 py-4 text-left text-xs font-black text-slate-400 uppercase tracking-wider">Category</th>
-                                    <th className="px-6 py-4 text-left text-xs font-black text-slate-400 uppercase tracking-wider">Type</th>
-                                    <th className="px-6 py-4 text-left text-xs font-black text-slate-400 uppercase tracking-wider">Downloads</th>
-                                    <th className="px-6 py-4 text-right text-xs font-black text-slate-400 uppercase tracking-wider">Action</th>
+                                    <th className="px-6 py-4 text-left text-xs font-black text-slate-500 uppercase tracking-wider">Document</th>
+                                    <th className="px-6 py-4 text-left text-xs font-black text-slate-500 uppercase tracking-wider">Category</th>
+                                    <th className="px-6 py-4 text-left text-xs font-black text-slate-500 uppercase tracking-wider">Type</th>
+                                    <th className="px-6 py-4 text-left text-xs font-black text-slate-500 uppercase tracking-wider">Downloads</th>
+                                    <th className="px-6 py-4 text-right text-xs font-black text-slate-500 uppercase tracking-wider">Action</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100">

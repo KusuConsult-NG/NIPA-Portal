@@ -143,7 +143,7 @@ export default function MemberDashboard() {
                             <div className="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm flex items-center justify-between">
                                 <div className="flex flex-col gap-6">
                                     <div className="space-y-2">
-                                        <p className="text-xs font-bold uppercase text-slate-400 tracking-widest">Financial Standing</p>
+                                        <p className="text-xs font-bold uppercase text-slate-500 tracking-widest">Financial Standing</p>
                                         <div className="flex items-center gap-4">
                                             <p className="text-3xl font-black text-slate-900">Paid through Dec 2026</p>
                                             <span className="bg-primary text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider shadow-sm">Active</span>
@@ -175,7 +175,7 @@ export default function MemberDashboard() {
                                             <div key={item.id} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:border-accent-purple/30 hover:shadow-md transition-all cursor-pointer group">
                                                 <div className="flex justify-between items-start mb-3">
                                                     <span className="text-xs font-bold text-accent-purple bg-accent-purple/10 px-3 py-1 rounded-lg uppercase tracking-wider">{item.category}</span>
-                                                    <span className="text-xs text-slate-400 font-medium">{item.createdAt.toDate().toLocaleDateString()}</span>
+                                                    <span className="text-xs text-slate-500 font-medium">{item.createdAt.toDate().toLocaleDateString()}</span>
                                                 </div>
                                                 <h4 className="font-bold text-lg group-hover:text-accent-purple transition-colors text-slate-900">{item.title}</h4>
                                                 <p className="text-slate-500 mt-2 leading-relaxed line-clamp-2">{item.content}</p>
@@ -209,14 +209,14 @@ export default function MemberDashboard() {
                                         <div className="size-20 rounded-full bg-center bg-cover border-4 border-white shadow-md ring-1 ring-slate-100 group-hover:scale-105 transition-transform" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuAHFUPr6qYhgHsdeLTGGykn92GKQbhLl1dEUEJzJ88kVLfaLjBI1TkIgJwTf_aMmB0Unqu23AKdCPpsTBi8O-expxJ-2oG6864Gvutz5yA27C8vts6skWrNqRgwgrjew1MJ-x7el6T4iJBsk3QOkn1HjncMHdqrBOxilTWv0SxopKHpy-if7bGfenEA0kVtwOOwhlctohLHr1KFf8xI91cF0pmtBoMzZldDIMY2J8S9Eysy3RG7KJC_i3-iM0ZIYfejDPKyloK-8mU')" }}></div>
                                         <div className="text-center">
                                             <p className="text-sm font-bold text-slate-900">Maj. Musa L.</p>
-                                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Oct 15</p>
+                                            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Oct 15</p>
                                         </div>
                                     </div>
                                     <div className="flex flex-col items-center gap-3 min-w-[110px] group cursor-pointer">
                                         <div className="size-20 rounded-full bg-center bg-cover border-4 border-white shadow-md ring-1 ring-slate-100 group-hover:scale-105 transition-transform" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBazlwepK9B0zNqk2EPkqJSfOlY-c8gfEoUaJImIz3jjJbcEh60TiTqVdMQplRBxTO-FVfbzU-VuflIL2-YlOwbiDAfIycWicx_s8reU-FMVfdKTqQjCahwqPxt6svxQ2Qr_SxkOa80z31LBMtdCQY0yzxpRRyv7u33N_QRUNk17Vl58aaxPImpjHlGRt7N1FCYF85JcUm7pnmeeBEKvmfT7QulV-pr0aYqnDhUoB__1pv1ypyv9uFXzAjs-fr20K4hJ_NnmphbynU')" }}></div>
                                         <div className="text-center">
                                             <p className="text-sm font-bold text-slate-900">Barr. Evelyn</p>
-                                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Oct 18</p>
+                                            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Oct 18</p>
                                         </div>
                                     </div>
                                 </div>
@@ -276,7 +276,7 @@ export default function MemberDashboard() {
                                         {events.map((event) => (
                                             <div key={event.id} className="flex gap-5 group cursor-pointer">
                                                 <div className="size-14 rounded-2xl bg-slate-50 flex flex-col items-center justify-center border border-slate-200 group-hover:border-primary/30 transition-colors">
-                                                    <span className="text-[10px] font-black text-slate-400 uppercase leading-none mb-1">
+                                                    <span className="text-[10px] font-black text-slate-500 uppercase leading-none mb-1">
                                                         {event.date.toDate().toLocaleDateString('en-US', { month: 'short' })}
                                                     </span>
                                                     <span className="text-xl font-black text-slate-900 leading-none">

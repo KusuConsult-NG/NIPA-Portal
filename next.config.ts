@@ -27,6 +27,19 @@ const nextConfig: NextConfig = {
   // Output configuration
   output: 'standalone',
 
+  webpack: (config: any, { isServer }: { isServer: boolean }) => {
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        '@grpc/grpc-js': false,
+        'net': false,
+        'tls': false,
+        'fs': false,
+      };
+    }
+    return config;
+  },
+
 };
 
 export default nextConfig;
