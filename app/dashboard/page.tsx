@@ -1,4 +1,5 @@
 'use client';
+// Trigger deployment
 
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
