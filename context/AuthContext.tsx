@@ -54,10 +54,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
                 if (authUser) {
                     // Set cookie for middleware and API routes
-                    Cookies.set('session', 'true', { expires: 7 });
+                    Cookies.set('session', 'true', { expires: 7, path: '/' });
                     try {
                         const token = await authUser.getIdToken();
-                        Cookies.set('auth_token', token, { expires: 7 });
+                        Cookies.set('auth_token', token, { expires: 7, path: '/' });
                     } catch (e) {
                         console.error("Error getting token", e);
                     }
@@ -79,10 +79,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     }
                 } else {
                     // Remove cookies
-                    Cookies.remove('session');
-                    Cookies.remove('auth_token');
+                    Cookies.remove('session', { path: '/' });
+                    Cookies.remove('auth_token', { path: '/' });
                     setProfile(null);
                 }
+
 
                 setLoading(false);
             });
@@ -100,8 +101,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             if (auth && typeof auth.signOut === 'function') {
                 await firebaseSignOut(auth);
             }
-            Cookies.remove('session'); // Ensure cookie is removed immediately on logout action
-            Cookies.remove('auth_token');
+            Cookies.remove('session', { path: '/' }); // Ensure cookie is removed immediately on logout action
+            Cookies.remove('auth_token', { path: '/' });
             setProfile(null);
             router.push('/login');
         } catch (error) {

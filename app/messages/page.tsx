@@ -172,16 +172,7 @@ export default function MessagesPage() {
         );
     }
 
-    if (!user) {
-        return (
-            <div className="flex h-screen items-center justify-center bg-background-main">
-                <div className="text-center p-8 bg-white rounded-2xl shadow-sm border border-slate-200">
-                    <p className="text-slate-500 font-medium mb-4">Please log in to view your messages.</p>
-                    <Link href="/login" className="bg-primary text-white px-6 py-2 rounded-lg font-bold">Log In</Link>
-                </div>
-            </div>
-        );
-    }
+
 
     return (
         <div className="flex min-h-screen bg-background-main font-sans text-slate-900">
