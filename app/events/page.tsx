@@ -30,6 +30,7 @@ export default function EventsPage() {
     // Modal States
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
+    const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
     // Data States
     const [events, setEvents] = useState<Event[]>([]);
@@ -114,6 +115,11 @@ export default function EventsPage() {
             navigator.clipboard.writeText(window.location.href);
             setToast({ message: "Link copied to clipboard!", type: 'success' });
         }
+    };
+
+    const handleViewDetails = (event: Event) => {
+        setSelectedEvent(event);
+        setIsDetailsModalOpen(true);
     };
 
     const handleCreateSubmit = async (e: React.FormEvent) => {
@@ -225,7 +231,7 @@ export default function EventsPage() {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         {filteredEvents.length > 0 ? (
                             filteredEvents.map(event => (
-                                <div key={event.id} className="bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-xl transition-all group">
+                                <div key={event.id} onClick={() => handleViewDetails(event)} className="bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-xl transition-all group cursor-pointer">
                                     {/* Image */}
                                     <div className="relative h-64 overflow-hidden">
                                         <div
@@ -250,7 +256,7 @@ export default function EventsPage() {
                                     {/* Content */}
                                     <div className="p-8 space-y-6">
                                         <div className="flex items-start justify-between">
-                                            <p className="text-slate-600 leading-relaxed font-medium">{event.description}</p>
+                                            <p className="text-slate-600 leading-relaxed font-medium line-clamp-3">{event.description}</p>
                                         </div>
 
                                         {/* Capacity */}
@@ -270,7 +276,7 @@ export default function EventsPage() {
                                         {/* Actions */}
                                         <div className="flex gap-4 pt-2">
                                             <button
-                                                onClick={() => handleRegister(event)}
+                                                onClick={(e) => { e.stopPropagation(); handleRegister(event); }}
                                                 disabled={event.date < new Date()}
                                                 className={`flex-1 py-4 text-white rounded-xl font-bold transition-all shadow-xl flex items-center justify-center gap-2 group/btn ${event.date < new Date() ? 'bg-slate-400 cursor-not-allowed shadow-none' : 'bg-primary hover:brightness-110 shadow-primary/20'}`}
                                             >
@@ -278,7 +284,7 @@ export default function EventsPage() {
                                                 {event.date < new Date() ? 'Registration Closed' : 'Register Now'}
                                             </button>
                                             <button
-                                                onClick={() => handleShare(event.title)}
+                                                onClick={(e) => { e.stopPropagation(); handleShare(event.title); }}
                                                 className="size-14 flex items-center justify-center bg-slate-50 text-slate-600 border border-slate-200 rounded-xl hover:bg-white hover:border-primary hover:text-primary transition-all shadow-sm"
                                             >
                                                 <span className="material-symbols-outlined">share</span>
@@ -315,7 +321,7 @@ export default function EventsPage() {
                             {filteredEvents.length > 0 ? (
                                 <div className="space-y-4 w-full">
                                     {filteredEvents.map(event => (
-                                        <div key={event.id} className="flex items-center gap-4 p-4 bg-slate-50 rounded-xl border border-slate-100 text-left hover:border-primary/30 transition-colors cursor-pointer group">
+                                        <div key={event.id} onClick={() => handleViewDetails(event)} className="flex items-center gap-4 p-4 bg-slate-50 rounded-xl border border-slate-100 text-left hover:border-primary/30 transition-colors cursor-pointer group">
                                             <div className="flex flex-col items-center justify-center bg-white border border-slate-200 rounded-lg w-14 h-14 shrink-0 shadow-sm group-hover:border-primary group-hover:text-primary transition-colors">
                                                 <span className="text-[10px] font-bold uppercase text-slate-500">{event.date.toLocaleString('default', { month: 'short' })}</span>
                                                 <span className="text-xl font-black text-slate-900">{event.date.getDate()}</span>
@@ -405,6 +411,92 @@ export default function EventsPage() {
                         {loading ? 'Creating...' : 'Create Event'}
                     </button>
                 </form>
+            </Modal>
+
+            {/* Details Modal */}
+            <Modal isOpen={isDetailsModalOpen} onClose={() => setIsDetailsModalOpen(false)} title="">
+                <div className="-mt-6 -mx-6 mb-6 relative h-64 overflow-hidden rounded-t-2xl">
+                    <div
+                        className="w-full h-full bg-cover bg-center"
+                        style={{ backgroundImage: `url("${selectedEvent?.image}")` }}
+                    />
+                    <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent"></div>
+                    <button onClick={() => setIsDetailsModalOpen(false)} className="absolute top-4 right-4 p-2 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors z-10">
+                        <span className="material-symbols-outlined">close</span>
+                    </button>
+                    <div className="absolute bottom-6 left-6 right-6">
+                        <span className="px-3 py-1 bg-primary text-white text-xs font-black uppercase rounded-full shadow-lg mb-2 inline-block">
+                            {selectedEvent?.type}
+                        </span>
+                        <h2 className="text-white text-3xl font-black leading-tight">{selectedEvent?.title}</h2>
+                    </div>
+                </div>
+
+                <div className="space-y-6">
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                            <div className="size-10 bg-white rounded-full flex items-center justify-center shadow-sm text-primary">
+                                <span className="material-symbols-outlined">calendar_today</span>
+                            </div>
+                            <div>
+                                <p className="text-xs text-slate-500 font-bold uppercase">Date</p>
+                                <p className="text-sm font-bold text-slate-900">{selectedEvent?.date.toLocaleDateString()}</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                            <div className="size-10 bg-white rounded-full flex items-center justify-center shadow-sm text-primary">
+                                <span className="material-symbols-outlined">schedule</span>
+                            </div>
+                            <div>
+                                <p className="text-xs text-slate-500 font-bold uppercase">Time</p>
+                                <p className="text-sm font-bold text-slate-900">09:00 AM</p>
+                            </div>
+                        </div>
+                        <div className="col-span-2 flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                            <div className="size-10 bg-white rounded-full flex items-center justify-center shadow-sm text-primary">
+                                <span className="material-symbols-outlined">location_on</span>
+                            </div>
+                            <div>
+                                <p className="text-xs text-slate-500 font-bold uppercase">Location</p>
+                                <p className="text-sm font-bold text-slate-900">{selectedEvent?.location}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="prose prose-slate max-w-none">
+                        <h4 className="text-lg font-bold text-slate-900 mb-2">About this Event</h4>
+                        <p className="text-slate-600 leading-relaxed">{selectedEvent?.description}</p>
+                        <p className="text-slate-600 leading-relaxed mt-2">
+                            Join us for an immersive experience designed to foster collaboration and strategic thinking among NIPA members. This event will feature keynote speakers, breakout sessions, and networking opportunities.
+                        </p>
+                    </div>
+
+                    <div className="border-t border-slate-200 pt-6">
+                        <div className="mb-4 flex flex-col gap-2">
+                            <div className="flex justify-between text-sm font-bold text-slate-700">
+                                <span>Attendance</span>
+                                <span>{selectedEvent ? Math.round((selectedEvent.registered / selectedEvent.capacity) * 100) : 0}% Filled</span>
+                            </div>
+                            <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
+                                <div
+                                    className="bg-primary h-full rounded-full"
+                                    style={{ width: `${selectedEvent ? (selectedEvent.registered / selectedEvent.capacity) * 100 : 0}%` }}
+                                />
+                            </div>
+                        </div>
+                        <button
+                            onClick={() => {
+                                setIsDetailsModalOpen(false);
+                                if (selectedEvent) handleRegister(selectedEvent);
+                            }}
+                            disabled={selectedEvent ? selectedEvent.date < new Date() : false}
+                            className={`w-full py-4 text-white font-bold rounded-xl hover:brightness-110 transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-2 ${selectedEvent && selectedEvent.date < new Date() ? 'bg-slate-400 cursor-not-allowed shadow-none' : 'bg-primary'}`}
+                        >
+                            <span className="material-symbols-outlined">confirmation_number</span>
+                            {selectedEvent && selectedEvent.date < new Date() ? 'Event Ended' : 'Register for Event'}
+                        </button>
+                    </div>
+                </div>
             </Modal>
 
             {/* Register Modal */}
