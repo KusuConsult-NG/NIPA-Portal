@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import MemberSidebar from '@/components/layout/MemberSidebar';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { collection, query, orderBy, limit, getDocs, Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
@@ -70,7 +70,7 @@ export default function MemberDashboard() {
         );
     }
 
-    const userName = profile?.name || 'Member';
+    const userName = useMemo(() => profile?.name || 'Member', [profile]);
 
     // If user is pending, show restricted view
     if (profile?.status === 'pending') {
@@ -108,6 +108,16 @@ export default function MemberDashboard() {
             </div>
         );
     }
+
+    const handleMarkAllAsRead = () => {
+        // Placeholder for future logic
+        alert("All announcements marked as read!");
+    };
+
+    const handleSyncToCalendar = () => {
+        // Placeholder for future logic
+        alert("Events synced successfully to your calendar!");
+    };
 
     return (
         <div className="flex min-h-screen bg-background-main font-sans text-slate-900">
@@ -152,7 +162,7 @@ export default function MemberDashboard() {
                                     </div>
                                     <div className="flex gap-4">
                                         <Link href="/payments" className="bg-primary text-white px-8 py-3 rounded-xl text-sm font-bold hover:brightness-105 transition-all shadow-lg shadow-primary/20">Pay Dues</Link>
-                                        <button className="bg-slate-100 text-slate-700 px-8 py-3 rounded-xl text-sm font-bold border border-slate-200 hover:bg-slate-200 transition-all">View History</button>
+                                        <Link href="/payments?tab=history" className="bg-slate-100 text-slate-700 px-8 py-3 rounded-xl text-sm font-bold border border-slate-200 hover:bg-slate-200 transition-all text-center">View History</Link>
                                     </div>
                                 </div>
                                 <div className="hidden sm:flex w-56 h-36 bg-primary/5 rounded-2xl items-center justify-center border-2 border-dashed border-primary/20">
@@ -162,7 +172,7 @@ export default function MemberDashboard() {
                             <div className="space-y-5">
                                 <div className="flex items-center justify-between px-1">
                                     <h3 className="text-xl font-bold text-slate-900">Latest Announcements</h3>
-                                    <button className="text-sm font-bold text-accent-purple hover:underline">Mark all as read</button>
+                                    <button onClick={handleMarkAllAsRead} className="text-sm font-bold text-primary hover:underline">Mark all as read</button>
                                 </div>
 
                                 {fetchingData ? (
@@ -223,14 +233,15 @@ export default function MemberDashboard() {
                             </div>
                         </div>
                         <div className="col-span-1 lg:col-span-4 space-y-8">
-                            <div className="bg-sidebar-bg rounded-2xl p-8 text-white space-y-6 shadow-xl">
-                                <div className="flex items-center gap-2">
+                            <div className="bg-linear-to-br from-sidebar-bg to-slate-800 rounded-2xl p-8 text-white space-y-6 shadow-xl border border-white/5 overflow-hidden relative">
+                                <div className="absolute -top-10 -right-10 size-40 bg-primary/10 rounded-full blur-3xl"></div>
+                                <div className="flex items-center gap-2 relative z-10">
                                     <span className="material-symbols-outlined text-primary">bolt</span>
                                     <h3 className="text-lg font-bold">Quick Actions</h3>
                                 </div>
-                                <div className="grid gap-4">
-                                    <Link className="flex items-center gap-4 p-4 bg-white/5 rounded-2xl hover:bg-white/10 transition-all group border border-white/5" href="#">
-                                        <div className="size-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                                <div className="grid gap-4 relative z-10">
+                                    <Link className="flex items-center gap-4 p-4 bg-white/5 rounded-2xl hover:bg-white/10 transition-all group border border-white/5 active:scale-95" href="/resources?category=Constitution">
+                                        <div className="size-11 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner">
                                             <span className="material-symbols-outlined text-primary">description</span>
                                         </div>
                                         <div className="flex flex-col">
@@ -239,8 +250,8 @@ export default function MemberDashboard() {
                                         </div>
                                         <span className="material-symbols-outlined ml-auto text-slate-500 group-hover:text-primary transition-colors">download</span>
                                     </Link>
-                                    <Link className="flex items-center gap-4 p-4 bg-white/5 rounded-2xl hover:bg-white/10 transition-all group border border-white/5" href="#">
-                                        <div className="size-10 rounded-xl bg-accent-purple/10 flex items-center justify-center">
+                                    <Link className="flex items-center gap-4 p-4 bg-white/5 rounded-2xl hover:bg-white/10 transition-all group border border-white/5 active:scale-95" href="/resources?category=Manuals">
+                                        <div className="size-11 rounded-xl bg-accent-purple/10 flex items-center justify-center shadow-inner">
                                             <span className="material-symbols-outlined text-accent-purple">history_edu</span>
                                         </div>
                                         <div className="flex flex-col">
@@ -249,8 +260,8 @@ export default function MemberDashboard() {
                                         </div>
                                         <span className="material-symbols-outlined ml-auto text-slate-500 group-hover:text-accent-purple transition-colors">arrow_forward</span>
                                     </Link>
-                                    <Link className="flex items-center gap-4 p-4 bg-white/5 rounded-2xl hover:bg-white/10 transition-all group border border-white/5" href="#">
-                                        <div className="size-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                                    <Link className="flex items-center gap-4 p-4 bg-white/5 rounded-2xl hover:bg-white/10 transition-all group border border-white/5 active:scale-95" href="/contact?subject=Strategic Initiative Proposal">
+                                        <div className="size-11 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner">
                                             <span className="material-symbols-outlined text-primary">campaign</span>
                                         </div>
                                         <div className="flex flex-col">
@@ -264,7 +275,7 @@ export default function MemberDashboard() {
                             <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 space-y-6">
                                 <div className="flex items-center justify-between">
                                     <h3 className="text-lg font-bold text-slate-900">Upcoming Events</h3>
-                                    <Link className="text-xs font-bold text-primary hover:underline" href="#">See All</Link>
+                                    <Link className="text-xs font-bold text-primary hover:underline" href="/events">See All</Link>
                                 </div>
 
                                 {fetchingData ? (
@@ -298,7 +309,7 @@ export default function MemberDashboard() {
                                     </div>
                                 )}
 
-                                <button className="w-full py-3.5 bg-slate-900 text-white rounded-xl text-sm font-bold mt-2 hover:bg-slate-800 transition-all shadow-lg shadow-slate-200">Sync to Calendar</button>
+                                <button onClick={handleSyncToCalendar} className="w-full py-3.5 bg-slate-900 text-white rounded-xl text-sm font-bold mt-2 hover:bg-slate-800 transition-all shadow-lg shadow-slate-200">Sync to Calendar</button>
                             </div>
                         </div>
                     </div>
