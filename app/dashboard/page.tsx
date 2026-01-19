@@ -1,5 +1,4 @@
 'use client';
-// Trigger deployment
 
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
@@ -234,42 +233,41 @@ export default function MemberDashboard() {
                             </div>
                         </div>
                         <div className="col-span-1 lg:col-span-4 space-y-8">
-                            <div className="bg-linear-to-br from-sidebar-bg to-slate-800 rounded-2xl p-8 text-white space-y-6 shadow-xl border border-white/5 overflow-hidden relative">
-                                <div className="absolute -top-10 -right-10 size-40 bg-primary/10 rounded-full blur-3xl"></div>
+                            <div className="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm space-y-6 relative overflow-hidden">
                                 <div className="flex items-center gap-2 relative z-10">
                                     <span className="material-symbols-outlined text-primary">bolt</span>
-                                    <h3 className="text-lg font-bold">Quick Actions</h3>
+                                    <h3 className="text-lg font-bold text-slate-900">Quick Actions</h3>
                                 </div>
                                 <div className="grid gap-4 relative z-10">
-                                    <Link className="flex items-center gap-4 p-4 bg-white/5 rounded-2xl hover:bg-white/10 transition-all group border border-white/5 active:scale-95" href="/resources?category=Constitution">
-                                        <div className="size-11 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner">
+                                    <Link className="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl hover:bg-slate-100 transition-all group border border-slate-100 active:scale-95" href="/resources?category=Constitution">
+                                        <div className="size-11 rounded-xl bg-white flex items-center justify-center shadow-sm border border-slate-100">
                                             <span className="material-symbols-outlined text-primary">description</span>
                                         </div>
                                         <div className="flex flex-col">
-                                            <span className="text-sm font-bold">Download Constitution</span>
-                                            <span className="text-[10px] text-slate-400 font-medium">PDF • 4.2 MB</span>
+                                            <span className="text-sm font-bold text-slate-900">Download Constitution</span>
+                                            <span className="text-[10px] text-slate-500 font-medium">PDF • 4.2 MB</span>
                                         </div>
-                                        <span className="material-symbols-outlined ml-auto text-slate-500 group-hover:text-primary transition-colors">download</span>
+                                        <span className="material-symbols-outlined ml-auto text-slate-400 group-hover:text-primary transition-colors">download</span>
                                     </Link>
-                                    <Link className="flex items-center gap-4 p-4 bg-white/5 rounded-2xl hover:bg-white/10 transition-all group border border-white/5 active:scale-95" href="/resources?category=Manuals">
-                                        <div className="size-11 rounded-xl bg-accent-purple/10 flex items-center justify-center shadow-inner">
+                                    <Link className="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl hover:bg-slate-100 transition-all group border border-slate-100 active:scale-95" href="/resources?category=Manuals">
+                                        <div className="size-11 rounded-xl bg-white flex items-center justify-center shadow-sm border border-slate-100">
                                             <span className="material-symbols-outlined text-accent-purple">history_edu</span>
                                         </div>
                                         <div className="flex flex-col">
-                                            <span className="text-sm font-bold">Policy Manual</span>
-                                            <span className="text-[10px] text-slate-400 font-medium">Updated Sept 2024</span>
+                                            <span className="text-sm font-bold text-slate-900">Policy Manual</span>
+                                            <span className="text-[10px] text-slate-500 font-medium">Updated Sept 2024</span>
                                         </div>
-                                        <span className="material-symbols-outlined ml-auto text-slate-500 group-hover:text-accent-purple transition-colors">arrow_forward</span>
+                                        <span className="material-symbols-outlined ml-auto text-slate-400 group-hover:text-accent-purple transition-colors">arrow_forward</span>
                                     </Link>
-                                    <Link className="flex items-center gap-4 p-4 bg-white/5 rounded-2xl hover:bg-white/10 transition-all group border border-white/5 active:scale-95" href="/contact?subject=Strategic Initiative Proposal">
-                                        <div className="size-11 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner">
+                                    <Link className="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl hover:bg-slate-100 transition-all group border border-slate-100 active:scale-95" href="/contact?subject=Strategic Initiative Proposal">
+                                        <div className="size-11 rounded-xl bg-white flex items-center justify-center shadow-sm border border-slate-100">
                                             <span className="material-symbols-outlined text-primary">campaign</span>
                                         </div>
                                         <div className="flex flex-col">
-                                            <span className="text-sm font-bold">Submit Proposal</span>
-                                            <span className="text-[10px] text-slate-400 font-medium">Strategic Initiative</span>
+                                            <span className="text-sm font-bold text-slate-900">Submit Proposal</span>
+                                            <span className="text-[10px] text-slate-500 font-medium">Strategic Initiative</span>
                                         </div>
-                                        <span className="material-symbols-outlined ml-auto text-slate-500 group-hover:text-primary transition-colors">add_circle</span>
+                                        <span className="material-symbols-outlined ml-auto text-slate-400 group-hover:text-primary transition-colors">add_circle</span>
                                     </Link>
                                 </div>
                             </div>

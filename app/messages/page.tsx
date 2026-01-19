@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import {
     getConversations,
@@ -30,6 +31,7 @@ export default function MessagesPage() {
     const [sending, setSending] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const router = useRouter();
 
     const activeConversation = conversations.find(c => c.id === activeConversationId);
 
@@ -41,14 +43,17 @@ export default function MessagesPage() {
         scrollToBottom();
     }, [messages]);
 
+    // Handle authentication redirect
+    useEffect(() => {
+        if (!authLoading && !user) {
+            router.push('/login');
+        }
+    }, [authLoading, user, router]);
+
     // Fetch conversations on mount
     useEffect(() => {
         const fetchConversations = async () => {
-            if (authLoading) return;
-            if (!user) {
-                setLoading(false);
-                return;
-            }
+            if (authLoading || !user) return;
 
             setLoading(true);
             try {
@@ -80,7 +85,7 @@ export default function MessagesPage() {
         };
 
         fetchConversations();
-    }, [user]);
+    }, [user, authLoading]);
 
     // Fetch messages when active conversation changes
     useEffect(() => {
@@ -150,7 +155,7 @@ export default function MessagesPage() {
         }
     };
 
-    if (loading || authLoading) {
+    if (loading || authLoading || !user) {
         return (
             <div className="flex h-screen items-center justify-center bg-background-main">
                 <span className="material-symbols-outlined animate-spin text-4xl text-primary">progress_activity</span>
