@@ -44,11 +44,6 @@ export default function MessagesPage() {
     }, [messages]);
 
     // Handle authentication redirect
-    useEffect(() => {
-        if (!authLoading && !user) {
-            router.push('/login');
-        }
-    }, [authLoading, user, router]);
 
     // Fetch conversations on mount
     useEffect(() => {
@@ -155,10 +150,24 @@ export default function MessagesPage() {
         }
     };
 
-    if (loading || authLoading || !user) {
+    if (loading || authLoading) {
         return (
             <div className="flex h-screen items-center justify-center bg-background-main">
                 <span className="material-symbols-outlined animate-spin text-4xl text-primary">progress_activity</span>
+            </div>
+        );
+    }
+
+    if (!user) {
+        return (
+            <div className="flex h-screen items-center justify-center bg-background-main">
+                <div className="text-center p-8 bg-white rounded-2xl shadow-sm border border-slate-200">
+                    <span className="material-symbols-outlined text-4xl text-slate-300 mb-4">lock</span>
+                    <p className="text-slate-500 font-medium mb-6">Please log in to view your messages</p>
+                    <Link href="/login" className="inline-flex items-center justify-center px-6 py-2.5 bg-primary text-white rounded-xl font-bold hover:bg-green-600 transition-colors shadow-lg shadow-primary/20">
+                        Go to Login
+                    </Link>
+                </div>
             </div>
         );
     }
