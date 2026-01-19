@@ -12,6 +12,7 @@ import {
 } from '@/lib/firestore';
 import { storage } from '@/lib/firebase';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import PublicHeader from '@/components/layout/PublicHeader';
 
 function ResourcesPageContent() {
     const { user } = useAuth();
@@ -167,6 +168,7 @@ function ResourcesPageContent() {
 
     return (
         <div className="min-h-screen bg-background-light font-display">
+            <PublicHeader />
             {/* Header */}
             <header className="bg-linear-to-r from-nipa-navy to-navy-card text-white px-8 py-16">
                 <div className="max-w-7xl mx-auto">
