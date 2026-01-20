@@ -60,10 +60,17 @@ export interface Event {
     title: string;
     description: string;
     date: Date;
+    time: string;
     location: string;
-    type: 'summit' | 'gala' | 'meeting' | 'training';
-    registrationRequired: boolean;
+    type: 'summit' | 'gala' | 'meeting' | 'training' | 'Conference' | 'Social' | 'Election';
+    organizer?: string;
+    virtualLink?: string;
+    registrationRequired?: boolean;
     capacity?: number;
+    registered?: number;
+    status?: 'upcoming' | 'past';
+    createdAt?: Date;
+    updatedAt?: Date;
 }
 
 // Announcement data types
