@@ -6,6 +6,7 @@ import MemberSidebar from '@/components/layout/MemberSidebar';
 import { useEffect, useState, useMemo } from 'react';
 import { collection, query, orderBy, limit, getDocs, Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { getCelebrants, User as FirestoreUser } from '@/lib/firestore';
 
 interface Announcement {
     id: string;
@@ -27,6 +28,8 @@ export default function MemberDashboard() {
     const { profile, loading } = useAuth();
     const [announcements, setAnnouncements] = useState<Announcement[]>([]);
     const [events, setEvents] = useState<Event[]>([]);
+    const [celebrants, setCelebrants] = useState<FirestoreUser[]>([]);
+    const [currentMonthName, setCurrentMonthName] = useState('');
     const [fetchingData, setFetchingData] = useState(true);
 
     const userName = useMemo(() => profile?.name || 'Member', [profile]);
@@ -53,6 +56,22 @@ export default function MemberDashboard() {
                     ...doc.data()
                 })) as Event[];
                 setEvents(eventsData);
+
+                // Fetch Celebrants for current month
+                const currentMonth = new Date().getMonth();
+                setCurrentMonthName(new Date().toLocaleString('default', { month: 'long' }));
+                const monthCelebrants = await getCelebrants(currentMonth);
+
+                // Sort to put upcoming/today first
+                const todayDay = new Date().getDate();
+                monthCelebrants.sort((a: FirestoreUser, b: FirestoreUser) => {
+                    const aDiff = (a.birthDay || 0) - todayDay;
+                    const bDiff = (b.birthDay || 0) - todayDay;
+                    if (aDiff >= 0 && bDiff < 0) return -1;
+                    if (aDiff < 0 && bDiff >= 0) return 1;
+                    return (a.birthDay || 0) - (b.birthDay || 0);
+                });
+                setCelebrants(monthCelebrants);
 
             } catch (error) {
                 console.error("Error fetching dashboard data:", error);
@@ -114,8 +133,43 @@ export default function MemberDashboard() {
     };
 
     const handleSyncToCalendar = () => {
-        // Placeholder for future logic
-        alert("Events synced successfully to your calendar!");
+        if (events.length === 0) {
+            alert("No upcoming events to sync.");
+            return;
+        }
+
+        let icsData = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//NIPA Portal//Events//EN\n";
+
+        events.forEach(event => {
+            const date = event.date.toDate();
+            // iCal format: YYYYMMDDTHHmmssZ
+            const formatString = (d: Date) => d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+
+            const startStr = formatString(date);
+            // Default 2 hour duration if not specified
+            const endDate = new Date(date.getTime() + 2 * 60 * 60 * 1000);
+            const endStr = formatString(endDate);
+
+            icsData += "BEGIN:VEVENT\n";
+            icsData += `UID:${event.id}@nipaportal.org\n`;
+            icsData += `DTSTAMP:${formatString(new Date())}\n`;
+            icsData += `DTSTART:${startStr}\n`;
+            icsData += `DTEND:${endStr}\n`;
+            icsData += `SUMMARY:${event.title}\n`;
+            icsData += `LOCATION:${event.location}\n`;
+            icsData += "END:VEVENT\n";
+        });
+
+        icsData += "END:VCALENDAR";
+
+        const blob = new Blob([icsData], { type: 'text/calendar;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'nipa-upcoming-events.ics');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     };
 
     return (
@@ -199,35 +253,41 @@ export default function MemberDashboard() {
                             </div>
                             <div className="space-y-5">
                                 <div className="flex items-center justify-between px-1">
-                                    <h3 className="text-xl font-bold text-slate-900">October Celebrants</h3>
+                                    <h3 className="text-xl font-bold text-slate-900">{currentMonthName} Celebrants</h3>
                                     <div className="flex gap-2">
                                         <button className="size-9 rounded-full border border-slate-200 bg-white flex items-center justify-center text-slate-400 hover:text-slate-900 transition-colors shadow-sm"><span className="material-symbols-outlined text-lg">chevron_left</span></button>
                                         <button className="size-9 rounded-full border border-slate-200 bg-white flex items-center justify-center text-slate-400 hover:text-slate-900 transition-colors shadow-sm"><span className="material-symbols-outlined text-lg">chevron_right</span></button>
                                     </div>
                                 </div>
                                 <div className="flex gap-8 overflow-x-auto pb-4 custom-scrollbar">
-                                    {/* Placeholder Celebrants Data - To be connected to Users collection later */}
-                                    <div className="flex flex-col items-center gap-3 min-w-[110px] group cursor-pointer">
-                                        <div className="size-20 rounded-full bg-center bg-cover border-4 border-white shadow-md ring-2 ring-primary group-hover:scale-105 transition-transform" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCIdNEHll1Zy-FWM9N_nu8oEIkajFL7R86NJJJzEGSmlzjp6bQEBLTnnbldcNOCWjcDIF-V7HAgFwDLslzxizhXU7EQzVS0nCR6iXCT9AEGo0G80-AB7Snlh4sJlxrG72xU7R5MNYw2pAzMl1uvyBV1rOjG7RABU21qTKx_G9UGo9P4EHGd9QQ2ld2QFcZCeFswy2m3CbowMhTYGjWHzpvCD2Ui2EnNt2qW9dIKlsDxuDLZqUphA1DsincYMO9oSpmIW09Loe3Fuqk')" }}></div>
-                                        <div className="text-center">
-                                            <p className="text-sm font-bold text-slate-900">Dr. Sarah O.</p>
-                                            <p className="text-[10px] text-primary font-black uppercase tracking-wider">Today</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex flex-col items-center gap-3 min-w-[110px] group cursor-pointer">
-                                        <div className="size-20 rounded-full bg-center bg-cover border-4 border-white shadow-md ring-1 ring-slate-100 group-hover:scale-105 transition-transform" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuAHFUPr6qYhgHsdeLTGGykn92GKQbhLl1dEUEJzJ88kVLfaLjBI1TkIgJwTf_aMmB0Unqu23AKdCPpsTBi8O-expxJ-2oG6864Gvutz5yA27C8vts6skWrNqRgwgrjew1MJ-x7el6T4iJBsk3QOkn1HjncMHdqrBOxilTWv0SxopKHpy-if7bGfenEA0kVtwOOwhlctohLHr1KFf8xI91cF0pmtBoMzZldDIMY2J8S9Eysy3RG7KJC_i3-iM0ZIYfejDPKyloK-8mU')" }}></div>
-                                        <div className="text-center">
-                                            <p className="text-sm font-bold text-slate-900">Maj. Musa L.</p>
-                                            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Oct 15</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex flex-col items-center gap-3 min-w-[110px] group cursor-pointer">
-                                        <div className="size-20 rounded-full bg-center bg-cover border-4 border-white shadow-md ring-1 ring-slate-100 group-hover:scale-105 transition-transform" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBazlwepK9B0zNqk2EPkqJSfOlY-c8gfEoUaJImIz3jjJbcEh60TiTqVdMQplRBxTO-FVfbzU-VuflIL2-YlOwbiDAfIycWicx_s8reU-FMVfdKTqQjCahwqPxt6svxQ2Qr_SxkOa80z31LBMtdCQY0yzxpRRyv7u33N_QRUNk17Vl58aaxPImpjHlGRt7N1FCYF85JcUm7pnmeeBEKvmfT7QulV-pr0aYqnDhUoB__1pv1ypyv9uFXzAjs-fr20K4hJ_NnmphbynU')" }}></div>
-                                        <div className="text-center">
-                                            <p className="text-sm font-bold text-slate-900">Barr. Evelyn</p>
-                                            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Oct 18</p>
-                                        </div>
-                                    </div>
+                                    {fetchingData ? (
+                                        <div className="flex justify-center w-full py-4"><span className="material-symbols-outlined animate-spin text-primary pr-2">progress_activity</span></div>
+                                    ) : celebrants.length > 0 ? (
+                                        celebrants.map(user => {
+                                            const todayDay = new Date().getDate();
+                                            const isToday = user.birthDay === todayDay;
+                                            const isPast = (user.birthDay || 0) < todayDay;
+
+                                            // Extract initials safely
+                                            const initials = user.name ? user.name.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase() : 'M';
+
+                                            return (
+                                                <div key={user.id} className={`flex flex-col items-center gap-3 min-w-[110px] group cursor-pointer ${isPast ? 'opacity-60' : ''}`}>
+                                                    <div className={`size-20 flex items-center justify-center rounded-full bg-slate-100 border-4 border-white shadow-md transition-transform group-hover:scale-105 ${isToday ? 'ring-2 ring-primary text-primary' : 'ring-1 ring-slate-100 text-slate-500'}`}>
+                                                        <span className="text-2xl font-black">{initials}</span>
+                                                    </div>
+                                                    <div className="text-center">
+                                                        <p className="text-sm font-bold text-slate-900 truncate max-w-[100px]">{user.name.split(' ')[0]}</p>
+                                                        <p className={`text-[10px] font-black uppercase tracking-wider ${isToday ? 'text-primary' : 'text-slate-500'}`}>
+                                                            {isToday ? 'Today' : `${currentMonthName.substring(0, 3)} ${user.birthDay}`}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })
+                                    ) : (
+                                        <div className="w-full text-center py-6 text-sm text-slate-500 font-medium">No birthdays scheduled for this month.</div>
+                                    )}
                                 </div>
                             </div>
                         </div>
