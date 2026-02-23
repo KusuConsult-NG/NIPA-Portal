@@ -47,7 +47,7 @@ service cloud.firestore {
         // Allow authenticated users to register as candidates (create)
         // Additional validation can be done in cloud functions or strict rule logic
         allow create: if isAuthenticated(); 
-        allow update: if isAdmin() || (isAuthenticated() && isOwner(request.resource.data.userId));
+        allow update: if isAdmin() || (isAuthenticated() && isOwner(resource.data.userId));
       }
 
       // Votes Subcollection

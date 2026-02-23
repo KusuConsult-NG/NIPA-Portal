@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { listUsers, User } from '@/lib/firestore';
 import MemberSidebar from '@/components/layout/MemberSidebar';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 
 export default function DirectoryPage() {
     const [users, setUsers] = useState<User[]>([]);
@@ -18,7 +20,17 @@ export default function DirectoryPage() {
     // UI States for Dropdowns
     const [openFilter, setOpenFilter] = useState<'none' | 'cohort' | 'profession' | 'location'>('none');
 
+    const { user, profile, loading: authLoading } = useAuth();
+    const router = useRouter();
+
     useEffect(() => {
+        if (!authLoading && (!user || profile?.role !== 'admin')) {
+            router.replace('/dashboard');
+        }
+    }, [user, profile, authLoading, router]);
+
+    useEffect(() => {
+        if (authLoading || profile?.role !== 'admin') return;
         const fetchUsers = async () => {
             try {
                 const { users } = await listUsers({ limit: 100 });

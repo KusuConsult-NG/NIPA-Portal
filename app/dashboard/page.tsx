@@ -29,6 +29,8 @@ export default function MemberDashboard() {
     const [events, setEvents] = useState<Event[]>([]);
     const [fetchingData, setFetchingData] = useState(true);
 
+    const userName = useMemo(() => profile?.name || 'Member', [profile]);
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -70,9 +72,6 @@ export default function MemberDashboard() {
         );
     }
 
-    const userName = useMemo(() => profile?.name || 'Member', [profile]);
-
-    // If user is pending, show restricted view
     if (profile?.status === 'pending') {
         return (
             <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">

@@ -2,11 +2,16 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 import { db } from '@/lib/firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import { User } from '@/lib/firestore';
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 export default function AdminPage() {
+    const { user, profile, loading: authLoading } = useAuth();
+    const router = useRouter();
     const [loading, setLoading] = useState(true);
     const [stats, setStats] = useState({
         totalMembers: 0,
@@ -17,8 +22,16 @@ export default function AdminPage() {
     });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [recentUsers, setRecentUsers] = useState<any[]>([]);
+    const [revenueData, setRevenueData] = useState<{ name: string, total: number }[]>([]);
 
     useEffect(() => {
+        if (!authLoading && (!user || profile?.role !== 'admin')) {
+            router.replace('/dashboard');
+            return;
+        }
+
+        if (authLoading || profile?.role !== 'admin') return;
+
         const fetchStats = async () => {
             try {
                 // 1. Fetch Users
@@ -41,6 +54,29 @@ export default function AdminPage() {
                 const paymentsRef = collection(db, 'payments');
                 const paymentsSnapshot = await getDocs(paymentsRef);
                 const totalRevenue = paymentsSnapshot.docs.reduce((sum, doc) => sum + (doc.data().amount || 0), 0);
+
+                const revTrendMap: Record<string, number> = {};
+                const now = new Date();
+                for (let i = 5; i >= 0; i--) {
+                    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                    revTrendMap[d.toLocaleString('default', { month: 'short' })] = 0;
+                }
+
+                paymentsSnapshot.docs.forEach(doc => {
+                    const data = doc.data();
+                    if (data.status === 'success' && data.createdAt) {
+                        const d = new Date(data.createdAt);
+                        const diffMonths = (now.getFullYear() - d.getFullYear()) * 12 + now.getMonth() - d.getMonth();
+                        if (diffMonths >= 0 && diffMonths <= 5) {
+                            const month = d.toLocaleString('default', { month: 'short' });
+                            if (revTrendMap[month] !== undefined) {
+                                revTrendMap[month] += (data.amount || 0);
+                            }
+                        }
+                    }
+                });
+
+                setRevenueData(Object.entries(revTrendMap).map(([name, total]) => ({ name, total })));
 
                 setStats({
                     totalMembers,
@@ -265,8 +301,18 @@ export default function AdminPage() {
                                     <button className="px-4 py-1.5 text-xs font-bold text-slate-500 hover:text-slate-900">1 Year</button>
                                 </div>
                             </div>
-                            <div className="h-64 flex items-center justify-center bg-slate-50 rounded-xl">
-                                <p className="text-slate-400 font-medium">Chart Visualization Coming Soon</p>
+                            <div className="h-64 flex items-center justify-center bg-slate-50 rounded-xl mt-6 p-4">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <LineChart data={revenueData}>
+                                        <XAxis dataKey="name" fontSize={12} stroke="#94a3b8" tickLine={false} axisLine={false} />
+                                        <YAxis hide />
+                                        <Tooltip
+                                            formatter={(value: any) => formatCurrency(Number(value) || 0)}
+                                            contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                                        />
+                                        <Line type="monotone" dataKey="total" stroke="var(--color-primary)" strokeWidth={4} dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 8 }} />
+                                    </LineChart>
+                                </ResponsiveContainer>
                             </div>
                         </div>
 

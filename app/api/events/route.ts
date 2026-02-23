@@ -1,58 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
-
-// In-memory storage for events
-const events = new Map();
-
-// Initialize with mock data
-if (events.size === 0) {
-    const mockEvents = [
-        {
-            id: '1',
-            title: 'National Strategy Plenary 2024',
-            description: 'Annual strategic planning session for all NIPA members',
-            date: new Date('2026-02-12'),
-            time: '09:00 AM',
-            location: 'Main Auditorium, Abuja',
-            type: 'summit',
-            capacity: 500,
-            registered: 342,
-            status: 'upcoming',
-            createdAt: new Date(),
-            updatedAt: new Date()
-        },
-        {
-            id: '2',
-            title: 'NIPA Gala & Awards Dinner',
-            description: 'Annual fundraising gala celebrating excellence',
-            date: new Date('2026-02-24'),
-            time: '07:00 PM',
-            location: 'Grand Ballroom, Eko Hotel, Lagos',
-            type: 'gala',
-            capacity: 300,
-            registered: 287,
-            status: 'upcoming',
-            createdAt: new Date(),
-            updatedAt: new Date()
-        }
-    ];
-
-    mockEvents.forEach(event => events.set(event.id, event));
-}
+import { adminDb } from '@/lib/firebase-admin';
 
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
         const status = searchParams.get('status') || 'all';
 
-        let allEvents = Array.from(events.values());
+        let query: FirebaseFirestore.Query = adminDb.collection('events');
 
         if (status !== 'all') {
-            allEvents = allEvents.filter(event => event.status === status);
+            query = query.where('status', '==', status);
         }
 
-        // Sort by date
-        allEvents.sort((a, b) => a.date.getTime() - b.date.getTime());
+        const snapshot = await query.orderBy('date', 'asc').get();
+
+        const allEvents = snapshot.docs.map(doc => {
+            const data = doc.data();
+            return {
+                id: doc.id,
+                ...data,
+                date: data.date ? (data.date.toDate ? data.date.toDate().toISOString() : data.date) : null,
+                createdAt: data.createdAt ? (data.createdAt.toDate ? data.createdAt.toDate().toISOString() : data.createdAt) : null,
+                updatedAt: data.updatedAt ? (data.updatedAt.toDate ? data.updatedAt.toDate().toISOString() : data.updatedAt) : null,
+            };
+        });
+
+        // Fallback or empty array is handled implicitly by Firestore returning empty docs
 
         return NextResponse.json({
             success: true,
@@ -63,7 +37,7 @@ export async function GET(request: NextRequest) {
     } catch (error) {
         console.error('Get events error:', error);
         return NextResponse.json(
-            { error: 'Server error', message: 'An error occurred' },
+            { error: 'Server error', message: 'An error occurred fetching events' },
             { status: 500 }
         );
     }
@@ -85,11 +59,9 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const id = `event_${Date.now()}`;
         const now = new Date();
 
-        const event = {
-            id,
+        const eventData = {
             title,
             description,
             date: new Date(date),
@@ -103,18 +75,18 @@ export async function POST(request: NextRequest) {
             updatedAt: now
         };
 
-        events.set(id, event);
+        const docRef = await adminDb.collection('events').add(eventData);
 
         return NextResponse.json({
             success: true,
             message: 'Event created successfully',
-            event
+            event: { id: docRef.id, ...eventData, date: eventData.date.toISOString(), createdAt: eventData.createdAt.toISOString(), updatedAt: eventData.updatedAt.toISOString() }
         }, { status: 201 });
 
     } catch (error) {
         console.error('Create event error:', error);
         return NextResponse.json(
-            { error: 'Server error', message: 'An error occurred' },
+            { error: 'Server error', message: 'An error occurred creating the event' },
             { status: 500 }
         );
     }

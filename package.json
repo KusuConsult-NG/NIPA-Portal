@@ -23,7 +23,8 @@
     "next": "15.1.11",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-paystack": "^6.0.0"
+    "react-paystack": "^6.0.0",
+    "recharts": "^3.7.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.3",

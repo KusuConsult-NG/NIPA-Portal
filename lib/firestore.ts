@@ -268,6 +268,32 @@ export interface Vote {
 /**
  * Get active election
  */
+export async function createElection(electionData: Omit<Election, 'id' | 'createdAt'>): Promise<Election> {
+    const electionRef = doc(collection(db, 'elections'));
+    const now = new Date().toISOString();
+    const newElection = {
+        id: electionRef.id,
+        ...electionData,
+        createdAt: now
+    };
+    await setDoc(electionRef, newElection);
+    return newElection as Election;
+}
+
+export async function updateElectionStatus(electionId: string, status: Election['status']): Promise<void> {
+    const electionRef = doc(db, 'elections', electionId);
+    await updateDoc(electionRef, { status });
+}
+
+export async function getAllElections(): Promise<Election[]> {
+    const q = query(collection(db, 'elections'), orderBy('createdAt', 'desc'));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+    } as Election));
+}
+
 export async function getActiveElection(): Promise<Election | null> {
     const q = query(
         collection(db, 'elections'),
@@ -666,87 +692,8 @@ export async function getCourses(filter?: { featured?: boolean; type?: string; s
             } as Course));
         }
 
-        // Mock data fallback if DB is empty (to ensure page works immediately)
-        console.log('[Firestore] No courses found, returning mocks');
-        return [
-            {
-                id: 'course-1',
-                title: 'Senior Executive Course (SEC) 46',
-                description: 'The flagship program designed for high-level policy makers and executors. Prepare for the next level of strategic leadership with intensive modules on governance, economy, and national security.',
-                shortDescription: 'Flagship program for high-level policy makers.',
-                type: 'Executive Program',
-                level: 'Executive',
-                price: 5000000,
-                currency: 'NGN',
-                startDate: '2024-02-01',
-                endDate: '2024-11-30',
-                duration: '10 Months',
-                instructor: 'Dr. A. Ibrahim',
-                image: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=2670&auto=format&fit=crop',
-                capacity: 60,
-                registeredCount: 45,
-                status: 'open',
-                featured: true,
-                createdAt: new Date().toISOString()
-            },
-            {
-                id: 'course-2',
-                title: 'Strategic Leadership Workshop',
-                description: 'Intensive 5-day workshop focused on modern leadership frameworks and change management in public sector institutions.',
-                shortDescription: 'Modern frameworks for public sector leadership.',
-                type: 'Workshop',
-                level: 'Advanced',
-                price: 250000,
-                currency: 'NGN',
-                startDate: '2024-03-15',
-                endDate: '2024-03-20',
-                duration: '5 Days',
-                instructor: 'Prof. Sarah Okon',
-                image: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=2670&auto=format&fit=crop',
-                capacity: 100,
-                registeredCount: 82,
-                status: 'open',
-                createdAt: new Date().toISOString()
-            },
-            {
-                id: 'course-3',
-                title: 'Digital Governance Seminar',
-                description: 'Exploring the intersection of technology and governance. Learn how to leverage digital tools for transparent and efficient public service delivery.',
-                shortDescription: 'Leveraging tech for efficient service delivery.',
-                type: 'Seminar',
-                level: 'Intermediate',
-                price: 150000,
-                currency: 'NGN',
-                startDate: '2024-04-05',
-                endDate: '2024-04-05',
-                duration: '1 Day',
-                instructor: 'Engr. T. Balogun',
-                image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=2670&auto=format&fit=crop',
-                capacity: 200,
-                registeredCount: 156,
-                status: 'upcoming',
-                createdAt: new Date().toISOString()
-            },
-            {
-                id: 'course-4',
-                title: 'Policy Formulation Masterclass',
-                description: 'A deep dive into the cycle of policy formulation, implementation, and evaluation. Suitable for civil servants and policy analysts.',
-                shortDescription: 'Comprehensive guide to policy cycle.',
-                type: 'Online',
-                level: 'Advanced',
-                price: 75000,
-                currency: 'NGN',
-                startDate: '2024-03-01',
-                endDate: '2024-03-31',
-                duration: '4 Weeks',
-                instructor: 'Dr. P. Mensah',
-                image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2670&auto=format&fit=crop',
-                capacity: 500,
-                registeredCount: 320,
-                status: 'open',
-                createdAt: new Date().toISOString()
-            }
-        ];
+        // Production strict mode: No mock data allowed. Return empty.
+        return [];
 
     } catch (error) {
         console.error('Error fetching courses:', error);

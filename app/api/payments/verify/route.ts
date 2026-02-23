@@ -44,41 +44,48 @@ export async function POST(request: NextRequest) {
         const amount = transactionData.amount / 100; // Paystack returns amount in kobo
         const now = new Date();
 
-        // Check if payment already exists
-        const existingPaymentApi = await adminDb.collection('payments')
-            .where('reference', '==', reference)
-            .get();
+        const paymentRef = adminDb.collection('payments').doc(reference);
 
-        if (!existingPaymentApi.empty) {
+        // Use transaction for absolute atomicity and locking against concurrent webhooks/client calls
+        const paymentRecord = await adminDb.runTransaction(async (t) => {
+            const doc = await t.get(paymentRef);
+
+            if (doc.exists) {
+                return { isNew: false, data: doc.data() };
+            }
+
+            const paymentData = {
+                memberId: user.userId,
+                amount: amount,
+                description: metadata?.description || 'NIPA Payment',
+                category: metadata?.category || 'General',
+                status: 'successful',
+                transactionDate: now,
+                receiptUrl: `#receipt-${reference}`,
+                createdAt: now,
+                reference: reference, // Store reference for idempotency
+                provider: 'paystack',
+                metadata: transactionData.metadata || {}
+            };
+
+            t.set(paymentRef, paymentData);
+            return { isNew: true, data: paymentData };
+        });
+
+        if (!paymentRecord.isNew) {
             return NextResponse.json({
                 success: true,
                 message: 'Payment already recorded',
-                payment: existingPaymentApi.docs[0].data()
+                payment: { id: reference, ...paymentRecord.data }
             });
         }
-
-        const paymentData = {
-            memberId: user.userId,
-            amount: amount,
-            description: metadata?.description || 'NIPA Payment',
-            category: metadata?.category || 'General',
-            status: 'successful',
-            transactionDate: now,
-            receiptUrl: `#receipt-${reference}`,
-            createdAt: now,
-            reference: reference, // Store reference for idempotency
-            provider: 'paystack',
-            metadata: transactionData.metadata || {}
-        };
-
-        const docRef = await adminDb.collection('payments').add(paymentData);
 
         return NextResponse.json({
             success: true,
             message: 'Payment verified and recorded',
             payment: {
-                id: docRef.id,
-                ...paymentData
+                id: reference,
+                ...paymentRecord.data
             }
         });
 

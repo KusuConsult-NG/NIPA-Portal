@@ -13,7 +13,6 @@ import {
     User,
     findUserById
 } from '@/lib/firestore';
-import BackButton from '@/components/ui/BackButton';
 import MemberSidebar from '@/components/layout/MemberSidebar';
 
 // Extended conversation with user info
@@ -31,7 +30,6 @@ export default function MessagesPage() {
     const [sending, setSending] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
-    const router = useRouter();
 
     const activeConversation = conversations.find(c => c.id === activeConversationId);
 

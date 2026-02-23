@@ -1,8 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { UserProfile } from '@/context/AuthContext';
 import { db } from '@/lib/firebase';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, query, limit } from 'firebase/firestore';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, Cell } from 'recharts';
 
 export default function AnalyticsPage() {
     const [timeRange, setTimeRange] = useState('month');
@@ -17,37 +21,116 @@ export default function AnalyticsPage() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [recentActivity, setRecentActivity] = useState<any[]>([]);
 
+    // New states for charts
+    const [revenueData, setRevenueData] = useState<{ name: string, total: number }[]>([]);
+    const [memberGrowthData, setMemberGrowthData] = useState<{ name: string, value: number, color: string }[]>([]);
+    const [topContributors, setTopContributors] = useState<{ name: string, total: number, rank: number }[]>([]);
+
+    const { user, profile, loading: authLoading } = useAuth();
+    const router = useRouter();
+
     useEffect(() => {
+        if (!authLoading && (!user || profile?.role !== 'admin')) {
+            router.replace('/dashboard');
+        }
+    }, [user, profile, authLoading, router]);
+
+    useEffect(() => {
+        if (authLoading || profile?.role !== 'admin') return;
         const fetchData = async () => {
             setLoading(true);
             try {
-                // 1. Fetch Users (for Active Members count)
+                // Fetch Users with a hard cap to prevent client OOM crashes at scale
                 const usersRef = collection(db, 'users');
-                const usersSnapshot = await getDocs(usersRef);
-                const totalMembers = usersSnapshot.size;
-                const activeMembers = usersSnapshot.docs.filter(doc => doc.data().status === 'active').length;
+                const usersQuery = query(usersRef, limit(1000));
+                const usersSnapshot = await getDocs(usersQuery);
+                const usersData = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as UserProfile & { id: string }));
+                const totalMembers = usersData.length;
+                const activeMembers = usersData.filter(user => user.status === 'active').length;
 
-                // 2. Fetch Payments (for Revenue)
+                // Fetch Payments
                 const paymentsRef = collection(db, 'payments');
-                const paymentsSnapshot = await getDocs(paymentsRef);
-                const totalRevenue = paymentsSnapshot.docs.reduce((sum, doc) => sum + (doc.data().amount || 0), 0);
+                const paymentsQuery = query(paymentsRef, limit(1000));
+                const paymentsSnapshot = await getDocs(paymentsQuery);
+                const paymentsData = paymentsSnapshot.docs.map(doc => {
+                    const data = doc.data() as { amount: number, status: string, createdAt: any, memberId?: string };
+                    return {
+                        id: doc.id,
+                        amount: data.amount,
+                        status: data.status,
+                        memberId: data.memberId,
+                        createdAt: data.createdAt?.toDate() || new Date()
+                    };
+                });
+
+                // Process Stats...
+                const successfulPayments = paymentsData.filter(p => p.status === 'success');
+                const totalRevenue = successfulPayments.reduce((sum, p) => sum + (p.amount || 0), 0); // Assuming amount is in kobo/cents
 
                 // Get recent payments for activity feed
-                const recentPayments = paymentsSnapshot.docs
-                    .map(doc => ({
-                        id: doc.id,
+                const recentPayments = paymentsData
+                    .map(p => ({
+                        id: p.id,
                         type: 'payment',
-                        ...doc.data(),
-                        timestamp: doc.data().createdAt?.toDate() || new Date()
+                        amount: p.amount,
+                        timestamp: p.createdAt
                     }))
                     .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
                     .slice(0, 5);
 
-                // 3. Fetch Events (for Attendance)
+                // Fetch Events
                 const eventsRef = collection(db, 'events');
-                const eventsSnapshot = await getDocs(eventsRef);
+                const eventsQuery = query(eventsRef, limit(100));
+                const eventsSnapshot = await getDocs(eventsQuery);
                 const totalEvents = eventsSnapshot.size;
-                const eventAttendance = eventsSnapshot.docs.reduce((sum, doc) => sum + (doc.data().registered || 0), 0);
+                const eventAttendance = eventsSnapshot.docs.reduce((sum, doc) => sum + ((doc.data() as { registered?: number }).registered || 0), 0);
+
+                // --- Calculate Chart Data ---
+                // Revenue Trend (Last 6 Months)
+                const revTrendMap: Record<string, number> = {};
+                const now = new Date();
+                for (let i = 5; i >= 0; i--) {
+                    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                    revTrendMap[d.toLocaleString('default', { month: 'short' })] = 0;
+                }
+
+                successfulPayments.forEach(p => {
+                    const d = new Date(p.createdAt);
+                    const diffMonths = (now.getFullYear() - d.getFullYear()) * 12 + now.getMonth() - d.getMonth();
+                    if (diffMonths >= 0 && diffMonths <= 5) {
+                        const month = d.toLocaleString('default', { month: 'short' });
+                        if (revTrendMap[month] !== undefined) {
+                            revTrendMap[month] += p.amount;
+                        }
+                    }
+                });
+                setRevenueData(Object.entries(revTrendMap).map(([name, total]) => ({ name, total })));
+
+                // Member Growth (Status Segments)
+                const pending = usersData.filter(u => u.status === 'pending').length;
+                const inactive = usersData.filter(u => u.status === 'inactive').length;
+
+                setMemberGrowthData([
+                    { name: 'Active', value: activeMembers, color: '#3b82f6' }, // blue-500
+                    { name: 'Pending', value: pending, color: '#eab308' }, // yellow-500
+                    { name: 'Inactive', value: inactive, color: '#ef4444' } // red-500
+                ]);
+
+                // Top Contributors
+                const contributorMap: Record<string, { total: number, name: string }> = {};
+                successfulPayments.filter(p => p.memberId).forEach(p => {
+                    if (!contributorMap[p.memberId!]) {
+                        const user = usersData.find(u => u.id === p.memberId);
+                        contributorMap[p.memberId!] = { total: 0, name: user?.name || 'Unknown Member' };
+                    }
+                    contributorMap[p.memberId!].total += p.amount;
+                });
+
+                const sortedContributors = Object.values(contributorMap)
+                    .sort((a, b) => b.total - a.total)
+                    .slice(0, 5)
+                    .map((c, i) => ({ ...c, rank: i + 1 }));
+                setTopContributors(sortedContributors);
 
                 setMetrics({
                     totalRevenue,
@@ -149,13 +232,18 @@ export default function AnalyticsPage() {
                                 <option>All Time</option>
                             </select>
                         </div>
-                        <div className="h-64 flex items-end justify-between gap-4">
-                            {[65, 78, 82, 90, 88, 95].map((height, idx) => (
-                                <div key={idx} className="flex-1 flex flex-col items-center gap-2">
-                                    <div className="w-full bg-linear-to-t from-[--color-primary] to-[--color-accent] rounded-t-lg transition-all hover:brightness-110" style={{ height: `${height}%` }}></div>
-                                    <span className="text-xs font-bold text-slate-400">{['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'][idx]}</span>
-                                </div>
-                            ))}
+                        <div className="h-64 flex items-end justify-between gap-4 mt-6">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={revenueData}>
+                                    <XAxis dataKey="name" fontSize={12} stroke="#94a3b8" tickLine={false} axisLine={false} />
+                                    <YAxis hide />
+                                    <Tooltip
+                                        formatter={(value: any) => formatCurrency(Number(value) || 0)}
+                                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                                    />
+                                    <Line type="monotone" dataKey="total" stroke="var(--color-primary)" strokeWidth={4} dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 8 }} />
+                                </LineChart>
+                            </ResponsiveContainer>
                         </div>
                     </div>
 
@@ -163,22 +251,20 @@ export default function AnalyticsPage() {
                     <div className="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm">
                         <h3 className="text-xl font-black mb-6">Member Growth</h3>
                         <div className="space-y-4">
-                            {[
-                                { label: 'New Members', value: 45, total: 100, color: 'bg-green-500' },
-                                { label: 'Renewals', value: 87, total: 100, color: 'bg-blue-500' },
-                                { label: 'Pending', value: 23, total: 100, color: 'bg-yellow-500' },
-                                { label: 'Inactive', value: 12, total: 100, color: 'bg-red-500' }
-                            ].map((item, idx) => (
-                                <div key={idx}>
-                                    <div className="flex justify-between items-center mb-2">
-                                        <span className="text-sm font-bold text-slate-700">{item.label}</span>
-                                        <span className="text-sm font-black text-slate-900">{item.value}</span>
+                            {memberGrowthData.map((item, idx) => {
+                                const percentage = metrics.totalMembers > 0 ? (item.value / metrics.totalMembers) * 100 : 0;
+                                return (
+                                    <div key={idx}>
+                                        <div className="flex justify-between items-center mb-2">
+                                            <span className="text-sm font-bold text-slate-700">{item.name}</span>
+                                            <span className="text-sm font-black text-slate-900">{item.value} ({percentage.toFixed(0)}%)</span>
+                                        </div>
+                                        <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
+                                            <div className="h-full rounded-full transition-all" style={{ width: `${percentage}%`, backgroundColor: item.color }}></div>
+                                        </div>
                                     </div>
-                                    <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
-                                        <div className={`${item.color} h-full rounded-full transition-all`} style={{ width: `${item.value}%` }}></div>
-                                    </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     </div>
                 </div>
@@ -216,11 +302,7 @@ export default function AnalyticsPage() {
                     <div className="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm">
                         <h3 className="text-xl font-black mb-6">Top Contributors</h3>
                         <div className="space-y-4">
-                            {[
-                                { name: 'Col. Ahmed B.', contributions: 12, rank: 1 },
-                                { name: 'Dr. Sarah O.', contributions: 10, rank: 2 },
-                                { name: 'Engr. Musa I.', contributions: 8, rank: 3 }
-                            ].map((contributor, idx) => (
+                            {topContributors.length > 0 ? topContributors.map((contributor, idx) => (
                                 <div key={idx} className="flex items-center gap-3">
                                     <div className={`size-8 rounded-full flex items-center justify-center font-black text-xs ${idx === 0 ? 'bg-yellow-100 text-yellow-700' :
                                         idx === 1 ? 'bg-slate-200 text-slate-700' :
@@ -230,10 +312,12 @@ export default function AnalyticsPage() {
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <p className="text-sm font-bold text-slate-900 truncate">{contributor.name}</p>
-                                        <p className="text-xs text-slate-500">{contributor.contributions} contributions</p>
+                                        <p className="text-xs text-slate-500">{formatCurrency(contributor.total)}</p>
                                     </div>
                                 </div>
-                            ))}
+                            )) : (
+                                <p className="text-slate-500 italic">No contributor data found.</p>
+                            )}
                         </div>
                     </div>
                 </div>

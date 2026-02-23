@@ -42,11 +42,11 @@ export default function SignupPage() {
 
             // 2. Set Cookies immediately to prevent middleware redirect loop
             const { default: Cookies } = await import('js-cookie');
-            Cookies.set('session', 'true', { expires: 7 });
+            Cookies.set('session', 'true', { expires: 7, path: '/' });
 
             try {
                 const token = await firebaseUser.getIdToken();
-                Cookies.set('auth_token', token, { expires: 7 });
+                Cookies.set('auth_token', token, { expires: 7, path: '/' });
             } catch (e) {
                 console.error("Token error", e);
             }

@@ -25,12 +25,12 @@ export default function LoginPage() {
 
             // Set cookie immediately to prevent middleware redirect loop
             const { default: Cookies } = await import('js-cookie');
-            Cookies.set('session', 'true', { expires: 7 });
+            Cookies.set('session', 'true', { expires: 7, path: '/' });
 
             // Get token for API access
             try {
                 const token = await firebaseUser.getIdToken();
-                Cookies.set('auth_token', token, { expires: 7 });
+                Cookies.set('auth_token', token, { expires: 7, path: '/' });
             } catch (e) {
                 console.error("Token error", e);
             }

@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth';
-
-// In-memory storage for event registrations
-const registrations = new Map(); // eventId -> Set of userIds
+import { adminDb } from '@/lib/firebase-admin';
 
 export async function POST(
     request: NextRequest,
@@ -16,33 +14,54 @@ export async function POST(
         const { id } = await context.params;
         const eventId = id;
 
-        // Get or create registrations set for this event
-        if (!registrations.has(eventId)) {
-            registrations.set(eventId, new Set());
-        }
+        const result = await adminDb.runTransaction(async (t) => {
+            const eventRef = adminDb.collection('events').doc(eventId);
+            const registrationRef = eventRef.collection('registrations').doc(user.userId);
 
-        const eventRegistrations = registrations.get(eventId);
+            const [eventDoc, registrationDoc] = await Promise.all([
+                t.get(eventRef),
+                t.get(registrationRef)
+            ]);
 
-        // Check if already registered
-        if (eventRegistrations.has(user.userId)) {
+            if (!eventDoc.exists) {
+                throw new Error('Event does not exist');
+            }
+
+            if (registrationDoc.exists) {
+                throw new Error('Already registered');
+            }
+
+            // Register user
+            t.set(registrationRef, {
+                userId: user.userId,
+                registeredAt: new Date().toISOString()
+            });
+
+            return true;
+        });
+
+        // Optional: Count can be fetched separately if needed, but omitted here for speed.
+        return NextResponse.json({
+            success: true,
+            message: 'Successfully registered for event',
+            eventId
+        }, { status: 201 });
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+        console.error('Event registration error:', error);
+        if (error.message === 'Already registered') {
             return NextResponse.json(
                 { error: 'Already registered', message: 'You are already registered for this event' },
                 { status: 409 }
             );
         }
-
-        // Register user
-        eventRegistrations.add(user.userId);
-
-        return NextResponse.json({
-            success: true,
-            message: 'Successfully registered for event',
-            eventId,
-            registeredCount: eventRegistrations.size
-        }, { status: 201 });
-
-    } catch (error) {
-        console.error('Event registration error:', error);
+        if (error.message === 'Event does not exist') {
+            return NextResponse.json(
+                { error: 'Not found', message: 'Event not found' },
+                { status: 404 }
+            );
+        }
         return NextResponse.json(
             { error: 'Server error', message: 'An error occurred' },
             { status: 500 }
@@ -62,24 +81,16 @@ export async function DELETE(
         const { id } = await context.params;
         const eventId = id;
 
-        if (!registrations.has(eventId)) {
-            return NextResponse.json(
-                { error: 'Not found', message: 'Not registered for this event' },
-                { status: 404 }
-            );
-        }
+        await adminDb.runTransaction(async (t) => {
+            const registrationRef = adminDb.collection('events').doc(eventId).collection('registrations').doc(user.userId);
+            const registrationDoc = await t.get(registrationRef);
 
-        const eventRegistrations = registrations.get(eventId);
+            if (!registrationDoc.exists) {
+                throw new Error('Not registered');
+            }
 
-        if (!eventRegistrations.has(user.userId)) {
-            return NextResponse.json(
-                { error: 'Not found', message: 'Not registered for this event' },
-                { status: 404 }
-            );
-        }
-
-        // Unregister user
-        eventRegistrations.delete(user.userId);
+            t.delete(registrationRef);
+        });
 
         return NextResponse.json({
             success: true,
@@ -87,8 +98,15 @@ export async function DELETE(
             eventId
         });
 
-    } catch (error) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
         console.error('Event unregistration error:', error);
+        if (error.message === 'Not registered') {
+            return NextResponse.json(
+                { error: 'Not found', message: 'Not registered for this event' },
+                { status: 404 }
+            );
+        }
         return NextResponse.json(
             { error: 'Server error', message: 'An error occurred' },
             { status: 500 }

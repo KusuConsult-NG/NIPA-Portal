@@ -1,17 +1,26 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { db } from '@/lib/firebase';
 import { collection, addDoc, Timestamp } from 'firebase/firestore';
 import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
 
 export default function SeedPage() {
-    const { user, profile } = useAuth();
+    const { user, profile, loading: authLoading } = useAuth();
+    const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [status, setStatus] = useState<string>('');
 
+    useEffect(() => {
+        // Strict guard
+        if (!authLoading && (!user || profile?.role !== 'admin')) {
+            router.replace('/dashboard');
+        }
+    }, [user, profile, authLoading, router]);
+
     const seedData = async () => {
-        if (!user) {
+        if (!user || profile?.role !== 'admin') {
             setStatus('Error: You must be logged in to seed data.');
             return;
         }

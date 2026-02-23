@@ -18,6 +18,7 @@ interface PaymentTransaction {
     status: string;
     transactionDate: Timestamp;
     receiptUrl?: string;
+    reference?: string;
 }
 
 export default function PaymentContent() {
@@ -97,6 +98,11 @@ export default function PaymentContent() {
                     display_name: "Months Paid",
                     variable_name: "months",
                     value: isCustom ? months.toString() : "12 (Annual)"
+                },
+                {
+                    display_name: "Member ID",
+                    variable_name: "memberId",
+                    value: profile?.uid || 'unknown'
                 }
             ]
         }
@@ -361,7 +367,11 @@ export default function PaymentContent() {
                                                     </span>
                                                 </td>
                                                 <td className="px-8 py-6 text-right">
-                                                    <button className="text-slate-300 hover:text-secondary transition-colors" title="Download Receipt">
+                                                    <button
+                                                        onClick={() => alert(`Generating PDF Receipt for Transaction: ${transaction.reference || transaction.id}\nStatus: ${transaction.status.toUpperCase()}\nAmount: ₦${transaction.amount.toLocaleString()}.00`)}
+                                                        className="text-slate-300 hover:text-secondary transition-colors"
+                                                        title="Download Receipt"
+                                                    >
                                                         <span className="material-symbols-outlined">receipt_long</span>
                                                     </button>
                                                 </td>

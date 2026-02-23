@@ -6,7 +6,7 @@ import { auth, onFirebaseReady } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 
-interface UserProfile {
+export interface UserProfile {
     uid: string;
     name: string;
     email: string;
